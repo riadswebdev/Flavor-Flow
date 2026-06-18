@@ -1,6 +1,6 @@
 "use client";
 
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -31,7 +31,7 @@ export default function Navbar() {
     avatar:
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
   };
-  const [user, setUser] = useState(users);
+  const [user, setUser] = useState();
 
   // Prevent hydration mismatch by waiting until component is mounted
   useEffect(() => {
@@ -108,9 +108,9 @@ export default function Navbar() {
               size="sm"
               aria-label="Toggle theme"
               className="text-foreground/70 hover:text-orange-500 hover:bg-default-100 transition-colors"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
             >
-              {mounted && theme === "dark" ?
+              {mounted && theme === "light" ?
                 <Sun className="h-5 w-5 transition-transform duration-300 scale-100 text-amber-500" />
               : <Moon className="h-5 w-5 transition-transform duration-300 scale-100 text-indigo-500" />
               }
@@ -148,7 +148,6 @@ export default function Navbar() {
                     {/* Changed from <button> to <div> to prevent nested button elements */}
                     <div className="flex items-center gap-1.5 group rounded-full p-0.5 transition-opacity hover:opacity-90 cursor-pointer">
                       <Avatar
-                        
                         color="warning"
                         radius="full"
                         size="sm"
@@ -163,7 +162,7 @@ export default function Navbar() {
                     </div>
                   </Dropdown.Trigger>
 
-                  <Dropdown.Popover className="border border-default-200/60 bg-background/90 backdrop-blur-md shadow-xl min-w-[200px] rounded-xl">
+                  <Dropdown.Popover className="border border-default-200/60 bg-background/90 backdrop-blur-md shadow-xl min-w-50 rounded-xl">
                     <div className="px-4 pt-4 pb-2 border-b border-default-200/40">
                       <p className="font-normal text-xs text-foreground/50">
                         Signed in as
@@ -219,28 +218,28 @@ export default function Navbar() {
               </>
             : <>
                 <div className="hidden sm:flex">
-                  <Button
-                    as={Link}
-                    href="/login"
-                    variant="light"
-                    radius="xl"
-                    size="sm"
-                    className="font-medium text-foreground/80 hover:text-foreground"
-                  >
-                    Login
-                  </Button>
+                  <Link href="/login" className="mr-2">
+                    <Button
+                      variant="light"
+                      radius="xl"
+                      size="sm"
+                      className="font-medium text-foreground/80 hover:text-foreground"
+                    >
+                      Login
+                    </Button>
+                  </Link>
                 </div>
                 <div className="hidden sm:flex">
-                  <Button
-                    as={Link}
-                    href="/register"
-                    color="warning"
-                    radius="xl"
-                    size="sm"
-                    className="font-medium bg-linear-to-r from-orange-500 to-rose-500 text-white shadow-md shadow-orange-500/20 hover:opacity-95"
-                  >
-                    Register
-                  </Button>
+                  <Link href="/register">
+                    <Button
+                      color="warning"
+                      radius="xl"
+                      size="sm"
+                      className="font-medium bg-linear-to-r from-orange-500 to-rose-500 text-white shadow-md shadow-orange-500/20 hover:opacity-95"
+                    >
+                      Register
+                    </Button>
+                  </Link>
                 </div>
               </>
             }
