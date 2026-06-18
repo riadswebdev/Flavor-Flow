@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
 import { motion } from "framer-motion";
 import { Heart, Users, ShieldCheck, Utensils } from "lucide-react";
+
+
 
 export default function AboutSection() {
   const features = [
