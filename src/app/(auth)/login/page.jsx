@@ -1,22 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Input, Button, Separator } from "@heroui/react";
 import { signIn } from "@/app/lib/auth-client";
-import {
-  UtensilsCrossed,
-  Eye,
-  EyeOff,
-  Loader2,
-} from "lucide-react";
+import { UtensilsCrossed, Eye, EyeOff, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
 
-  
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  // const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,7 +21,7 @@ export default function LoginPage() {
   const toggleVisibility = () => setIsVisible(!isVisible);
 
   // ১. Credential Login (Email + Password)
-   const handleCredentialLogin = async (e) => {
+  const handleCredentialLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -36,12 +30,11 @@ export default function LoginPage() {
       const { data, error: authError } = await signIn.email({
         email,
         password,
-        callbackURL: callbackUrl,
       });
       if (authError) {
         setError(authError.message || "Invalid email or password");
       } else {
-        router.push(callbackUrl);
+        // router.push(callbackUrl);
         router.refresh();
       }
     } catch (err) {
@@ -49,7 +42,7 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
-   };
+  };
 
   // ২. Google Login (OAuth)
   const handleGoogleLogin = async () => {
@@ -57,7 +50,7 @@ export default function LoginPage() {
     // try {
     //   await authClient.signIn.social({
     //     provider: "google",
-    //     callbackURL: callbackUrl, 
+    //     callbackURL: callbackUrl,
     //   });
     // } catch (err) {
     //   setError("Failed to initialize Google login.");

@@ -14,7 +14,7 @@ import {
   Globe2,
   ArrowUpDown,
 } from "lucide-react";
-
+import { getRecipes } from "@/components/lib/api/recipes";
 
 const CATEGORIES = [
   "All",
@@ -56,8 +56,8 @@ export default function BrowseRecipes() {
   const [debouncedTerm, setDebouncedTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
- const [totalPages, setTotalPages] = useState(1);
-console.log(totalPages, "total page");
+  const [totalPages, setTotalPages] = useState(1);
+  console.log(totalPages, "total page");
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedTerm(search);
@@ -81,10 +81,7 @@ console.log(totalPages, "total page");
         if (sortBy) params.append("sortBy", sortBy);
         params.append("page", page.toString());
 
-        const res = await fetch(
-          `http://localhost:8000/api/recipes?${params.toString()}`,
-        );
-        const data = await res.json();
+        const data = await getRecipes(params);
 
         if (data.success) {
           setRecipes(data.data);
@@ -119,7 +116,7 @@ console.log(totalPages, "total page");
     setSortBy("newest");
     setPage(1);
   };
-console.log(recipes);
+  console.log(recipes);
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-[#0b0f19] text-neutral-800 dark:text-neutral-200 transition-colors duration-300 relative overflow-hidden">
       {/* Background Decorative Glows */}
@@ -268,7 +265,9 @@ console.log(recipes);
             </div>
             <p className="text-sm font-semibold">
               Found{" "}
-              <span className="text-orange-500 text-base font-bold">{recipes.length}</span>{" "}
+              <span className="text-orange-500 text-base font-bold">
+                {recipes.length}
+              </span>{" "}
               Premium Recipes
             </p>
           </div>
@@ -342,4 +341,3 @@ console.log(recipes);
     </div>
   );
 }
-
