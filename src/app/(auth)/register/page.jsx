@@ -1,23 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-// import { authClient } from "@/lib/auth-client";
-import { Input, Button, Separator } from "@heroui/react"; // 👈 Separator-এর জায়গায় Separetor হবে
+import { Input, Button, Separator, toast } from "@heroui/react";
+import { signUp } from "@/app/lib/auth-client";
 import {
   UtensilsCrossed,
-  Mail,
-  Lock,
   Eye,
   EyeOff,
-  User,
   Image,
   Loader2,
   Check,
   X,
 } from "lucide-react";
 
-export default function RegisterPage() {
+const RegisterPage = () => {
   const router = useRouter();
 
   const [name, setName] = useState("");
@@ -29,17 +26,14 @@ export default function RegisterPage() {
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
-  const [error, setError] = useState("");
-
+  const [signUpError, setSignUpError] = useState("");
   const toggleVisibility = () => setIsVisible(!isVisible);
 
-  // পাসওয়ার্ড রুলস ভ্যালিডেশন চেক
   const hasMinLength = password.length >= 6;
   const hasUppercase = /[A-Z]/.test(password);
   const hasLowercase = /[a-z]/.test(password);
   const isPasswordValid = hasMinLength && hasUppercase && hasLowercase;
 
-  // ইমেজ সিলেক্ট এবং প্রিভিউ হ্যান্ডলার
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -48,10 +42,8 @@ export default function RegisterPage() {
     }
   };
 
-  // ImgBB-তে ইমেজ আপলোড করার ফাংশন
   const uploadToImgBB = async (file) => {
-    const apiKey =
-      process.env.NEXT_PUBLIC_IMGBB_API_KEY || "YOUR_IMGBB_API_KEY";
+    const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
     const formData = new FormData();
     formData.append("image", file);
 
@@ -64,6 +56,7 @@ export default function RegisterPage() {
     );
 
     const data = await response.json();
+
     if (data.success) {
       return data.data.url;
     } else {
@@ -71,13 +64,12 @@ export default function RegisterPage() {
     }
   };
 
-  // ফর্ম সাবমিট হ্যান্ডলার
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError("");
+    setSignUpError("");
 
     if (!isPasswordValid) {
-      setError("Please fulfill all password requirements.");
+      setSignUpError("Please fulfill all password requirements.");
       return;
     }
 
@@ -91,9 +83,24 @@ export default function RegisterPage() {
         setImageUploading(false);
       }
 
-      // আপনার Better Auth লজিক এখানে আনকমেন্ট করে নিতে পারেন
-    } catch (err) {
-      setError(err.message || "Something went wrong during registration.");
+      const { error } = await signUp.email({
+        email: email,
+        password: password,
+        name: name,
+        image: uploadedImageUrl,
+        role: "user",
+        isBlocked: false,
+        plan: "free"
+      });
+
+      if (error) {
+        setSignUpError(
+          error.message || "Failed to create account. Please try again.",
+        );
+      } else {
+        toast.success("Account created successfully! Please log in.");
+        router.push("/login");
+      }
     } finally {
       setLoading(false);
       setImageUploading(false);
@@ -120,9 +127,9 @@ export default function RegisterPage() {
           </p>
         </div>
         {/* Error Feedback */}
-        {error && (
+        {signUpError && (
           <div className="p-3 text-sm text-rose-500 bg-rose-500/10 rounded-xl border border-rose-500/20 text-center font-medium">
-            {error}
+            {signUpError}
           </div>
         )}
         {/* Form */}
@@ -169,7 +176,7 @@ export default function RegisterPage() {
             </label>
             <div className="flex items-center gap-4 p-3 rounded-xl border-2 border-dashed border-default-200 hover:border-orange-500/50 transition-colors relative bg-default-50/30">
               {imagePreview ?
-                <Image
+                <img
                   width={48}
                   height={48}
                   src={imagePreview}
@@ -298,9 +305,7 @@ export default function RegisterPage() {
             : "Sign Up"}
           </Button>
         </form>
-        <Separator className="my-4" />{" "}
-        {/* 👈 Separator বদলে Separator ব্যবহার করা হয়েছে */}
-        {/* Footer Link */}
+        <Separator className="my-4" /> {/* Footer Link */}
         <p className="text-center text-sm text-foreground/60">
           Already have an account?{" "}
           <a
@@ -313,4 +318,5 @@ export default function RegisterPage() {
       </div>
     </div>
   );
-}
+};
+export default RegisterPage;

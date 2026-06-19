@@ -1,0 +1,590 @@
+[
+  {
+    "recipeName": "Smoked Salmon Avocado Toast",
+    "recipeImage": "https://images.unsplash.com/photo-1525351484163-7529414344d8",
+    "category": "Breakfast",
+    "cuisineType": "French",
+    "difficultyLevel": "Easy",
+    "preparationTime": 15,
+    "ingredients": [
+      "Sourdough bread",
+      "Avocado",
+      "Smoked salmon",
+      "Capers",
+      "Red onion",
+      "Lemon juice"
+    ],
+    "instructions": [
+      "Toast bread",
+      "Mash avocado",
+      "Spread avocado",
+      "Add salmon",
+      "Garnish and serve"
+    ],
+    "likesCount": 425,
+    "isFeatured": true,
+    "status": "published",
+    "author": {
+      "id": "user_001",
+      "name": "Emma Watson",
+      "email": "emma@example.com",
+      "avatar": "https://randomuser.me/api/portraits/women/1.jpg"
+    },
+    "createdAt": "2026-06-10T11:20:00Z",
+    "updatedAt": "2026-06-10T11:20:00Z"
+  },
+  {
+    "recipeName": "Authentic Beef Biryani",
+    "recipeImage": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8",
+    "category": "Lunch",
+    "cuisineType": "Indian",
+    "difficultyLevel": "Hard",
+    "preparationTime": 90,
+    "ingredients": [
+      "Basmati rice",
+      "Beef",
+      "Yogurt",
+      "Onions",
+      "Biryani masala"
+    ],
+    "instructions": [
+      "Marinate beef",
+      "Cook beef",
+      "Boil rice",
+      "Layer ingredients",
+      "Dum cook"
+    ],
+    "likesCount": 890,
+    "isFeatured": true,
+    "status": "published",
+    "author": {
+      "id": "user_002",
+      "name": "Tanvir Rahman",
+      "email": "tanvir@example.com",
+      "avatar": "https://randomuser.me/api/portraits/men/2.jpg"
+    },
+    "createdAt": "2026-06-12T15:45:00Z",
+    "updatedAt": "2026-06-14T09:30:00Z"
+  },
+  {
+    "recipeName": "Fudgy Chocolate Brownies",
+    "recipeImage": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c",
+    "category": "Dessert",
+    "cuisineType": "American",
+    "difficultyLevel": "Medium",
+    "preparationTime": 40,
+    "ingredients": ["Dark chocolate", "Butter", "Sugar", "Eggs", "Flour"],
+    "instructions": [
+      "Melt chocolate",
+      "Mix ingredients",
+      "Bake",
+      "Cool",
+      "Serve"
+    ],
+    "likesCount": 512,
+    "isFeatured": false,
+    "status": "published",
+    "author": {
+      "id": "user_003",
+      "name": "Sarah Cook",
+      "email": "sarah@example.com",
+      "avatar": "https://randomuser.me/api/portraits/women/3.jpg"
+    },
+    "createdAt": "2026-06-15T18:00:00Z",
+    "updatedAt": "2026-06-15T18:00:00Z"
+  },
+  {
+    "recipeName": "Thai Green Curry",
+    "recipeImage": "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd",
+    "category": "Dinner",
+    "cuisineType": "Thai",
+    "difficultyLevel": "Medium",
+    "preparationTime": 30,
+    "ingredients": ["Chicken", "Coconut milk", "Green curry paste", "Basil"],
+    "instructions": [
+      "Cook curry paste",
+      "Add chicken",
+      "Add coconut milk",
+      "Simmer",
+      "Serve"
+    ],
+    "likesCount": 198,
+    "isFeatured": false,
+    "status": "published",
+    "author": {
+      "id": "user_004",
+      "name": "Ananya Sen",
+      "email": "ananya@example.com",
+      "avatar": "https://randomuser.me/api/portraits/women/4.jpg"
+    },
+    "createdAt": "2026-06-18T04:15:00Z",
+    "updatedAt": "2026-06-18T04:15:00Z"
+  },
+  {
+    "recipeName": "Margherita Pizza",
+    "recipeImage": "https://images.unsplash.com/photo-1513104890138-7c749659a591",
+    "category": "Dinner",
+    "cuisineType": "Italian",
+    "difficultyLevel": "Medium",
+    "preparationTime": 50,
+    "ingredients": ["Pizza dough", "Mozzarella", "Tomato sauce", "Basil"],
+    "instructions": [
+      "Prepare dough",
+      "Spread sauce",
+      "Add toppings",
+      "Bake",
+      "Serve"
+    ],
+    "likesCount": 680,
+    "isFeatured": true,
+    "status": "published",
+    "author": {
+      "id": "user_005",
+      "name": "Marco Rossi",
+      "email": "marco@example.com",
+      "avatar": "https://randomuser.me/api/portraits/men/5.jpg"
+    },
+    "createdAt": "2026-06-11T12:00:00Z",
+    "updatedAt": "2026-06-11T12:00:00Z"
+  },
+  {
+    "recipeName": "Chicken Caesar Salad",
+    "recipeImage": "https://images.unsplash.com/photo-1546793665-c74683f339c1",
+    "category": "Lunch",
+    "cuisineType": "American",
+    "difficultyLevel": "Easy",
+    "preparationTime": 20,
+    "ingredients": ["Chicken", "Romaine lettuce", "Croutons", "Parmesan"],
+    "instructions": [
+      "Grill chicken",
+      "Prepare lettuce",
+      "Mix dressing",
+      "Combine ingredients"
+    ],
+    "likesCount": 320,
+    "isFeatured": false,
+    "status": "published",
+    "author": {
+      "id": "user_006",
+      "name": "James Miller",
+      "email": "james@example.com",
+      "avatar": "https://randomuser.me/api/portraits/men/6.jpg"
+    },
+    "createdAt": "2026-06-09T09:20:00Z",
+    "updatedAt": "2026-06-09T09:20:00Z"
+  },
+  {
+    "recipeName": "Vegetable Fried Rice",
+    "recipeImage": "https://images.unsplash.com/photo-1512058564366-18510be2db19",
+    "category": "Lunch",
+    "cuisineType": "Chinese",
+    "difficultyLevel": "Easy",
+    "preparationTime": 25,
+    "ingredients": ["Rice", "Carrots", "Peas", "Soy sauce"],
+    "instructions": ["Cook vegetables", "Add rice", "Season", "Stir fry"],
+    "likesCount": 278,
+    "isFeatured": false,
+    "status": "published",
+    "author": {
+      "id": "user_007",
+      "name": "Li Wei",
+      "email": "li@example.com",
+      "avatar": "https://randomuser.me/api/portraits/men/7.jpg"
+    },
+    "createdAt": "2026-06-08T10:00:00Z",
+    "updatedAt": "2026-06-08T10:00:00Z"
+  },
+  {
+    "recipeName": "Mango Smoothie",
+    "recipeImage": "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4",
+    "category": "Drinks",
+    "cuisineType": "Indian",
+    "difficultyLevel": "Easy",
+    "preparationTime": 10,
+    "ingredients": ["Mango", "Milk", "Honey", "Ice"],
+    "instructions": ["Blend ingredients", "Pour into glass", "Serve chilled"],
+    "likesCount": 156,
+    "isFeatured": false,
+    "status": "published",
+    "author": {
+      "id": "user_008",
+      "name": "Priya Sharma",
+      "email": "priya@example.com",
+      "avatar": "https://randomuser.me/api/portraits/women/8.jpg"
+    },
+    "createdAt": "2026-06-05T08:00:00Z",
+    "updatedAt": "2026-06-05T08:00:00Z"
+  },
+  {
+    "recipeName": "Japanese Sushi Rolls",
+    "recipeImage": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c",
+    "category": "Seafood",
+    "cuisineType": "Japanese",
+    "difficultyLevel": "Hard",
+    "preparationTime": 75,
+    "ingredients": ["Sushi rice", "Nori", "Salmon", "Cucumber"],
+    "instructions": [
+      "Prepare rice",
+      "Place nori",
+      "Add fillings",
+      "Roll and slice"
+    ],
+    "likesCount": 730,
+    "isFeatured": true,
+    "status": "published",
+    "author": {
+      "id": "user_009",
+      "name": "Kenji Ito",
+      "email": "kenji@example.com",
+      "avatar": "https://randomuser.me/api/portraits/men/9.jpg"
+    },
+    "createdAt": "2026-06-01T10:30:00Z",
+    "updatedAt": "2026-06-01T10:30:00Z"
+  },
+  {
+    "recipeName": "Paneer Butter Masala",
+    "recipeImage": "https://images.unsplash.com/photo-1631452180539-96aca7d48617",
+    "category": "Dinner",
+    "cuisineType": "Indian",
+    "difficultyLevel": "Medium",
+    "preparationTime": 35,
+    "ingredients": ["Paneer", "Tomato puree", "Cream", "Butter"],
+    "instructions": ["Cook gravy", "Add paneer", "Simmer", "Serve with naan"],
+    "likesCount": 540,
+    "isFeatured": true,
+    "status": "published",
+    "author": {
+      "id": "user_010",
+      "name": "Rohit Verma",
+      "email": "rohit@example.com",
+      "avatar": "https://randomuser.me/api/portraits/men/10.jpg"
+    },
+    "createdAt": "2026-06-04T14:20:00Z",
+    "updatedAt": "2026-06-04T14:20:00Z"
+  },
+  {
+    "recipeName": "Blueberry Pancakes",
+    "recipeImage": "https://images.unsplash.com/photo-1528207776546-365bb710ee93",
+    "category": "Breakfast",
+    "cuisineType": "American",
+    "difficultyLevel": "Easy",
+    "preparationTime": 20,
+    "ingredients": ["Flour", "Milk", "Eggs", "Blueberries"],
+    "instructions": [
+      "Prepare batter",
+      "Add blueberries",
+      "Cook pancakes",
+      "Serve"
+    ],
+    "likesCount": 410,
+    "isFeatured": false,
+    "status": "published",
+    "author": {
+      "id": "user_011",
+      "name": "Jessica Lee",
+      "email": "jessica@example.com",
+      "avatar": "https://randomuser.me/api/portraits/women/11.jpg"
+    },
+    "createdAt": "2026-06-07T07:30:00Z",
+    "updatedAt": "2026-06-07T07:30:00Z"
+  },
+  {
+    "recipeName": "Shrimp Tacos",
+    "recipeImage": "https://images.unsplash.com/photo-1565299585323-38174c4a6c5b",
+    "category": "Dinner",
+    "cuisineType": "Mexican",
+    "difficultyLevel": "Medium",
+    "preparationTime": 30,
+    "ingredients": ["Shrimp", "Tortillas", "Cabbage", "Lime"],
+    "instructions": ["Cook shrimp", "Prepare toppings", "Assemble tacos"],
+    "likesCount": 385,
+    "isFeatured": false,
+    "status": "published",
+    "author": {
+      "id": "user_012",
+      "name": "Carlos Diaz",
+      "email": "carlos@example.com",
+      "avatar": "https://randomuser.me/api/portraits/men/12.jpg"
+    },
+    "createdAt": "2026-06-13T11:45:00Z",
+    "updatedAt": "2026-06-13T11:45:00Z"
+  },
+  {
+    "recipeName": "Greek Salad",
+    "recipeImage": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
+    "category": "Vegetarian",
+    "cuisineType": "Greek",
+    "difficultyLevel": "Easy",
+    "preparationTime": 15,
+    "ingredients": ["Tomatoes", "Cucumber", "Olives", "Feta cheese"],
+    "instructions": ["Chop vegetables", "Mix ingredients", "Add dressing"],
+    "likesCount": 260,
+    "isFeatured": false,
+    "status": "published",
+    "author": {
+      "id": "user_013",
+      "name": "Elena Kostas",
+      "email": "elena@example.com",
+      "avatar": "https://randomuser.me/api/portraits/women/13.jpg"
+    },
+    "createdAt": "2026-06-06T09:10:00Z",
+    "updatedAt": "2026-06-06T09:10:00Z"
+  },
+  {
+    "recipeName": "Chicken Alfredo Pasta",
+    "recipeImage": "https://images.unsplash.com/photo-1645112411341-6c4fd023882c",
+    "category": "Dinner",
+    "cuisineType": "Italian",
+    "difficultyLevel": "Medium",
+    "preparationTime": 35,
+    "ingredients": ["Pasta", "Chicken", "Cream", "Parmesan"],
+    "instructions": [
+      "Cook pasta",
+      "Prepare sauce",
+      "Add chicken",
+      "Mix together"
+    ],
+    "likesCount": 620,
+    "isFeatured": true,
+    "status": "published",
+    "author": {
+      "id": "user_014",
+      "name": "Sophia Romano",
+      "email": "sophia@example.com",
+      "avatar": "https://randomuser.me/api/portraits/women/14.jpg"
+    },
+    "createdAt": "2026-06-02T13:00:00Z",
+    "updatedAt": "2026-06-02T13:00:00Z"
+  },
+  {
+    "recipeName": "Banana Bread",
+    "recipeImage": "https://images.unsplash.com/photo-1608198093002-ad4e005484ec",
+    "category": "Dessert",
+    "cuisineType": "American",
+    "difficultyLevel": "Easy",
+    "preparationTime": 60,
+    "ingredients": ["Bananas", "Flour", "Sugar", "Eggs"],
+    "instructions": ["Mix ingredients", "Bake", "Cool and serve"],
+    "likesCount": 490,
+    "isFeatured": false,
+    "status": "published",
+    "author": {
+      "id": "user_015",
+      "name": "Olivia Baker",
+      "email": "olivia@example.com",
+      "avatar": "https://randomuser.me/api/portraits/women/15.jpg"
+    },
+    "createdAt": "2026-06-03T16:00:00Z",
+    "updatedAt": "2026-06-03T16:00:00Z"
+  },
+  {
+    "recipeName": "Fish and Chips",
+    "recipeImage": "https://images.unsplash.com/photo-1579208575657-c595a05383b7",
+    "category": "Seafood",
+    "cuisineType": "British",
+    "difficultyLevel": "Medium",
+    "preparationTime": 45,
+    "ingredients": ["Fish fillet", "Potatoes", "Flour", "Oil"],
+    "instructions": ["Prepare batter", "Fry fish", "Cook chips", "Serve"],
+    "likesCount": 300,
+    "isFeatured": false,
+    "status": "published",
+    "author": {
+      "id": "user_016",
+      "name": "John Smith",
+      "email": "john@example.com",
+      "avatar": "https://randomuser.me/api/portraits/men/16.jpg"
+    },
+    "createdAt": "2026-06-16T12:00:00Z",
+    "updatedAt": "2026-06-16T12:00:00Z"
+  },
+  {
+    "recipeName": "Falafel Wrap",
+    "recipeImage": "https://images.unsplash.com/photo-1543332164-6e82f355badc",
+    "category": "Vegetarian",
+    "cuisineType": "Middle Eastern",
+    "difficultyLevel": "Medium",
+    "preparationTime": 40,
+    "ingredients": ["Chickpeas", "Pita bread", "Tahini", "Lettuce"],
+    "instructions": ["Prepare falafel", "Fry", "Assemble wrap"],
+    "likesCount": 280,
+    "isFeatured": false,
+    "status": "published",
+    "author": {
+      "id": "user_017",
+      "name": "Ahmed Ali",
+      "email": "ahmed@example.com",
+      "avatar": "https://randomuser.me/api/portraits/men/17.jpg"
+    },
+    "createdAt": "2026-06-10T08:30:00Z",
+    "updatedAt": "2026-06-10T08:30:00Z"
+  },
+  {
+    "recipeName": "Strawberry Cheesecake",
+    "recipeImage": "https://images.unsplash.com/photo-1533134242443-d4fd215305ad",
+    "category": "Dessert",
+    "cuisineType": "American",
+    "difficultyLevel": "Hard",
+    "preparationTime": 120,
+    "ingredients": ["Cream cheese", "Strawberries", "Biscuits", "Sugar"],
+    "instructions": ["Prepare crust", "Make filling", "Bake", "Chill"],
+    "likesCount": 710,
+    "isFeatured": true,
+    "status": "published",
+    "author": {
+      "id": "user_018",
+      "name": "Emily Brown",
+      "email": "emily@example.com",
+      "avatar": "https://randomuser.me/api/portraits/women/18.jpg"
+    },
+    "createdAt": "2026-06-17T15:00:00Z",
+    "updatedAt": "2026-06-17T15:00:00Z"
+  },
+  {
+    "recipeName": "Tom Yum Soup",
+    "recipeImage": "https://images.unsplash.com/photo-1555126634-323283e090fa",
+    "category": "Dinner",
+    "cuisineType": "Thai",
+    "difficultyLevel": "Medium",
+    "preparationTime": 35,
+    "ingredients": ["Shrimp", "Lemongrass", "Mushrooms", "Chili"],
+    "instructions": ["Boil broth", "Add herbs", "Cook shrimp", "Serve hot"],
+    "likesCount": 340,
+    "isFeatured": false,
+    "status": "published",
+    "author": {
+      "id": "user_019",
+      "name": "Nok Chai",
+      "email": "nok@example.com",
+      "avatar": "https://randomuser.me/api/portraits/women/19.jpg"
+    },
+    "createdAt": "2026-06-18T10:30:00Z",
+    "updatedAt": "2026-06-18T10:30:00Z"
+  },
+  {
+    "recipeName": "Chicken Shawarma",
+    "recipeImage": "https://images.unsplash.com/photo-1529006557810-274b9b2fc783",
+    "category": "Lunch",
+    "cuisineType": "Middle Eastern",
+    "difficultyLevel": "Medium",
+    "preparationTime": 50,
+    "ingredients": ["Chicken", "Garlic sauce", "Pita bread", "Vegetables"],
+    "instructions": ["Marinate chicken", "Grill", "Assemble wrap"],
+    "likesCount": 460,
+    "isFeatured": true,
+    "status": "published",
+    "author": {
+      "id": "user_020",
+      "name": "Yusuf Khan",
+      "email": "yusuf@example.com",
+      "avatar": "https://randomuser.me/api/portraits/men/20.jpg"
+    },
+    "createdAt": "2026-06-19T08:00:00Z",
+    "updatedAt": "2026-06-19T08:00:00Z"
+  },
+  {
+    "recipeName": "Vegetable Spring Rolls",
+    "recipeImage": "https://images.unsplash.com/photo-1562967916-eb82221dfb92",
+    "category": "Snacks",
+    "cuisineType": "Chinese",
+    "difficultyLevel": "Easy",
+    "preparationTime": 25,
+    "ingredients": ["Spring roll wrappers", "Cabbage", "Carrots", "Soy sauce"],
+    "instructions": ["Prepare filling", "Wrap rolls", "Fry", "Serve"],
+    "likesCount": 210,
+    "isFeatured": false,
+    "status": "published",
+    "author": {
+      "id": "user_021",
+      "name": "Mei Lin",
+      "email": "mei@example.com",
+      "avatar": "https://randomuser.me/api/portraits/women/21.jpg"
+    },
+    "createdAt": "2026-06-05T14:00:00Z",
+    "updatedAt": "2026-06-05T14:00:00Z"
+  },
+  {
+    "recipeName": "Avocado Smoothie Bowl",
+    "recipeImage": "https://images.unsplash.com/photo-1490645935967-10de6ba17061",
+    "category": "Breakfast",
+    "cuisineType": "American",
+    "difficultyLevel": "Easy",
+    "preparationTime": 12,
+    "ingredients": ["Avocado", "Banana", "Milk", "Granola"],
+    "instructions": ["Blend ingredients", "Pour into bowl", "Add toppings"],
+    "likesCount": 275,
+    "isFeatured": false,
+    "status": "published",
+    "author": {
+      "id": "user_022",
+      "name": "Lisa Green",
+      "email": "lisa@example.com",
+      "avatar": "https://randomuser.me/api/portraits/women/22.jpg"
+    },
+    "createdAt": "2026-06-09T07:45:00Z",
+    "updatedAt": "2026-06-09T07:45:00Z"
+  },
+  {
+    "recipeName": "Butter Chicken",
+    "recipeImage": "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398",
+    "category": "Dinner",
+    "cuisineType": "Indian",
+    "difficultyLevel": "Medium",
+    "preparationTime": 45,
+    "ingredients": ["Chicken", "Butter", "Tomatoes", "Cream"],
+    "instructions": ["Cook chicken", "Prepare gravy", "Combine", "Serve"],
+    "likesCount": 850,
+    "isFeatured": true,
+    "status": "published",
+    "author": {
+      "id": "user_023",
+      "name": "Amit Patel",
+      "email": "amit@example.com",
+      "avatar": "https://randomuser.me/api/portraits/men/23.jpg"
+    },
+    "createdAt": "2026-06-13T18:30:00Z",
+    "updatedAt": "2026-06-13T18:30:00Z"
+  },
+  {
+    "recipeName": "Chocolate Milkshake",
+    "recipeImage": "https://images.unsplash.com/photo-1572490122747-3968b75cc699",
+    "category": "Drinks",
+    "cuisineType": "American",
+    "difficultyLevel": "Easy",
+    "preparationTime": 8,
+    "ingredients": ["Ice cream", "Milk", "Chocolate syrup"],
+    "instructions": ["Blend ingredients", "Pour into glass", "Serve"],
+    "likesCount": 190,
+    "isFeatured": false,
+    "status": "published",
+    "author": {
+      "id": "user_024",
+      "name": "David White",
+      "email": "david@example.com",
+      "avatar": "https://randomuser.me/api/portraits/men/24.jpg"
+    },
+    "createdAt": "2026-06-14T17:00:00Z",
+    "updatedAt": "2026-06-14T17:00:00Z"
+  },
+  {
+    "recipeName": "Classic Club Sandwich",
+    "recipeImage": "https://images.unsplash.com/photo-1528735602780-2552fd46c7af",
+    "category": "Lunch",
+    "cuisineType": "American",
+    "difficultyLevel": "Easy",
+    "preparationTime": 18,
+    "ingredients": ["Bread", "Chicken", "Lettuce", "Tomato", "Mayonnaise"],
+    "instructions": ["Toast bread", "Layer ingredients", "Slice and serve"],
+    "likesCount": 245,
+    "isFeatured": false,
+    "status": "published",
+    "author": {
+      "id": "user_025",
+      "name": "Michael Scott",
+      "email": "michael@example.com",
+      "avatar": "https://randomuser.me/api/portraits/men/25.jpg"
+    },
+    "createdAt": "2026-06-19T12:00:00Z",
+    "updatedAt": "2026-06-19T12:00:00Z"
+  }
+]

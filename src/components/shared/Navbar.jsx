@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Button, Dropdown, Avatar, Badge, Label } from "@heroui/react";
 import {
@@ -17,21 +17,18 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { signOut, useSession } from "@/app/lib/auth-client";
 
 export default function Navbar() {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
 
-  // Simulated Authentication State for development & testing
-  const users = {
-    name: "Jane Doe",
-    email: "jane.doe@flavorflow.com",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
-  };
-  const [user, setUser] = useState();
+  const { data: session, isPending, error } = useSession();
+  console.log("Session Data:", session, isPending, error);
+  const user = session?.user;
 
   // Prevent hydration mismatch by waiting until component is mounted
   useEffect(() => {
@@ -57,6 +54,16 @@ export default function Navbar() {
     { label: "About", path: "/about" },
     { label: "Contact", path: "/contact" },
   ];
+
+  const handleLogOutBtn = async () => {
+    await signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.replace("/login");
+        },
+      },
+    });
+  };
 
   return (
     <div className="w-full sticky top-0 z-50 px-4 sm:px-6 lg:px-8 pt-4">
@@ -153,7 +160,7 @@ export default function Navbar() {
                         size="sm"
                         className="w-8 h-8 text-xs ring-offset-background"
                       >
-                        <Avatar.Image alt={user.name} src={user?.avatar} />
+                        <Avatar.Image alt={user.name} src={user?.image} />
                         <Avatar.Fallback delayMs={600}>
                           {getInitials(user.name)}
                         </Avatar.Fallback>
@@ -203,7 +210,7 @@ export default function Navbar() {
                         id="logout"
                         textValue="Log Out"
                         variant="danger"
-                        onClick={() => setUser(null)}
+                        onClick={handleLogOutBtn}
                       >
                         <div className="flex w-full items-center justify-between gap-2">
                           <Label className="text-danger cursor-pointer font-normal">
@@ -308,10 +315,7 @@ export default function Navbar() {
                 </div>
                 <div>
                   <button
-                    onClick={() => {
-                      setUser(null);
-                      setIsMenuOpen(false);
-                    }}
+                    onClick={handleLogOutBtn}
                     className="flex items-center gap-3 w-full py-3 px-4 rounded-xl text-base font-medium text-danger hover:bg-danger/10 text-left"
                   >
                     <LogOut className="w-5 h-5" /> Log Out

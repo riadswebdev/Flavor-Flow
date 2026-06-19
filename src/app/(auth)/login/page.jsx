@@ -2,12 +2,10 @@
 
 import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-// import { authClient } from "@/lib/auth-client"; // আপনার ক্লায়েন্ট প্যাথ অনুযায়ী পরিবর্তন করুন
 import { Input, Button, Separator } from "@heroui/react";
+import { signIn } from "@/app/lib/auth-client";
 import {
   UtensilsCrossed,
-  Mail,
-  Lock,
   Eye,
   EyeOff,
   Loader2,
@@ -17,7 +15,7 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // ব্যবহারকারী যে পেজে যেতে চেয়েছিল (Intended Route), অথবা ডিফল্ট Home পেজ
+  
   const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const [email, setEmail] = useState("");
@@ -29,18 +27,17 @@ export default function LoginPage() {
   const toggleVisibility = () => setIsVisible(!isVisible);
 
   // ১. Credential Login (Email + Password)
-  const handleCredentialLogin = async (e) => {
+   const handleCredentialLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      const { data, error: authError } = await authClient.signIn.email({
+      const { data, error: authError } = await signIn.email({
         email,
         password,
-        callbackURL: callbackUrl, // লগইন শেষে নির্দিষ্ট রুটে রিডাইরেক্ট করবে
+        callbackURL: callbackUrl,
       });
-
       if (authError) {
         setError(authError.message || "Invalid email or password");
       } else {
@@ -52,14 +49,15 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
-  };
+   };
 
   // ২. Google Login (OAuth)
   const handleGoogleLogin = async () => {
+    console.log("Google login initiated. Redirecting to provider...");
     // try {
     //   await authClient.signIn.social({
     //     provider: "google",
-    //     callbackURL: callbackUrl, // গুগল লগইন শেষে নির্দিষ্ট রুটে রিডাইরেক্ট করবে
+    //     callbackURL: callbackUrl, 
     //   });
     // } catch (err) {
     //   setError("Failed to initialize Google login.");
