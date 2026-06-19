@@ -90,7 +90,7 @@ const RegisterPage = () => {
         image: uploadedImageUrl,
         role: "user",
         isBlocked: false,
-        plan: "free"
+        plan: "free",
       });
 
       if (error) {
@@ -99,7 +99,9 @@ const RegisterPage = () => {
         );
       } else {
         toast.success("Account created successfully! Please log in.");
-        router.push("/login");
+        setTimeout(() => {
+          router.push("/login");
+        }, 1000);
       }
     } finally {
       setLoading(false);

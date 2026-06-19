@@ -1,4 +1,5 @@
 import { ChefHat, Clock, Globe2, Heart } from "lucide-react";
+import Image from "next/image";
 
 
 const RecipeCard = ({ MOCK_RECIPES }) => {
@@ -10,8 +11,9 @@ const RecipeCard = ({ MOCK_RECIPES }) => {
           className="group bg-white dark:bg-[#131b2e] border border-neutral-200/80 dark:border-neutral-800/80 rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col relative"
         >
           {/* Card Image Header Component Area */}
-          <div className="h-52 w-full relative overflow-hidden bg-neutral-200 dark:bg-neutral-800">
-            <img
+          <div className="h-52 w-full relative overflow-hidden bg-neutral-200 dark:bg-neutral-800 aspect-video">
+            <Image
+              fill
               src={recipe.recipeImage}
               alt={recipe.recipeName}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

@@ -81,8 +81,8 @@ export default function BrowseRecipes() {
         if (sortBy) params.append("sortBy", sortBy);
         params.append("page", page.toString());
 
-        const data = await getRecipes(params);
-
+        const data = await getRecipes(params.toString());
+console.log("Fetched Recipes Data:", params);
         if (data.success) {
           setRecipes(data.data);
           setTotalPages(data?.totalPages);
