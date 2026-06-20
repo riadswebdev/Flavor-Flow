@@ -27,7 +27,7 @@ export default function Navbar() {
   const router = useRouter();
 
   const { data: session, isPending, error } = useSession();
-  console.log("Session Data:", session, isPending, error);
+
   const user = session?.user;
 
   // Prevent hydration mismatch by waiting until component is mounted
@@ -36,17 +36,6 @@ export default function Navbar() {
   }, []);
 
   const isActive = (path) => pathname === path;
-
-  // Helper to generate initials for the Avatar fallback placeholder
-  const getInitials = (name) => {
-    return name ?
-        name
-          .split(" ")
-          .map((n) => n[0])
-          .join("")
-          .toUpperCase()
-      : "U";
-  };
 
   const navItems = [
     { label: "Home", path: "/" },
@@ -160,9 +149,9 @@ export default function Navbar() {
                         size="sm"
                         className="w-8 h-8 text-xs ring-offset-background"
                       >
-                        <Avatar.Image alt={user.name} src={user?.image} />
+                        <Avatar.Image alt={user?.name} src={user?.image} />
                         <Avatar.Fallback delayMs={600}>
-                          {getInitials(user.name)}
+                          {user?.name.charAt(0)}
                         </Avatar.Fallback>
                       </Avatar>
                       <ChevronDown className="w-3.5 h-3.5 text-foreground/50 group-hover:text-foreground transition-colors hidden sm:block" />
@@ -175,7 +164,7 @@ export default function Navbar() {
                         Signed in as
                       </p>
                       <p className="font-semibold text-sm text-orange-500 truncate">
-                        {user.email}
+                        {user?.email}
                       </p>
                     </div>
 
@@ -323,27 +312,27 @@ export default function Navbar() {
                 </div>
               </div>
             : <div className="flex flex-col gap-2 pt-2">
-                <Button
-                  as={Link}
-                  href="/login"
-                  variant="bordered"
-                  radius="xl"
-                  fullWidth
-                  onClick={() => setIsMenuOpen(false)}
-                  className="font-medium"
-                >
-                  Login
-                </Button>
-                <Button
-                  as={Link}
-                  href="/register"
-                  radius="xl"
-                  fullWidth
-                  onClick={() => setIsMenuOpen(false)}
-                  className="font-medium bg-linear-to-r from-orange-500 to-rose-500 text-white shadow-lg"
-                >
-                  Register
-                </Button>
+                <Link href="/login">
+                  <Button
+                    variant="bordered"
+                    radius="xl"
+                    fullWidth
+                    onClick={() => setIsMenuOpen(false)}
+                    className="font-medium"
+                  >
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button
+                    radius="xl"
+                    fullWidth
+                    onClick={() => setIsMenuOpen(false)}
+                    className="font-medium bg-linear-to-r from-orange-500 to-rose-500 text-white shadow-lg"
+                  >
+                    Register
+                  </Button>
+                </Link>
               </div>
             }
           </div>

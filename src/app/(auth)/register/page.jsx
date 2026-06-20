@@ -84,9 +84,9 @@ const RegisterPage = () => {
       }
 
       const { error } = await signUp.email({
+        name: name,
         email: email,
         password: password,
-        name: name,
         image: uploadedImageUrl,
         role: "user",
         isBlocked: false,

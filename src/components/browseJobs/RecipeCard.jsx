@@ -1,6 +1,6 @@
 import { ChefHat, Clock, Globe2, Heart } from "lucide-react";
 import Image from "next/image";
-
+import Link from "next/link";
 
 const RecipeCard = ({ MOCK_RECIPES }) => {
   return (
@@ -19,7 +19,7 @@ const RecipeCard = ({ MOCK_RECIPES }) => {
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-80" />
 
             {/* Float Badge Category wrapper */}
             <span className="absolute top-3 left-3 px-3 py-1 rounded-lg text-[11px] font-extrabold bg-white/90 dark:bg-[#0b0f19]/90 text-orange-600 dark:text-orange-400 uppercase tracking-wider shadow-sm backdrop-blur-xs">
@@ -75,12 +75,11 @@ const RecipeCard = ({ MOCK_RECIPES }) => {
             </div>
 
             {/* View Details Client Interactive CTA Button */}
-            <button
-              onClick={() => alert(`Navigating to recipe: ${recipe._id}`)}
-              className="w-full py-2.5 rounded-xl bg-neutral-100 hover:bg-gradient-to-r hover:from-orange-500 hover:to-rose-500 dark:bg-[#1a233d]/60 dark:hover:bg-gradient-to-r text-neutral-800 dark:text-neutral-300 font-bold text-xs uppercase tracking-wider hover:text-white dark:hover:text-white border border-neutral-200/40 dark:border-neutral-800/40 hover:border-transparent dark:hover:border-transparent shadow-xs transition-all duration-300"
-            >
-              View Details
-            </button>
+            <Link href={`recipes/${recipe._id}`}>
+              <button className="w-full py-2.5 rounded-xl bg-neutral-100 hover:bg-linear-to-r hover:from-orange-500 hover:to-rose-500 dark:bg-[#1a233d]/60 dark:hover:bg-linear-to-r text-neutral-800 dark:text-neutral-300 font-bold text-xs uppercase tracking-wider hover:text-white dark:hover:text-white border border-neutral-200/40 dark:border-neutral-800/40 hover:border-transparent dark:hover:border-transparent shadow-xs transition-all duration-300">
+                View Details
+              </button>
+            </Link>
           </div>
         </div>
       ))}

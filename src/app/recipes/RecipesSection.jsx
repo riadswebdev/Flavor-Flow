@@ -57,7 +57,7 @@ export default function BrowseRecipes() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  console.log(totalPages, "total page");
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedTerm(search);
@@ -82,12 +82,10 @@ export default function BrowseRecipes() {
         params.append("page", page.toString());
 
         const data = await getRecipes(params.toString());
-console.log("Fetched Recipes Data:", params);
+
         if (data.success) {
-          setRecipes(data.data);
+          setRecipes(data?.data);
           setTotalPages(data?.totalPages);
-          console.log("Fetched Recipes:", data?.data);
-          console.log("Total Recipes Count:", data?.totalPages);
         }
       } catch (error) {
         console.error("Error fetching recipes:", error);
@@ -116,7 +114,7 @@ console.log("Fetched Recipes Data:", params);
     setSortBy("newest");
     setPage(1);
   };
-  console.log(recipes);
+
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-[#0b0f19] text-neutral-800 dark:text-neutral-200 transition-colors duration-300 relative overflow-hidden">
       {/* Background Decorative Glows */}
@@ -129,7 +127,7 @@ console.log("Fetched Recipes Data:", params);
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-500/10 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 text-xs font-semibold tracking-wide uppercase border border-orange-500/20">
             <Sparkles size={12} /> Explore FlavorFlow
           </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-neutral-900 via-orange-600 to-rose-600 dark:from-white dark:via-orange-400 dark:to-rose-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight bg-linear-to-r from-neutral-900 via-orange-600 to-rose-600 dark:from-white dark:via-orange-400 dark:to-rose-400 bg-clip-text text-transparent">
             Browse Recipes
           </h1>
           <p className="text-sm sm:text-base text-neutral-500 dark:text-neutral-400">
@@ -246,7 +244,7 @@ console.log("Fetched Recipes Data:", params);
                   }}
                   className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all ${
                     activeCategory === cat ?
-                      "bg-gradient-to-r from-orange-500 to-rose-500 border-transparent text-white shadow-md shadow-orange-500/20 scale-105"
+                      "bg-linear-to-r from-orange-500 to-rose-500 border-transparent text-white shadow-md shadow-orange-500/20 scale-105"
                     : "bg-neutral-100 dark:bg-[#1a233d]/50 border-neutral-200/80 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-orange-500/40"
                   }`}
                 >
@@ -298,7 +296,7 @@ console.log("Fetched Recipes Data:", params);
             </p>
             <button
               onClick={handleResetFilters}
-              className="px-5 py-2 bg-gradient-to-r from-orange-500 to-rose-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:opacity-90 transition-all"
+              className="px-5 py-2 bg-linear-to-r from-orange-500 to-rose-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:opacity-90 transition-all"
             ></button>
           </div>
         : <RecipeCard MOCK_RECIPES={recipes} />}
@@ -321,7 +319,7 @@ console.log("Fetched Recipes Data:", params);
               onClick={() => setPage(num)}
               className={`w-9 h-9 rounded-xl text-xs font-bold transition-all ${
                 page === num ?
-                  "bg-gradient-to-r from-orange-500 to-rose-500 text-white shadow-md shadow-orange-500/20 scale-105"
+                  "bg-linear-to-r from-orange-500 to-rose-500 text-white shadow-md shadow-orange-500/20 scale-105"
                 : "bg-white dark:bg-[#131b2e] border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-orange-500/50"
               }`}
             >

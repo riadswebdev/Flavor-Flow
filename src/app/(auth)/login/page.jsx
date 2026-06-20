@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input, Button, Separator } from "@heroui/react";
-import { signIn } from "@/app/lib/auth-client";
+import { authClient, signIn } from "@/app/lib/auth-client";
 import { UtensilsCrossed, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Icon } from "@iconify/react";
 
@@ -45,7 +45,7 @@ export default function LoginPage() {
   // ২. Google Login (OAuth)
   const handleGoogleLogin = async () => {
     try {
-      await signIn.social({
+      await authClient.signIn.social({
         provider: "google",
       });
     } catch (err) {
@@ -148,7 +148,7 @@ export default function LoginPage() {
         <Button
           variant="bordered"
           radius="xl"
-          onClick={handleGoogleLogin}
+          onPress={handleGoogleLogin}
           className="w-full font-medium border-default-200 hover:bg-default-100 transition-all text-foreground"
         >
           <Icon icon="devicon:google" />
