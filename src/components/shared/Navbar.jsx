@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Button, Dropdown, Avatar, Badge, Label } from "@heroui/react";
+import { signOut, useSession } from "@/app/lib/auth-client";
 import {
   Sun,
   Moon,
@@ -17,7 +18,6 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { signOut, useSession } from "@/app/lib/auth-client";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -25,7 +25,9 @@ export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
-
+if (pathname.startsWith("/dashboard")) {
+  return null;
+}
   const { data: session, isPending, error } = useSession();
 
   const user = session?.user;
