@@ -25,7 +25,7 @@ export default function RecipeDetails({ recipeData, currentUser, likeStatus }) {
   const [reportReason, setReportReason] = useState("");
   const [isPurchasing, setIsPurchasing] = useState(false);
 
-  
+  const apiBaseUrl = process.env.NEXT_PUBLIC_RECIPES_API_URL || "http://localhost:8000";
  
   // 1. Like / Unlike Button Handler with Optimistic UI Updates
   const handleLikeToggle = async () => {
@@ -41,7 +41,7 @@ export default function RecipeDetails({ recipeData, currentUser, likeStatus }) {
    
     try {
       const res = await fetch(
-        `http://localhost:8000/api/recipes/${recipeData._id}/like`,
+        `${apiBaseUrl}/api/recipes/${recipeData._id}/like`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -91,7 +91,7 @@ export default function RecipeDetails({ recipeData, currentUser, likeStatus }) {
     setIsPurchasing(true);
     try {
       const res = await fetch(
-        "http://localhost:8000/api/create-checkout-session",
+        `${apiBaseUrl}/api/create-checkout-session`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input, Button, Separator, toast } from "@heroui/react";
-import { signUp } from "@/app/lib/auth-client";
+import { authClient } from "@/app/lib/auth-client";
+import { uploadToImgBB } from "@/lib/actions/uploadImage";
 import { updateUserAdditionalField } from "@/lib/actions/user";
+
 import {
   UtensilsCrossed,
   Eye,
@@ -43,28 +45,6 @@ const RegisterPage = () => {
     }
   };
 
-  const uploadToImgBB = async (file) => {
-    const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
-    const formData = new FormData();
-    formData.append("image", file);
-
-    const response = await fetch(
-      `https://api.imgbb.com/1/upload?key=${apiKey}`,
-      {
-        method: "POST",
-        body: formData,
-      },
-    );
-
-    const data = await response.json();
-
-    if (data.success) {
-      return data.data.url;
-    } else {
-      throw new Error("Image upload failed to ImgBB");
-    }
-  };
-
   const handleRegister = async (e) => {
     e.preventDefault();
     setSignUpError("");
@@ -84,7 +64,7 @@ const RegisterPage = () => {
         setImageUploading(false);
       }
 
-      const { data, error } = await signUp.email({
+      const { data, error } = await authClient.signUp.email({
         name: name,
         email: email,
         password: password,
@@ -94,35 +74,26 @@ const RegisterPage = () => {
         plan: "free",
       });
 
+      const userId = data?.user?.id;
+
+      const additionalField = {
+        recipesAddedCount: 0,
+        totalFavorites: 0,
+        totalLikesReceived: 0,
+        expireAt: null,
+        recipeLimit: 3,
+      };
+
       if (error) {
         setSignUpError(
           error.message || "Failed to create account. Please try again.",
         );
         return;
       }
-      const userId = data?.user?.id;
+
       if (userId) {
-        const additionalField = {
-          recipesAddedCount: 0,
-          totalFavorites: 0,
-          totalLikesReceived: 0,
-          expireAt: null,
-          recipeLimit: 3,
-        };
-        console.log("Hitting API for User ID:", userId, additionalField);
-
-        await updateUserAdditionalField(additionalField, userId);
-
         toast.success("Account created successfully! Please log in.");
-
-        setTimeout(() => {
-        //   router.push("/login");
-        }, 1000);
-      } else {
-        console.error("User ID not found in response:", data);
-        setSignUpError(
-          "Account created, but failed to initialize profile stats.",
-        );
+        const data = await updateUserAdditionalField(additionalField, userId);
       }
     } finally {
       setLoading(false);

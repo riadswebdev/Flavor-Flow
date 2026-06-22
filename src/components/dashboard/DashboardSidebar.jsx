@@ -3,13 +3,13 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button, Drawer, Avatar } from "@heroui/react";
+import { Button, Drawer } from "@heroui/react";
 import { motion } from "framer-motion";
-import { FiLogOut, FiMenu, FiAlertCircle, FiX } from "react-icons/fi";
+import { FiLogOut, FiMenu, FiAlertCircle } from "react-icons/fi";
 import { dashboardNavItems } from "../../../config/dashboardNav";
 import Image from "next/image";
 
-export default function DashboardSidebar({ role = "admin", userSession }) {
+export default function DashboardSidebar({ role = "user", userSession }) {
   const pathname = usePathname();
   const navItems = dashboardNavItems[role] || dashboardNavItems.user;
   const renderNavLinks = (

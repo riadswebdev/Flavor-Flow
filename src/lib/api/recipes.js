@@ -10,21 +10,27 @@ export const getRecipes = async (params) => {
   return data;
 };
 
+export const getRecipesByUserId = async (userId) => {
+  const res = await fetch(`${baseUrl}/api/user/${userId}/recipes`);
+  const data = await res.json();
+  return data;
+};
+
 export const getSingleRecipe = async (id) => {
   const res = await fetch(`${baseUrl}/api/recipes/${id}`);
   const data = await res.json();
   return data.data;
 };
 
-export const getLikeStatus = async (recipeId,userId) => {
+export const getLikeStatus = async (recipeId, userId) => {
   const res = await fetch(
     `${baseUrl}/api/recipes/${recipeId}/like-status?userId=${userId}`,
   );
-  const data = await res.json()
+  const data = await res.json();
   return data;
 };
 
-export const getFeatureAndPopularRecipe =async ()=>{
+export const getFeatureAndPopularRecipe = async () => {
   const res = await fetch(`${baseUrl}/api/feature&popularRecipe`);
-  return await res.json()
-}
+  return await res.json();
+};

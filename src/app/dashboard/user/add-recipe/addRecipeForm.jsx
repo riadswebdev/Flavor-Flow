@@ -28,11 +28,12 @@ import {
   FiActivity,
   FiBookOpen,
 } from "react-icons/fi";
+import { publishRecipe } from "@/lib/actions/recipe";
 
-const userStats = {
-  recipeCount: 1, // ২ বা তার বেশি হলে সাবমিট বাটন লক হয়ে প্রিমিয়াম কার্ড শো করবে
-  plan: "free",
-};
+// const loggedInUser = {
+//   recipeCount: 1,
+//   plan: "free",
+// };
 
 export default function AddRecipeForm({ loggedInUser }) {
   const router = useRouter();
@@ -95,7 +96,7 @@ export default function AddRecipeForm({ loggedInUser }) {
         text: "Image uploaded successfully!",
       });
     } catch (error) {
-      console.error("Imgbb Upload Error:", error);
+      
       setGlobalMessage({
         type: "error",
         text: "Image upload failed. Please check connection or API key.",
@@ -186,10 +187,11 @@ export default function AddRecipeForm({ loggedInUser }) {
     try {
       setIsSubmitting(true);
       setGlobalMessage({ type: "", text: "" });
-      console.log(finalRecipePayload, "all data");
-      const response = { status: 201 };
 
-      if (response.status === 201 || response.status === 200) {
+      const response = await publishRecipe(finalRecipePayload);
+     
+
+      if (response.insertedId) {
         setGlobalMessage({
           type: "success",
           text: "🎉 Recipe published successfully!",
@@ -206,7 +208,8 @@ export default function AddRecipeForm({ loggedInUser }) {
         setErrors({});
 
         setTimeout(() => {
-          // router.push("/dashboard/my-recipes");
+          router.refresh();
+          router.push("/dashboard/user/my-recipes");
         }, 2000);
       }
     } catch (error) {
@@ -221,15 +224,16 @@ export default function AddRecipeForm({ loggedInUser }) {
       setIsSubmitting(false);
     }
   };
+  console.log("Logged in user data in AddRecipeForm:", loggedInUser);
 
   if (
-    userStats.recipeLimit !== -1 &&
-    userStats.recipesCount >= userStats.recipeLimit
+    loggedInUser.recipeLimit !== -1 &&
+    loggedInUser.recipesCount >= loggedInUser.recipeLimit
   ) {
     //  redirect("/plans");
   }
   const isLimitReached =
-    userStats.plan !== "free" && userStats.recipeCount >= 2;
+    loggedInUser.plan !== "free" && loggedInUser.recipeCount >= 2;
 
   return (
     <motion.div
@@ -249,7 +253,7 @@ export default function AddRecipeForm({ loggedInUser }) {
             <h1 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight sm:text-4xl">
               Add New Recipe
             </h1>
-            {userStats.plan === "premium" ?
+            {loggedInUser.plan === "premium" ?
               <Chip className="bg-linear-to-r from-orange-500 to-rose-500 text-white font-black text-[10px] uppercase border-0 px-2.5 shadow-md shadow-orange-500/20">
                 Premium Member
               </Chip>
@@ -258,7 +262,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                 variant="flat"
                 className="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold"
               >
-                Free Tier ({userStats.recipeCount}/2)
+                Free Tier ({loggedInUser.recipeCount}/2)
               </Chip>
             }
           </div>
@@ -309,7 +313,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                   if (errors.recipeName)
                     setErrors((prev) => ({ ...prev, recipeName: null }));
                 }}
-                errorMessage={errors.recipeName}
+                aria-errormessage={errors.recipeName}
                 className="w-full text-zinc-800 dark:text-zinc-100"
               />
             </div>
@@ -337,7 +341,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                   />
 
                   {imageUploading ?
-                    <div className="space-y-3 w-full max-w-[200px]">
+                    <div className="space-y-3 w-full max-w-50">
                       <Spinner color="warning" size="sm" />
                       <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden">
                         <div
@@ -403,7 +407,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                       setErrors((prev) => ({ ...prev, category: null }));
                   }}
                   isInvalid={!!errors.category}
-                  errorMessage={errors.category}
+                  aria-errormessage={errors.category}
                 >
                   <Select.Trigger>
                     <Select.Value />
@@ -448,7 +452,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                       setErrors((prev) => ({ ...prev, cuisineType: null }));
                   }}
                   isInvalid={!!errors.cuisineType}
-                  errorMessage={errors.cuisineType}
+                  aria-errormessage={errors.cuisineType}
                 />
               </div>
 
@@ -469,7 +473,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                       setErrors((prev) => ({ ...prev, difficultyLevel: null }));
                   }}
                   isInvalid={!!errors.difficultyLevel}
-                  errorMessage={errors.difficultyLevel}
+                  aria-errormessage={errors.difficultyLevel}
                 >
                   <Select.Trigger>
                     <Select.Value />
@@ -506,7 +510,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                       setErrors((prev) => ({ ...prev, preparationTime: null }));
                   }}
                   isInvalid={!!errors.preparationTime}
-                  errorMessage={errors.preparationTime}
+                  aria-errormessage={errors.preparationTime}
                 />
               </div>
             </div>
@@ -585,7 +589,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                 placeholder="Cook chicken for 15 minutes&#10;Prepare the gravy&#10;Combine everything together"
                 variant="bordered"
                 radius="xl"
-                minRows={4}
+                rows={4}
                 value={instructions}
                 onChange={(e) => {
                   setInstructions(e.target.value);
@@ -593,7 +597,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                     setErrors((prev) => ({ ...prev, instructions: null }));
                 }}
                 isInvalid={!!errors.instructions}
-                errorMessage={errors.instructions}
+                aria-errormessage={errors.instructions}
                 className="w-full text-zinc-800 dark:text-zinc-100"
               />
             </div>
