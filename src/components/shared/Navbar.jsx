@@ -25,17 +25,19 @@ export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
-if (pathname.startsWith("/dashboard")) {
-  return null;
-}
   const { data: session, isPending, error } = useSession();
-
-  const user = session?.user;
 
   // Prevent hydration mismatch by waiting until component is mounted
   useEffect(() => {
-    setMounted(true);
+    const timeoutId = window.setTimeout(() => setMounted(true), 0);
+    return () => window.clearTimeout(timeoutId);
   }, []);
+
+  if (pathname.startsWith("/dashboard")) {
+    return null;
+  }
+
+  const user = session?.user;
 
   const isActive = (path) => pathname === path;
 
@@ -117,30 +119,10 @@ if (pathname.startsWith("/dashboard")) {
             {/* Conditional Layout: Authenticated vs Unauthenticated */}
             {user ?
               <>
-                {/* Notification Bell */}
-                <div className="hidden items-center">
-                  <Badge
-                    content=""
-                    color="danger"
-                    shape="circle"
-                    placement="top-right"
-                    size="sm"
-                  >
-                    <Button
-                      isIconOnly
-                      variant="light"
-                      radius="full"
-                      size="sm"
-                      aria-label="View notifications"
-                      className="text-foreground/70 hover:text-orange-500"
-                    >
-                      <Bell className="h-5 w-5" />
-                    </Button>
-                  </Badge>
-                </div>
+               
 
-                {/* User Dropdown Profile (Updated to HeroUI Compound Syntax) */}
-                {/* User Dropdown Profile (Fixed hydration error) */}
+              
+                {/* User Dropdown Profile  */}
                 <Dropdown placement="bottom-end" backdrop="blur">
                   <Dropdown.Trigger className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-orange-500">
                     {/* Changed from <button> to <div> to prevent nested button elements */}
@@ -188,7 +170,7 @@ if (pathname.startsWith("/dashboard")) {
                         id="dashboard"
                         textValue="Dashboard"
                         as={Link}
-                        href="/dashboard"
+                        href="/dashboard/user"
                       >
                         <div className="flex w-full items-center justify-between gap-2">
                           <Label className="cursor-pointer font-normal">

@@ -1,53 +1,81 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Input, Button, Avatar, Chip } from "@heroui/react";
+import Image from "next/image";
+import { Card, Input, Button, Chip, toast, ToastProvider } from "@heroui/react";
 import {
-  User,
-  Mail,
-  Camera,
   Calendar,
   Shield,
   CheckCircle,
   Sparkles,
   Save,
-  RefreshCw,
+  Image as ImageIcon,
 } from "lucide-react";
+import { authClient } from "@/app/lib/auth-client";
+import { uploadToImgBB } from "@/lib/actions/uploadImage";
 
 export default function UserProfile({ data }) {
-  
   const [userData, setUserData] = useState(data);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [imageUploading, setImageUploading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // ফর্মের জন্য লোকাল স্টেট
   const [formData, setFormData] = useState({
     name: userData.name,
     image: userData.image,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleUpdateProfile = (e) => {
+  const handleUpdateProfile = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    //    Axios/Fetch বা Server Action
-    setTimeout(() => {
+    try {
+      setLoading(true);
+      setIsSubmitting(true);
+      const updateData = {
+        name: formData.name,
+      };
+      let uploadedImageUrl = null;
+      if (imageFile) {
+        setImageUploading(true);
+        uploadedImageUrl = await uploadToImgBB(imageFile);
+        console.log("Uploaded URL:", uploadedImageUrl);
+        updateData.image = uploadedImageUrl;
+        setImageUploading(false);
+      }
+      await authClient.updateUser(updateData);
       setUserData((prev) => ({
         ...prev,
         name: formData.name,
-        image: formData.image,
+        image: uploadedImageUrl || prev.image,
         updatedAt: new Date(),
       }));
+      setImagePreview("");
+      setImageFile(null);
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update profile");
+    } finally {
+      setLoading(false);
       setIsSubmitting(false);
-      alert("Profile updated successfully!");
-    }, 1000);
+      setImageUploading(false);
+    }
   };
 
-  // ডেট ফরম্যাটার ইউটিলিটি
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -61,16 +89,19 @@ export default function UserProfile({ data }) {
       {/* ================= Left Profile OverView Card ================= */}
       <div className="lg:col-span-1 flex flex-col gap-6">
         <Card className="p-6 bg-white/60 dark:bg-[#0d1324]/50 border border-neutral-200/50 dark:border-neutral-800/50 backdrop-blur-xl rounded-3xl flex flex-col items-center text-center relative overflow-hidden shadow-sm">
-          <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-orange-500 to-rose-600" />
+          <div className="absolute top-0 inset-x-0 h-2 bg-linear-to-r from-orange-500 to-rose-600" />
 
-          <div className="relative mt-4 group">
-            <Avatar
-              src={userData.image}
-              className="w-28 h-28 text-large rounded-2xl ring-4 ring-orange-500/10 object-cover"
-              fallback={userData.name.charAt(0)}
+          <div className="relative mt-4 group ">
+            <Image
+              src={userData?.image}
+              alt={`${userData?.name} profile`}
+              width={100}
+              height={100}
+              className="w-full h-full text-large rounded-2xl object-cover"
+              fallback={userData?.name.charAt(0)}
             />
             {userData.plan === "premium" && (
-              <div className="absolute -bottom-2 -right-2 bg-gradient-to-tr from-amber-500 to-orange-600 text-white p-1.5 rounded-xl shadow-md">
+              <div className="absolute -bottom-2 -right-2 bg-linear-to-tr from-amber-500 to-orange-600 text-white p-1.5 rounded-xl shadow-md">
                 <Sparkles className="size-4 animate-pulse" />
               </div>
             )}
@@ -118,7 +149,7 @@ export default function UserProfile({ data }) {
               <span className="text-neutral-400 flex items-center gap-2">
                 <Shield className="size-3.5" /> Account ID
               </span>
-              <span className="text-neutral-500 font-mono text-[11px] max-w-[120px] truncate">
+              <span className="text-neutral-500 font-mono text-[11px] max-w-30 truncate">
                 {userData.id}
               </span>
             </div>
@@ -157,40 +188,39 @@ export default function UserProfile({ data }) {
                 name="name"
                 label="Full Name"
                 placeholder="Enter your name"
-                labelPlacement="outside"
                 value={formData.name}
                 onChange={handleInputChange}
-                startContent={
-                  <User className="size-4 text-neutral-400 shrink-0" />
-                }
-                classNames={{
-                  inputWrapper:
-                    "bg-white/50 dark:bg-[#11182c]/40 border border-neutral-200/60 dark:border-neutral-800/60 rounded-xl",
-                  label:
-                    "text-xs font-bold text-neutral-600 dark:text-neutral-400",
-                }}
-                isRequired
+                className="bg-white/50 dark:bg-[#11182c]/40 border border-neutral-200/60 dark:border-neutral-800/60 rounded-xl"
               />
 
-              <Input
-                type="url"
-                name="image"
-                label="Profile Image URL"
-                placeholder="Paste avatar URL"
-                labelPlacement="outside"
-                value={formData.image}
-                onChange={handleInputChange}
-                startContent={
-                  <Camera className="size-4 text-neutral-400 shrink-0" />
+              <div className="flex items-center gap-4 p-3 rounded-xl border-2 border-dashed border-default-200 hover:border-orange-500/50 transition-colors relative bg-default-50/30">
+                {imagePreview ?
+                  <Image
+                    src={imagePreview}
+                    alt="Avatar Preview"
+                    width={48}
+                    height={48}
+                    className="w-12 h-12 rounded-full object-cover border border-default-200"
+                  />
+                : <div className="p-3 rounded-full bg-default-100 text-default-400">
+                    <ImageIcon size={20} />
+                  </div>
                 }
-                classNames={{
-                  inputWrapper:
-                    "bg-white/50 dark:bg-[#11182c]/40 border border-neutral-200/60 dark:border-neutral-800/60 rounded-xl",
-                  label:
-                    "text-xs font-bold text-neutral-600 dark:text-neutral-400",
-                }}
-                isRequired
-              />
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-foreground">
+                    {imageFile ? imageFile.name : "Choose an image file"}
+                  </p>
+                  <p className="text-[11px] text-foreground/50">
+                    PNG, JPG up to 5MB
+                  </p>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
@@ -200,16 +230,7 @@ export default function UserProfile({ data }) {
                 label="Email Address"
                 value={userData.email}
                 disabled
-                labelPlacement="outside"
-                startContent={
-                  <Mail className="size-4 text-neutral-400 shrink-0" />
-                }
-                classNames={{
-                  inputWrapper:
-                    "bg-neutral-100/60 dark:bg-[#11182c]/20 border border-neutral-200/40 dark:border-neutral-800/40 rounded-xl opacity-70 cursor-not-allowed",
-                  label:
-                    "text-xs font-bold text-neutral-400 dark:text-neutral-500",
-                }}
+                className="bg-neutral-100/60 dark:bg-[#11182c]/20 border border-neutral-200/40 dark:border-neutral-800/40 rounded-xl opacity-70 cursor-not-allowed"
               />
 
               {/* (Read Only) */}
@@ -218,26 +239,16 @@ export default function UserProfile({ data }) {
                 label="Platform Privilege Role"
                 value={userData.role.toUpperCase()}
                 disabled
-                labelPlacement="outside"
-                startContent={
-                  <Shield className="size-4 text-neutral-400 shrink-0" />
-                }
-                classNames={{
-                  inputWrapper:
-                    "bg-neutral-100/60 dark:bg-[#11182c]/20 border border-neutral-200/40 dark:border-neutral-800/40 rounded-xl opacity-70 cursor-not-allowed",
-                  label:
-                    "text-xs font-bold text-neutral-400 dark:text-neutral-500",
-                }}
+                className="bg-neutral-100/60 dark:bg-[#11182c]/20 border border-neutral-200/40 dark:border-neutral-800/40 rounded-xl opacity-70 cursor-not-allowed"
               />
             </div>
 
             <div className="flex justify-end pt-4 border-t border-neutral-100 dark:border-neutral-800/60 mt-6">
               <Button
                 type="submit"
-                isLoading={isSubmitting}
-                disabled={isSubmitting}
+                isDisabled={loading || imageUploading}
                 startContent={!isSubmitting && <Save className="size-4" />}
-                className="bg-gradient-to-r from-orange-500 to-rose-600 text-white font-bold text-xs rounded-xl px-6 shadow-md shadow-orange-500/10 uppercase tracking-wider"
+                className="bg-linear-to-r from-orange-500 to-rose-600 text-white font-bold text-xs rounded-xl px-6 shadow-md shadow-orange-500/10 uppercase tracking-wider"
               >
                 {isSubmitting ? "Saving Changes..." : "Save Profile"}
               </Button>

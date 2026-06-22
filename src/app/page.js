@@ -1,6 +1,9 @@
 import AboutSection from "@/components/home/AboutSection";
 import BannerSection from "@/components/home/BannerSection";
 import ContactSection from "@/components/home/ContactSection";
+import FeaturedRecipes from "@/components/home/FeaturedRecipes";
+import HomeRecipesContainer from "@/components/home/HomeRecipesContainer";
+import PopularRecipes from "@/components/home/PopularRecipes";
 
 export const metadata = {
   title: "Flavor Flow - Home",
@@ -12,6 +15,9 @@ export default function Home() {
   return (
     <>
       <BannerSection />
+      {/* <FeaturedRecipes />
+      <PopularRecipes /> */}
+      <HomeRecipesContainer/>
       <AboutSection />
       <ContactSection />
     </>

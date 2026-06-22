@@ -14,7 +14,7 @@ import {
   Globe2,
   ArrowUpDown,
 } from "lucide-react";
-import { getRecipes } from "@/components/lib/api/recipes";
+import { getRecipes } from "@/lib/api/recipes";
 
 const CATEGORIES = [
   "All",

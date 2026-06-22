@@ -7,16 +7,11 @@ import { Button, Drawer, Avatar } from "@heroui/react";
 import { motion } from "framer-motion";
 import { FiLogOut, FiMenu, FiAlertCircle, FiX } from "react-icons/fi";
 import { dashboardNavItems } from "../../../config/dashboardNav";
+import Image from "next/image";
 
-export default function DashboardSidebar({
-  role = "user",
-  isPremium = false,
-  userSession,
-}) {
+export default function DashboardSidebar({ role = "admin", userSession }) {
   const pathname = usePathname();
   const navItems = dashboardNavItems[role] || dashboardNavItems.user;
-
- 
   const renderNavLinks = (
     <nav className="flex flex-col gap-1.5 w-full">
       {navItems.map((item) => {
@@ -63,7 +58,6 @@ export default function DashboardSidebar({
       {/* ================= DESKTOP SIDEBAR ================= */}
       <aside className="hidden lg:flex flex-col   h-screen w-80 bg-white/80 dark:bg-[#0d1324]/60 border-r border-neutral-200/60 dark:border-neutral-800/50 backdrop-blur-xl p-5 z-30 justify-between">
         <div className="space-y-7 w-full">
-        
           <div className="px-3 py-2 flex items-center gap-2.5">
             <div className="size-8 rounded-xl bg-linear-to-tr from-orange-500 to-rose-600 flex items-center justify-center text-white shadow-md">
               <FiAlertCircle className="size-4" />
@@ -73,15 +67,17 @@ export default function DashboardSidebar({
             </span>
           </div>
 
-         
           <div className="px-3 py-3 rounded-2xl bg-neutral-100/50 dark:bg-[#161f38]/40 border border-neutral-200/40 dark:border-neutral-800/40 flex items-center gap-3">
-            <Avatar
+            <Image
+              width={30}
+              height={30}
+              alt={userSession?.name}
               size="md"
               src={
                 userSession?.image ||
                 "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde"
               }
-              className="rounded-xl ring-2 ring-orange-500/20 w-11 h-11 object-cover"
+              className="rounded-xl  w-11 h-11 object-cover"
               fallback={userSession?.name?.charAt(0) || "U"}
             />
             <div className="flex flex-col justify-center min-w-0">
@@ -91,20 +87,18 @@ export default function DashboardSidebar({
               <p className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mt-0.5">
                 {role === "admin" ?
                   "Platform Admin"
-                : isPremium ?
+                : userSession?.plan !== "free" ?
                   "Premium Chef"
                 : "Free Member"}
               </p>
             </div>
           </div>
 
-         
           {renderNavLinks}
         </div>
 
-        
         <div className="space-y-4 w-full">
-          {role === "user" && !isPremium && (
+          {role === "user" && userSession?.plan === "free" && (
             <div className="relative rounded-2xl p-4 bg-linear-to-br from-neutral-900 via-neutral-900 to-[#1e1415] dark:from-[#131a30] dark:to-[#221215] border border-neutral-200/10 overflow-hidden shadow-xl">
               <p className="text-[10px] font-bold text-orange-400 flex items-center gap-1 uppercase tracking-wider">
                 <FiAlertCircle /> Unlimited Access
@@ -159,16 +153,7 @@ export default function DashboardSidebar({
                         FlavorFlow Menu
                       </Drawer.Heading>
                     </Drawer.Header>
-                    <Drawer.CloseTrigger asChild>
-                      <Button
-                        isIconOnly
-                        variant="light"
-                        size="sm"
-                        className="rounded-xl"
-                      >
-                        <FiX className="size-5" />
-                      </Button>
-                    </Drawer.CloseTrigger>
+                    <Drawer.CloseTrigger />
                   </div>
                   <div className="w-full">{renderNavLinks}</div>
                 </div>

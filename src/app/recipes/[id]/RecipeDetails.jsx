@@ -19,11 +19,11 @@ export default function RecipeDetails({ recipeData, currentUser, likeStatus }) {
   // States for interactive features
   const [likesCount, setLikesCount] = useState(recipeData.likesCount);
   const [isLiked, setIsLiked] = useState(likeStatus?.isLiked || false);
+  const [isLikeLoading, setIsLikeLoading] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportReason, setReportReason] = useState("");
   const [isPurchasing, setIsPurchasing] = useState(false);
-  const [isLikeLoading, setIsLikeLoading] = useState(false);
 
   
  

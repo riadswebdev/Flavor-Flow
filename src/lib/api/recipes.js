@@ -23,3 +23,8 @@ export const getLikeStatus = async (recipeId,userId) => {
   const data = await res.json()
   return data;
 };
+
+export const getFeatureAndPopularRecipe =async ()=>{
+  const res = await fetch(`${baseUrl}/api/feature&popularRecipe`);
+  return await res.json()
+}

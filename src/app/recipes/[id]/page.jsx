@@ -1,6 +1,6 @@
-import { getLikeStatus, getSingleRecipe } from "@/components/lib/api/recipes";
+import { getLikeStatus, getSingleRecipe } from "@/lib/api/recipes";
 import RecipeDetails from "./RecipeDetails";
-import { getUserSession } from "@/components/lib/core/session";
+import { getUserSession } from "@/lib/core/session";
 
 export default async function RecipePage({ params }) {
   const { id } = await params;

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
 import { BsGithub } from "react-icons/bs";
@@ -7,10 +7,10 @@ import { UtensilsCrossed, Mail, Phone, MapPin } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 export default function Footer() {
-const pathname = usePathname()
-//  if (pathname.startsWith("/dashboard")) {
-//    return null; 
-//  }
+  const pathname = usePathname();
+  if (pathname.startsWith("/dashboard")) {
+    return null;
+  }
 
   return (
     <footer className="w-full bg-background border-t border-default-100 mt-auto">

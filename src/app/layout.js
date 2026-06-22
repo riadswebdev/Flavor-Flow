@@ -33,7 +33,7 @@ export default function RootLayout({ children }) {
           <Navbar />
           {children}
           <Footer />
-          <ToastProvider />
+          <ToastProvider placement="top end" />
         </Providers>
       </body>
     </html>

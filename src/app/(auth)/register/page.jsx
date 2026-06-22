@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input, Button, Separator, toast } from "@heroui/react";
 import { signUp } from "@/app/lib/auth-client";
+import { updateUserAdditionalField } from "@/lib/actions/user";
 import {
   UtensilsCrossed,
   Eye,
@@ -83,7 +84,7 @@ const RegisterPage = () => {
         setImageUploading(false);
       }
 
-      const { error } = await signUp.email({
+      const { data, error } = await signUp.email({
         name: name,
         email: email,
         password: password,
@@ -97,11 +98,31 @@ const RegisterPage = () => {
         setSignUpError(
           error.message || "Failed to create account. Please try again.",
         );
-      } else {
+        return;
+      }
+      const userId = data?.user?.id;
+      if (userId) {
+        const additionalField = {
+          recipesAddedCount: 0,
+          totalFavorites: 0,
+          totalLikesReceived: 0,
+          expireAt: null,
+          recipeLimit: 3,
+        };
+        console.log("Hitting API for User ID:", userId, additionalField);
+
+        await updateUserAdditionalField(additionalField, userId);
+
         toast.success("Account created successfully! Please log in.");
+
         setTimeout(() => {
-          router.push("/login");
+        //   router.push("/login");
         }, 1000);
+      } else {
+        console.error("User ID not found in response:", data);
+        setSignUpError(
+          "Account created, but failed to initialize profile stats.",
+        );
       }
     } finally {
       setLoading(false);

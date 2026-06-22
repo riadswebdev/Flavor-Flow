@@ -2,35 +2,33 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Button, Dropdown, Avatar, Badge, Label } from "@heroui/react";
+import { Button, Dropdown, Label } from "@heroui/react";
+import { FiChevronRight, FiHome } from "react-icons/fi";
+import { authClient } from "@/app/lib/auth-client";
+import Image from "next/image";
 import {
   Sun,
   Moon,
   User,
   LayoutDashboard,
   LogOut,
-  Bell,
   ChevronDown,
-
- 
 } from "lucide-react";
-import { FiChevronRight, FiHome } from "react-icons/fi";
-import { signOut } from "@/app/lib/auth-client";
 
-export default function DashboardNavbar({ role = "user" }) {
+export default function DashboardNavbar({ user }) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
- 
-    const getPageTitle = () => {
-      
+  const getPageTitle = () => {
     const segments = pathname.split("/").filter(Boolean);
     if (segments.length <= 2) return "Overview";
     const rawTitle = segments[segments.length - 1];
@@ -38,35 +36,34 @@ export default function DashboardNavbar({ role = "user" }) {
       rawTitle.charAt(0).toUpperCase() + rawTitle.slice(1).replace(/-/g, " ")
     );
   };
-    const handleLogOutBtn = async () => {
-     await signOut({
-          fetchOptions: {
-            onSuccess: () => {
-              router.replace("/login");
-            },
-          },
-        });
-}
-    
+  const handleLogOutBtn = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.replace("/login");
+        },
+      },
+    });
+  };
+
   return (
     <header className="sticky top-0 h-20 shrink-0 border-b border-neutral-200/50 dark:border-neutral-800/40 bg-white/40 dark:bg-[#0b0f19]/30 backdrop-blur-md flex items-center justify-between px-6 pl-16 lg:pl-10 sm:px-10 z-20 w-full">
-     
       <div className="flex flex-col justify-center">
         <nav className="hidden sm:flex items-center gap-1 text-[10px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-0.5">
           <FiHome className="size-3" />
           <FiChevronRight size={10} />
           <span>Dashboard</span>
           <FiChevronRight size={10} />
-          <span className="text-orange-500 dark:text-orange-400">{role}</span>
+          <span className="text-orange-500 dark:text-orange-400">
+            {user?.role}
+          </span>
         </nav>
         <h2 className="text-lg font-black tracking-tight text-neutral-800 dark:text-neutral-100">
           {getPageTitle()}
         </h2>
       </div>
 
-      
       <div className="flex items-center gap-3.5">
-       
         <Button
           isIconOnly
           variant="light"
@@ -80,36 +77,19 @@ export default function DashboardNavbar({ role = "user" }) {
           : <Moon className="h-4 w-4 text-indigo-400" />}
         </Button>
 
-    
-        <Badge
-          content=""
-          color="danger"
-          shape="circle"
-          placement="top-right"
-          size="sm"
-        >
-          <Button
-            isIconOnly
-            variant="light"
-            radius="full"
-            size="sm"
-            className="text-foreground/70 hover:text-orange-500"
-          >
-            <Bell className="h-4 w-4" />
-          </Button>
-        </Badge>
-
         <div className="h-5 w-px bg-neutral-200 dark:bg-neutral-800" />
 
-         {/* HeroUI v3  */}
+        {/* HeroUI v3  */}
         <Dropdown placement="bottom-end" backdrop="blur">
           <Dropdown.Trigger className="rounded-full outline-none">
             <div className="flex items-center gap-1.5 group cursor-pointer">
-              <Avatar
+              <Image
+                width={20}
+                height={20}
+                alt={user?.name}
                 size="sm"
-                className="w-8 h-8 text-xs ring-2 ring-orange-500/10"
-                src="https://ik.imagekit.io/i455l48ls/profile-photoaidcom-cropped%20(1).png?updatedAt=1780659702199"
-                fallback="M"
+                className="w-8 h-8 text-xs "
+                src={user?.image}
               />
               <ChevronDown className="w-3 h-3 text-neutral-400 group-hover:text-neutral-600 transition-colors hidden sm:block" />
             </div>
@@ -155,10 +135,13 @@ export default function DashboardNavbar({ role = "user" }) {
               </Dropdown.Item>
 
               <Dropdown.Item id="logout" textValue="Log Out" variant="danger">
-                <div onProgress={handleLogOutBtn} className="flex w-full items-center justify-between gap-2">
-                  <Label className="text-danger cursor-pointer font-normal text-xs">
+                <div
+                  onClick={handleLogOutBtn}
+                  className="flex w-full items-center justify-between gap-2"
+                >
+                  <button className="text-danger cursor-pointer font-normal text-xs">
                     Log Out
-                  </Label>
+                  </button>
                   <LogOut className="w-3.5 h-3.5 text-danger" />
                 </div>
               </Dropdown.Item>
