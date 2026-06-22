@@ -25,20 +25,21 @@ export default function RecipeDetails({ recipeData, currentUser, likeStatus }) {
   const [reportReason, setReportReason] = useState("");
   const [isPurchasing, setIsPurchasing] = useState(false);
 
-  const apiBaseUrl = process.env.NEXT_PUBLIC_RECIPES_API_URL || "http://localhost:8000";
- 
+  const apiBaseUrl =
+    process.env.NEXT_PUBLIC_RECIPES_API_URL || "http://localhost:8000";
+
   // 1. Like / Unlike Button Handler with Optimistic UI Updates
   const handleLikeToggle = async () => {
     if (isLikeLoading || !currentUser?.id) return;
 
-    const newLikedState = !isLiked ;
+    const newLikedState = !isLiked;
     const action = newLikedState ? "like" : "unlike";
 
     // ২. Optimistic UI Update
     setIsLiked(newLikedState);
     setLikesCount((prev) => (newLikedState ? prev + 1 : prev - 1));
     setIsLikeLoading(true);
-   
+
     try {
       const res = await fetch(
         `${apiBaseUrl}/api/recipes/${recipeData._id}/like`,
@@ -90,18 +91,15 @@ export default function RecipeDetails({ recipeData, currentUser, likeStatus }) {
   const handlePurchase = async () => {
     setIsPurchasing(true);
     try {
-      const res = await fetch(
-        `${apiBaseUrl}/api/create-checkout-session`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            recipeId: recipeData._id,
-            recipeName: recipeData.recipeName,
-            price: 499,
-          }),
-        },
-      );
+      const res = await fetch(`${apiBaseUrl}/api/create-checkout-session`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recipeId: recipeData._id,
+          recipeName: recipeData.recipeName,
+          price: 499,
+        }),
+      });
 
       const session = await res.json();
       if (session.url) {

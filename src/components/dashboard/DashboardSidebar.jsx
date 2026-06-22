@@ -13,7 +13,7 @@ export default function DashboardSidebar({ role = "user", userSession }) {
   const pathname = usePathname();
   const navItems = dashboardNavItems[role] || dashboardNavItems.user;
   const renderNavLinks = (
-    <nav className="flex flex-col gap-1.5 w-full">
+    <nav className="flex flex-col gap-1.5 w-full sticky top-0 z-50">
       {navItems.map((item) => {
         const isActive = pathname === item.href;
         return (
@@ -24,7 +24,7 @@ export default function DashboardSidebar({ role = "user", userSession }) {
           >
             <button
               type="button"
-              className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all relative z-10 ${
+              className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all relative z-10 cursor-pointer ${
                 isActive ?
                   "text-white font-semibold"
                 : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200"

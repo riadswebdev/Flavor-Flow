@@ -1,4 +1,5 @@
 import { Card, CardContent, Chip, Button } from "@heroui/react";
+import { FiArrowRight } from "react-icons/fi";
 import {
   FaBookOpen,
   FaHeart,
@@ -7,8 +8,7 @@ import {
   FaUtensils,
   FaClock,
 } from "react-icons/fa";
-import { FiArrowRight } from "react-icons/fi";
-import Link from "next/link";
+
 
 import { getRecipesByUserId } from "@/lib/api/recipes";
 import { getUserSession } from "@/lib/core/session";

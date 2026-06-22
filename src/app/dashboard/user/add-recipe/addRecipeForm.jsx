@@ -96,7 +96,6 @@ export default function AddRecipeForm({ loggedInUser }) {
         text: "Image uploaded successfully!",
       });
     } catch (error) {
-      
       setGlobalMessage({
         type: "error",
         text: "Image upload failed. Please check connection or API key.",
@@ -189,7 +188,6 @@ export default function AddRecipeForm({ loggedInUser }) {
       setGlobalMessage({ type: "", text: "" });
 
       const response = await publishRecipe(finalRecipePayload);
-     
 
       if (response.insertedId) {
         setGlobalMessage({
@@ -303,6 +301,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                 Recipe Name <span className="text-rose-500">*</span>
               </label>
               <Input
+                required
                 type="text"
                 placeholder="Example: Butter Chicken"
                 variant="bordered"
@@ -333,6 +332,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                   }`}
                 >
                   <input
+                    required
                     type="file"
                     accept="image/*"
                     onChange={handleImageUpload}
@@ -397,6 +397,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                 </label>
 
                 <Select
+                  isRequired
                   placeholder="Select Category"
                   variant="bordered"
                   radius="xl"
@@ -406,7 +407,6 @@ export default function AddRecipeForm({ loggedInUser }) {
                     if (errors.category)
                       setErrors((prev) => ({ ...prev, category: null }));
                   }}
-                  isInvalid={!!errors.category}
                   aria-errormessage={errors.category}
                 >
                   <Select.Trigger>
@@ -441,6 +441,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                   Cuisine Type <span className="text-rose-500">*</span>
                 </label>
                 <Input
+                  isRequired
                   type="text"
                   placeholder="e.g., Indian, Italian"
                   variant="bordered"
@@ -451,7 +452,6 @@ export default function AddRecipeForm({ loggedInUser }) {
                     if (errors.cuisineType)
                       setErrors((prev) => ({ ...prev, cuisineType: null }));
                   }}
-                  isInvalid={!!errors.cuisineType}
                   aria-errormessage={errors.cuisineType}
                 />
               </div>
@@ -472,7 +472,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                     if (errors.difficultyLevel)
                       setErrors((prev) => ({ ...prev, difficultyLevel: null }));
                   }}
-                  isInvalid={!!errors.difficultyLevel}
+                  isRequired
                   aria-errormessage={errors.difficultyLevel}
                 >
                   <Select.Trigger>
@@ -509,7 +509,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                     if (errors.preparationTime)
                       setErrors((prev) => ({ ...prev, preparationTime: null }));
                   }}
-                  isInvalid={!!errors.preparationTime}
+                  required
                   aria-errormessage={errors.preparationTime}
                 />
               </div>
@@ -596,7 +596,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                   if (errors.instructions)
                     setErrors((prev) => ({ ...prev, instructions: null }));
                 }}
-                isInvalid={!!errors.instructions}
+                required
                 aria-errormessage={errors.instructions}
                 className="w-full text-zinc-800 dark:text-zinc-100"
               />
