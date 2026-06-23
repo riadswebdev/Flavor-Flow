@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import {
   Heart,
   Flag,
@@ -133,10 +134,11 @@ export default function RecipeDetails({ recipeData, currentUser, likeStatus }) {
         {/* ================= MAIN HERO GRID ================= */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
           {/* Large Hero Image (Left Side) */}
-          <div className="lg:col-span-7 xl:col-span-8 relative rounded-3xl overflow-hidden shadow-2xl border border-neutral-200/60 dark:border-neutral-800/50 h-[350px] sm:h-[450px] lg:h-[500px]">
-            <img
+          <div className="lg:col-span-7 xl:col-span-8 relative rounded-3xl overflow-hidden shadow-2xl border border-neutral-200/60 dark:border-neutral-800/50 h-87.5 sm:h-112.5 lg:h-125">
+            <Image
               src={recipeData.recipeImage}
               alt={recipeData.recipeName}
+              fill
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
             />
             <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
@@ -326,10 +328,13 @@ export default function RecipeDetails({ recipeData, currentUser, likeStatus }) {
 
         {/* ================= CHEF PROFILE CARD ================= */}
         <div className="bg-linear-to-r from-orange-500/5 via-rose-500/5 to-transparent border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 flex flex-col sm:flex-row items-center gap-4 shadow-inner mb-12">
-          <img
-            src={recipeData?.author?.avatar}
-            alt={recipeData?.author?.name}
+          <Image
+            src={recipeData?.author?.avatar || "/placeholder-avatar.png"}
+            alt={recipeData?.author?.name || "Author avatar"}
+            width={64}
+            height={64}
             className="w-16 h-16 rounded-2xl object-cover ring-4 ring-orange-500/20"
+            priority={false}
           />
           <div className="text-center sm:text-left space-y-1">
             <p className="text-xs uppercase font-extrabold tracking-widest text-neutral-400">
@@ -340,7 +345,7 @@ export default function RecipeDetails({ recipeData, currentUser, likeStatus }) {
               {recipeData?.author?.email}
             </p>
           </div>
-          ?
+          
         </div>
       </div>
 

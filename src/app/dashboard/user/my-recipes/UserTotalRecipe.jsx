@@ -392,7 +392,7 @@ const UserTotalRecipe = ({ initialRecipes = [], userId }) => {
                             </Tooltip>
                             <Tooltip content="Edit Recipe">
                               <Link
-                                href={`/dashboard/edit-recipe/${recipe._id}`}
+                                href={`/dashboard/user/my-recipes/${recipe._id}`}
                               >
                                 <Button
                                   isIconOnly
@@ -510,7 +510,7 @@ const UserTotalRecipe = ({ initialRecipes = [], userId }) => {
                         View
                       </Button>
                     </Link>
-                    <Link href={`/dashboard/edit-recipe/${recipe._id}`}>
+                    <Link href={`/dashboard/user/my-recipes/${recipe._id}`}>
                       <Button
                         size="sm"
                         variant="flat"

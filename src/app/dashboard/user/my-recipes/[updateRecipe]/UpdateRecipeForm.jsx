@@ -1,37 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { uploadToImgBB } from "@/lib/actions/uploadImage";
-import { publishRecipe } from "@/lib/actions/recipe";
+import { getSingleRecipe } from "@/lib/api/recipes";
 
 import {
   Card,
   CardContent,
   Input,
   Select,
-  ListBox,
   Button,
-  Chip,
   Separator,
   Spinner,
+  Skeleton,
   TextArea,
+  ListBox,
+  Label,
 } from "@heroui/react";
+
 import {
   FiPlus,
   FiTrash2,
   FiUploadCloud,
   FiCheckCircle,
   FiAlertCircle,
-  FiZap,
-  FiActivity,
+  FiClock,
   FiBookOpen,
+  FiArrowLeft,
 } from "react-icons/fi";
+import { updateRecipe } from "@/lib/actions/recipe";
 
-export default function AddRecipeForm({ loggedInUser }) {
+export default function UpdateRecipeForm({ recipeId }) {
   const router = useRouter();
+
+  // ================= System & Loading States =================
+  const [pageLoading, setPageLoading] = useState(true);
+  const [recipeNotFound, setRecipeNotFound] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [globalMessage, setGlobalMessage] = useState({ type: "", text: "" });
 
   // ================= Form States =================
   const [recipeName, setRecipeName] = useState("");
@@ -43,12 +54,66 @@ export default function AddRecipeForm({ loggedInUser }) {
   const [instructions, setInstructions] = useState("");
   const [recipeImage, setRecipeImage] = useState("");
 
-  // System States
-  const [imageUploading, setImageUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [globalMessage, setGlobalMessage] = useState({ type: "", text: "" });
+  // Keep a reference of fields that must NOT change
+  const [immutableMeta, setImmutableMeta] = useState({
+    likesCount: 0,
+    isFeatured: false,
+    status: "published",
+    author: {},
+    createdAt: "",
+  });
+
+  // ================= Fetch Recipe Data =================
+  useEffect(() => {
+    const fetchRecipe = async () => {
+      try {
+        setPageLoading(true);
+        const recipe = await getSingleRecipe(recipeId);
+        console.log("Fetched Recipe Data:", recipe);
+
+        if (!recipe) {
+          setRecipeNotFound(true);
+          return;
+        }
+
+        // Populate Form Fields
+        setRecipeName(recipe.recipeName || "");
+        setCategory(new Set(recipe.category ? [recipe.category] : []));
+        setCuisineType(recipe.cuisineType || "");
+        setDifficultyLevel(
+          new Set(recipe.difficultyLevel ? [recipe.difficultyLevel] : []),
+        );
+        setPreparationTime(String(recipe.preparationTime || ""));
+        setIngredients(
+          recipe.ingredients && recipe.ingredients.length > 0 ?
+            recipe.ingredients
+          : [""],
+        );
+        setInstructions(
+          recipe.instructions ? recipe.instructions.join("\n") : "",
+        );
+        setRecipeImage(recipe.recipeImage || "");
+
+        // Retain Immutable Field Map Data
+        setImmutableMeta({
+          likesCount: recipe.likesCount || 0,
+          isFeatured: recipe.isFeatured || false,
+          status: recipe.status || "published",
+          author: recipe.author || {},
+          createdAt: recipe.createdAt,
+        });
+      } catch (error) {
+        console.error("Error fetching recipe:", error);
+        setRecipeNotFound(true);
+      } finally {
+        setPageLoading(false);
+      }
+    };
+
+    if (recipeId) {
+      fetchRecipe();
+    }
+  }, [recipeId]);
 
   // ================= Dynamic Ingredients Handlers =================
   const handleIngredientChange = (index, value) => {
@@ -72,45 +137,46 @@ export default function AddRecipeForm({ loggedInUser }) {
     }
   };
 
-  // ================= Image Upload to ImgBB =================
+  // ================= Image Upload Handler =================
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     try {
       setImageUploading(true);
-      setUploadProgress(0);
       setGlobalMessage({ type: "", text: "" });
 
+      // Action uploads image directly to ImgBB
       const imageUrl = await uploadToImgBB(file);
 
       setRecipeImage(imageUrl);
       setErrors((prev) => ({ ...prev, recipeImage: null }));
       setGlobalMessage({
         type: "success",
-        text: "Image uploaded successfully!",
+        text: "New image uploaded and updated successfully!",
       });
     } catch (error) {
       setGlobalMessage({
         type: "error",
-        text: "Image upload failed. Please check connection or API key.",
+        text: "Image upload failed. Please try again.",
       });
     } finally {
       setImageUploading(false);
     }
   };
 
-  // ================= Client-Side Manual Validation =================
+  // ================= Client Side Form Validation =================
   const validateForm = () => {
     const newErrors = {};
 
     if (!recipeName.trim()) newErrors.recipeName = "Recipe name is required";
     if (recipeName.length > 100)
       newErrors.recipeName = "Maximum 100 characters allowed";
-    if (!recipeImage) newErrors.recipeImage = "Recipe image upload is required";
+    if (!recipeImage) newErrors.recipeImage = "Recipe image is required";
 
     const selectedCategory = Array.from(category)[0];
-    if (!selectedCategory) newErrors.category = "Category is required";
+    if (!selectedCategory)
+      newErrors.category = "Category Selection is required";
 
     if (!cuisineType.trim()) newErrors.cuisineType = "Cuisine type is required";
 
@@ -137,14 +203,14 @@ export default function AddRecipeForm({ loggedInUser }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  // ================= Form Submission Logic =================
+  // ================= Form Submission Code =================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) {
       setGlobalMessage({
         type: "error",
-        text: "Please fix the validation errors below.",
+        text: "Please clear the field validation errors below.",
       });
       return;
     }
@@ -165,16 +231,6 @@ export default function AddRecipeForm({ loggedInUser }) {
         .map((ing) => ing.trim())
         .filter((ing) => ing !== ""),
       instructions: instructionsArray,
-      likesCount: 0,
-      isFeatured: false,
-      status: "published",
-      author: {
-        id: loggedInUser.id,
-        name: loggedInUser.name,
-        email: loggedInUser.email,
-        avatar: loggedInUser.image,
-      },
-      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
@@ -182,89 +238,120 @@ export default function AddRecipeForm({ loggedInUser }) {
       setIsSubmitting(true);
       setGlobalMessage({ type: "", text: "" });
 
-      const response = await publishRecipe(finalRecipePayload);
-
-      if (response.insertedId) {
+     
+      const updatedRecipe = await updateRecipe(recipeId, finalRecipePayload);
+    
+      if (updatedRecipe.success) {
         setGlobalMessage({
           type: "success",
-          text: "🎉 Recipe published successfully!",
+          text: "🎉 Recipe updated successfully!",
         });
-
-        setRecipeName("");
-        setCategory(new Set([]));
-        setCuisineType("");
-        setDifficultyLevel(new Set([]));
-        setPreparationTime("");
-        setIngredients([""]);
-        setInstructions("");
-        setRecipeImage("");
-        setErrors({});
 
         setTimeout(() => {
           router.refresh();
-          router.push("/dashboard/user/my-recipes");
+          router.replace("/dashboard/user/my-recipes");
         }, 2000);
       }
     } catch (error) {
-      console.error("Backend Error:", error);
+      console.error("Backend Error Strategy:", error);
       setGlobalMessage({
         type: "error",
         text:
           error.response?.data?.message ||
-          "Failed to publish recipe to server.",
+          "Failed to update the recipe on the server.",
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (
-    loggedInUser.recipeLimit !== -1 &&
-    loggedInUser.recipesCount >= loggedInUser.recipeLimit
-  ) {
-    //  redirect("/plans");
+  // ================= 1. RENDERING HEROUI SKELETON LOADING STATE =================
+  if (pageLoading) {
+    return (
+      <div className="min-h-screen py-12 px-4 max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div className="space-y-3">
+          <Skeleton className="h-9 w-2/5 rounded-xl" />
+          <Skeleton className="h-5 w-3/5 rounded-xl" />
+        </div>
+        <Card className="p-6 sm:p-10 border border-zinc-200/50 dark:border-zinc-800/80 rounded-[2rem]">
+          <div className="space-y-6">
+            <Skeleton className="h-12 w-full rounded-xl" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Skeleton className="h-40 w-full rounded-2xl" />
+              <Skeleton className="h-40 w-full rounded-2xl" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Skeleton className="h-12 w-full rounded-xl" />
+              <Skeleton className="h-12 w-full rounded-xl" />
+              <Skeleton className="h-12 w-full rounded-xl" />
+              <Skeleton className="h-12 w-full rounded-xl" />
+            </div>
+            <Skeleton className="h-32 w-full rounded-xl" />
+            <Skeleton className="h-12 w-full rounded-xl" />
+          </div>
+        </Card>
+      </div>
+    );
   }
-  const isLimitReached =
-    loggedInUser.plan !== "free" && loggedInUser.recipeCount >= 2;
 
+  // ================= 2. RENDERING ERROR/EMPTY NOT FOUND PREMIUM STATE =================
+  if (recipeNotFound) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4 }}
+        className="min-h-[70vh] flex flex-cols-center justify-center text-center px-4"
+      >
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-72 h-72 bg-rose-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="p-4 bg-rose-500/10 dark:bg-rose-500/5 text-rose-500 rounded-2xl border border-rose-500/20 mb-4 shadow-xl">
+          <FiAlertCircle className="w-12 h-12 animate-pulse" />
+        </div>
+        <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
+          Recipe Not Found
+        </h2>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-2 max-w-md font-medium">
+          The requested recipe record configuration either does not exist, or
+          you lack authentication clearance profiles to view it.
+        </p>
+        <Button
+          variant="flat"
+          radius="xl"
+          startContent={<FiArrowLeft />}
+          onClick={() => router.push("/dashboard/user/my-recipes")}
+          className="mt-6 font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:opacity-90"
+        >
+          Return to My Recipes
+        </Button>
+      </motion.div>
+    );
+  }
+
+  // ================= 3. RENDERING EDIT FORM INTERFACE =================
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="min-h-screen py-12 px-4 max-w-4xl mx-auto sm:px-6 lg:px-8 bg-transparent relative"
     >
-      {/* Dynamic Background Glows */}
-      <div className="absolute top-0 left-1/4 w-72 h-72 bg-orange-500/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-rose-500/10 rounded-full blur-[100px] pointer-events-none" />
+      {/* Background Radial Glow Decorations */}
+      <div className="absolute top-0 left-1/4 w-80 h-80 bg-orange-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-rose-500/10 rounded-full blur-[120px] pointer-events-none" />
 
       {/* ================= PAGE HEADER ================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-zinc-200/60 dark:border-zinc-800/60 relative z-10">
+      <div className="flex flex-col sm:flex-row sms-center justify-between gap-4 mb-8 pb-6 border-b border-zinc-200/60 dark:border-zinc-800/60 relative z-10">
         <div className="space-y-1">
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight sm:text-4xl">
-              Add New Recipe
-            </h1>
-            {loggedInUser.plan === "premium" ?
-              <Chip className="bg-linear-to-r from-orange-500 to-rose-500 text-white font-black text-[10px] uppercase border-0 px-2.5 shadow-md shadow-orange-500/20">
-                Premium Member
-              </Chip>
-            : <Chip
-                size="sm"
-                variant="flat"
-                className="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold"
-              >
-                Free Tier ({loggedInUser.recipeCount}/2)
-              </Chip>
-            }
-          </div>
+          <h1 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight sm:text-4xl">
+            Update Recipe
+          </h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">
-            Share your favorite recipe with the FlavorFlow community.
+            Edit your recipe data configuration and keep it up to date.
           </p>
         </div>
       </div>
 
-      {/* Alerts Toast System */}
+      {/* Global Toast Alert Mechanism */}
       <AnimatePresence mode="wait">
         {globalMessage.text && (
           <motion.div
@@ -285,11 +372,11 @@ export default function AddRecipeForm({ loggedInUser }) {
         )}
       </AnimatePresence>
 
-      {/* ================= RECIPE FORM CARD ================= */}
-      <Card className="bg-white/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/80 rounded-[2rem] shadow-2xl relative z-10 overflow-visible">
-        <CardContent className="p-6 sm:p-10 overflow-visible">
+      {/* ================= EDIT FORM CARD ================= */}
+      <Card className="bg-white/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/80 rounded-[2rem] shadow-2xl relative z-10">
+        <CardContent className="p-6 sm:p-10">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* 1. Recipe Name */}
+            {/* 1. Recipe Name Input */}
             <div className="space-y-2">
               <label className="text-xs font-black uppercase text-zinc-700 dark:text-zinc-300 tracking-wider">
                 Recipe Name <span className="text-rose-500">*</span>
@@ -297,7 +384,7 @@ export default function AddRecipeForm({ loggedInUser }) {
               <Input
                 required
                 type="text"
-                placeholder="Example: Butter Chicken"
+                placeholder="Example: Garlic Butter Salmon"
                 variant="bordered"
                 radius="xl"
                 value={recipeName}
@@ -311,22 +398,21 @@ export default function AddRecipeForm({ loggedInUser }) {
               />
             </div>
 
-            {/* 2. Drag & Drop Image Upload Component Area */}
+            {/* 2. Custom Upload & Cloud Preview Grid Area */}
             <div className="space-y-2">
               <label className="text-xs font-black uppercase text-zinc-700 dark:text-zinc-300 tracking-wider">
-                Recipe Image Upload <span className="text-rose-500">*</span>
+                Recipe Image <span className="text-rose-500">*</span>
               </label>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4s-center">
                 <div
-                  className={`relative border-2 border-dashed rounded-2xl p-6 transition-all bg-zinc-50/50 dark:bg-zinc-950/30 flex flex-col items-center justify-center text-center min-h-40 ${
+                  className={`relative border-2 border-dashed rounded-2xl p-6 transition-all bg-zinc-50/50 dark:bg-zinc-950/30 flex flex-cols-center justify-center text-center min-h-40 ${
                     errors.recipeImage ? "border-rose-500" : (
                       "border-zinc-200 dark:border-zinc-800 hover:border-orange-500/50"
                     )
                   }`}
                 >
                   <input
-                    required
                     type="file"
                     accept="image/*"
                     onChange={handleImageUpload}
@@ -335,16 +421,10 @@ export default function AddRecipeForm({ loggedInUser }) {
                   />
 
                   {imageUploading ?
-                    <div className="space-y-3 w-full max-w-50">
-                      <Spinner color="warning" size="sm" />
-                      <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-                        <div
-                          className="bg-linear-to-r from-orange-500 to-rose-500 h-full transition-all duration-300"
-                          style={{ width: `${uploadProgress}%` }}
-                        />
-                      </div>
-                      <span className="text-[10px] font-bold text-orange-500 block">
-                        {uploadProgress}% Uploading...
+                    <div className="space-y-3 w-full flex flex-cols-center justify-center">
+                      <Spinner color="warning" size="md" />
+                      <span className="text-[11px] font-bold text-orange-500 block animate-pulse">
+                        Uploading Media Array Matrix to Cloud...
                       </span>
                     </div>
                   : <div className="space-y-2">
@@ -352,7 +432,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                         <FiUploadCloud className="w-5 h-5" />
                       </div>
                       <p className="text-xs font-extrabold text-zinc-800 dark:text-zinc-200">
-                        Drag & drop or browse image
+                        Select new file to swap image
                       </p>
                       <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium">
                         Supports PNG, JPG, JPEG up to 5MB
@@ -361,16 +441,17 @@ export default function AddRecipeForm({ loggedInUser }) {
                   }
                 </div>
 
-                <div className="relative aspect-video rounded-2xl border border-zinc-200/60 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950 overflow-hidden flex items-center justify-center">
+                <div className="relative aspect-video rounded-2xl border border-zinc-200/60 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950 overflow-hidden flex items-center justify-center shadow-inner">
                   {recipeImage ?
                     <Image
                       src={recipeImage}
-                      alt="Recipe Preview"
+                      alt="Recipe Target Preview"
                       fill
-                      className="object-cover rounded-2xl animate-fadeIn"
+                      priority
+                      className="object-cover rounded-2xl transition-transform duration-300 hover:scale-105"
                     />
                   : <span className="text-xs font-bold text-zinc-400 dark:text-zinc-600">
-                      Image preview will appear here
+                      No Media Registered
                     </span>
                   }
                 </div>
@@ -382,19 +463,14 @@ export default function AddRecipeForm({ loggedInUser }) {
               )}
             </div>
 
-            {/* 3. Core Meta Fields (Dropdowns and Inputs) */}
+            {/* 3. Dropdowns & Numerical Attribute Grid Fields */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Category Select */}
+              {/* Category Dropdown */}
               <div className="space-y-2">
                 <label className="text-xs font-black uppercase text-zinc-700 dark:text-zinc-300 tracking-wider">
                   Category <span className="text-rose-500">*</span>
                 </label>
-
                 <Select
-                  isRequired
-                  placeholder="Select Category"
-                  variant="bordered"
-                  radius="xl"
                   selectedKeys={category}
                   onSelectionChange={(keys) => {
                     setCategory(keys);
@@ -402,9 +478,10 @@ export default function AddRecipeForm({ loggedInUser }) {
                       setErrors((prev) => ({ ...prev, category: null }));
                   }}
                   aria-errormessage={errors.category}
+                  className="w-full text-zinc-800 dark:text-zinc-100"
                 >
-                  <Select.Trigger>
-                    <Select.Value />
+                  <Select.Trigger variant="bordered" radius="xl" isRequired>
+                    <Select.Value placeholder="Select Category" />
                     <Select.Indicator />
                   </Select.Trigger>
                   <Select.Popover>
@@ -418,10 +495,9 @@ export default function AddRecipeForm({ loggedInUser }) {
                         "Drinks",
                         "Vegetarian",
                         "Seafood",
-                      ].map((item) => (
-                        <ListBox.Item key={item} id={item} textValue={item}>
-                          {item}
-                          <ListBox.ItemIndicator />
+                      ].map((category) => (
+                        <ListBox.Item key={category} id={category}>
+                          <Label>{category}</Label>
                         </ListBox.Item>
                       ))}
                     </ListBox>
@@ -429,7 +505,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                 </Select>
               </div>
 
-              {/* Cuisine Type */}
+              {/* Cuisine Input */}
               <div className="space-y-2">
                 <label className="text-xs font-black uppercase text-zinc-700 dark:text-zinc-300 tracking-wider">
                   Cuisine Type <span className="text-rose-500">*</span>
@@ -437,7 +513,7 @@ export default function AddRecipeForm({ loggedInUser }) {
                 <Input
                   required
                   type="text"
-                  placeholder="e.g., Indian, Italian"
+                  placeholder="e.g., French, Mexican"
                   variant="bordered"
                   radius="xl"
                   value={cuisineType}
@@ -450,35 +526,30 @@ export default function AddRecipeForm({ loggedInUser }) {
                 />
               </div>
 
-              {/* Difficulty Level */}
+              {/* Difficulty Level Dropdown */}
               <div className="space-y-2">
                 <label className="text-xs font-black uppercase text-zinc-700 dark:text-zinc-300 tracking-wider">
                   Difficulty Level <span className="text-rose-500">*</span>
                 </label>
-
                 <Select
-                  placeholder="Select Difficulty"
-                  variant="bordered"
-                  radius="xl"
                   selectedKeys={difficultyLevel}
                   onSelectionChange={(keys) => {
                     setDifficultyLevel(keys);
                     if (errors.difficultyLevel)
                       setErrors((prev) => ({ ...prev, difficultyLevel: null }));
                   }}
-                  isRequired
                   aria-errormessage={errors.difficultyLevel}
+                  className="w-full text-zinc-800 dark:text-zinc-100"
                 >
-                  <Select.Trigger>
-                    <Select.Value />
+                  <Select.Trigger variant="bordered" radius="xl" isRequired>
+                    <Select.Value placeholder="Select Difficulty" />
                     <Select.Indicator />
                   </Select.Trigger>
                   <Select.Popover>
                     <ListBox>
                       {["Easy", "Medium", "Hard"].map((lvl) => (
-                        <ListBox.Item key={lvl} id={lvl} textValue={lvl}>
-                          {lvl}
-                          <ListBox.ItemIndicator />
+                        <ListBox.Item key={lvl} id={lvl}>
+                          <Label>{lvl}</Label>
                         </ListBox.Item>
                       ))}
                     </ListBox>
@@ -486,13 +557,14 @@ export default function AddRecipeForm({ loggedInUser }) {
                 </Select>
               </div>
 
-              {/* Preparation Time */}
+              {/* Prep Time Input */}
               <div className="space-y-2">
                 <label className="text-xs font-black uppercase text-zinc-700 dark:text-zinc-300 tracking-wider">
                   Preparation Time (Minutes){" "}
                   <span className="text-rose-500">*</span>
                 </label>
                 <Input
+                  required
                   type="number"
                   placeholder="Minutes"
                   variant="bordered"
@@ -503,7 +575,6 @@ export default function AddRecipeForm({ loggedInUser }) {
                     if (errors.preparationTime)
                       setErrors((prev) => ({ ...prev, preparationTime: null }));
                   }}
-                  required
                   aria-errormessage={errors.preparationTime}
                 />
               </div>
@@ -511,11 +582,11 @@ export default function AddRecipeForm({ loggedInUser }) {
 
             <Separator className="my-2 bg-zinc-200/60 dark:bg-zinc-800/60" />
 
-            {/* 4. Dynamic Ingredients List */}
+            {/* 4. Dynamic Ingredients System Map Array */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-black uppercase text-zinc-700 dark:text-zinc-300 tracking-wider flex items-center gap-2">
-                  <FiActivity className="text-orange-500" /> Ingredients{" "}
+                  <FiClock className="text-orange-500" /> Ingredients{" "}
                   <span className="text-rose-500">*</span>
                 </label>
                 <Button
@@ -568,7 +639,7 @@ export default function AddRecipeForm({ loggedInUser }) {
               </div>
             </div>
 
-            {/* 5. Instructions Area */}
+            {/* 5. Instructions Processing Area */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-black uppercase text-zinc-700 dark:text-zinc-300 tracking-wider flex items-center gap-2">
@@ -580,10 +651,10 @@ export default function AddRecipeForm({ loggedInUser }) {
                 </span>
               </div>
               <TextArea
-                placeholder="Cook chicken for 15 minutes&#10;Prepare the gravy&#10;Combine everything together"
+                placeholder="Cook chicken for 15 minutes&#10;Prepare the gravy matrix&#10;Serve hot"
                 variant="bordered"
                 radius="xl"
-                rows={4}
+                rows={5}
                 value={instructions}
                 onChange={(e) => {
                   setInstructions(e.target.value);
@@ -596,45 +667,20 @@ export default function AddRecipeForm({ loggedInUser }) {
               />
             </div>
 
-            {/* ================= UPGRADE CARD / SUBMIT TIERS ================= */}
-            <div className="pt-4">
-              {isLimitReached ?
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.97 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="bg-linear-to-br from-zinc-900 via-zinc-950 to-orange-950/40 dark:from-zinc-950 dark:via-zinc-950 dark:to-orange-950/20 border border-orange-500/20 rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl"
-                >
-                  <div className="space-y-2 text-center md:text-left">
-                    <div className="inline-flex items-center gap-2 bg-orange-500/10 text-orange-400 px-3 py-1 rounded-xl text-xs font-black uppercase tracking-wider">
-                      <FiZap className="w-3.5 h-3.5 fill-current" /> ⭐ Recipe
-                      Limit Reached
-                    </div>
-                    <h4 className="text-base sm:text-lg font-black text-white tracking-tight">
-                      Free members can create up to 2 recipes.
-                    </h4>
-                    <p className="text-xs text-zinc-400 font-medium max-w-xl">
-                      Upgrade to Premium to unlock unlimited recipe uploads,
-                      front-page algorithmic exposure, and custom cooking
-                      analytics.
-                    </p>
+            {/* ================= ACTIONS BUTTON TIERS ================= */}
+            <div className="flex flex-col sm:flex-rows-center gap-4 pt-4">
+              <Button
+                type="submit"
+                disabled={isSubmitting || imageUploading}
+                className="w-full sm:w-2/3 order-2 sm:order-1 bg-linear-to-r from-orange-500 to-rose-500 text-white font-black text-xs uppercase tracking-wider rounded-2xl h-12 shadow-lg shadow-orange-500/20 hover:opacity-95 disabled:opacity-50 transition-all active:scale-[0.99] flex items-center justify-center gap-2 mx-auto"
+              >
+                {isSubmitting ?
+                  <div className="flexs-center gap-2">
+                    <Spinner color="white" size="sm" />
+                    <span>Updating Recipe...</span>
                   </div>
-                  <Button className="w-full md:w-auto bg-linear-to-r from-orange-500 to-rose-500 text-white font-black text-xs uppercase tracking-wider rounded-2xl px-8 h-12 shadow-lg shadow-orange-500/20 active:scale-[0.96] transition-transform shrink-0">
-                    Upgrade Now
-                  </Button>
-                </motion.div>
-              : <Button
-                  type="submit"
-                  disabled={isSubmitting || imageUploading}
-                  className="w-full bg-linear-to-r from-orange-500 to-rose-500 text-white font-black text-xs uppercase tracking-wider rounded-2xl h-12 shadow-lg shadow-orange-500/20 hover:opacity-95 disabled:opacity-50 transition-all active:scale-[0.99]"
-                >
-                  {isSubmitting ?
-                    <div className="flex items-center gap-2">
-                      <Spinner color="white" size="sm" />
-                      <span>Publishing...</span>
-                    </div>
-                  : "Publish Recipe"}
-                </Button>
-              }
+                : "Update Recipe"}
+              </Button>
             </div>
           </form>
         </CardContent>
