@@ -26,6 +26,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { DeleteRecipe } from "./[updateRecipe]/DeleteRecipe";
 
 // Difficulty & Status Styling Maps
 const difficultyColorMap = {
@@ -41,6 +42,7 @@ const statusColorMap = {
 };
 
 const UserTotalRecipe = ({ initialRecipes = [], userId }) => {
+ 
   const router = useRouter();
   const [recipes, setRecipes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -57,6 +59,7 @@ const UserTotalRecipe = ({ initialRecipes = [], userId }) => {
   // Simulate Initial Load State for Skeleton
   useEffect(() => {
     if (initialRecipes) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setRecipes(initialRecipes);
       setIsLoading(false);
     }
@@ -313,8 +316,8 @@ const UserTotalRecipe = ({ initialRecipes = [], userId }) => {
                       >
                         <Table.Cell>
                           <Image
-                            src={recipe.recipeImage || "/placeholder.png"}
-                            alt={recipe.recipeName || "recipe image"}
+                            src={recipe?.recipeImage || "/placeholder.png"}
+                            alt={recipe?.recipeName || "recipe image"}
                             width={64}
                             height={64}
                             className="object-cover border border-default-200 rounded-xl"
@@ -322,7 +325,7 @@ const UserTotalRecipe = ({ initialRecipes = [], userId }) => {
                           />
                         </Table.Cell>
                         <Table.Cell className="font-bold text-default-800 dark:text-default-200">
-                          {recipe.recipeName}
+                          {recipe?.recipeName}
                         </Table.Cell>
                         <Table.Cell>
                           <Chip
@@ -331,11 +334,11 @@ const UserTotalRecipe = ({ initialRecipes = [], userId }) => {
                             color="warning"
                             className="font-medium capitalize"
                           >
-                            {recipe.category}
+                            {recipe?.category}
                           </Chip>
                         </Table.Cell>
                         <Table.Cell className="text-sm text-default-600 dark:text-default-300 font-medium">
-                          {recipe.cuisineType}
+                          {recipe?.cuisineType}
                         </Table.Cell>
                         <Table.Cell>
                           <Chip
@@ -405,15 +408,12 @@ const UserTotalRecipe = ({ initialRecipes = [], userId }) => {
                               </Link>
                             </Tooltip>
                             <Tooltip color="danger" content="Delete Recipe">
-                              <Button
-                                onClick={() => requestDelete(recipe)}
-                                isIconOnly
-                                size="sm"
-                                variant="light"
-                                className="text-default-400 hover:text-danger text-lg"
-                              >
-                                <FiTrash2 />
-                              </Button>
+                              <DeleteRecipe
+                                recipeId={recipe._id}
+                                recipeName={recipe?.recipeName}
+                              />
+
+                            
                             </Tooltip>
                           </div>
                         </Table.Cell>
@@ -520,7 +520,10 @@ const UserTotalRecipe = ({ initialRecipes = [], userId }) => {
                         Edit
                       </Button>
                     </Link>
-                    <Button
+
+                    <DeleteRecipe recipeId={recipe._id} />
+
+                    {/* <Button
                       onClick={() => requestDelete(recipe)}
                       size="sm"
                       variant="flat"
@@ -528,7 +531,7 @@ const UserTotalRecipe = ({ initialRecipes = [], userId }) => {
                       className="font-semibold rounded-xl w-full"
                     >
                       Delete
-                    </Button>
+                    </Button> */}
                   </div>
                 </motion.div>
               ))}

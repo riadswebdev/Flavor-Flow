@@ -35,10 +35,26 @@ export const updateRecipe = async (recipeId, updatedData) => {
       throw new Error("Failed to update recipe");
     }
     const data = await res.json();
-    console.log("Recipe updated successfully:", data);
     return data;
   } catch (error) {
     console.error("Error updating recipe:", error);
+    throw error;
+  }
+};
+
+export const deleteRecipe = async (recipeId) => {
+  try {
+    const res = await fetch(`${baseUrl}/api/recipes/${recipeId}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) {
+      throw new Error("Failed to delete recipe");
+    }
+    const data = await res.json();
+
+    return data;
+  } catch (error) {
+    console.error("Error deleting recipe:", error);
     throw error;
   }
 };

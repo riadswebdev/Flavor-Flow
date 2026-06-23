@@ -675,7 +675,7 @@ export default function UpdateRecipeForm({ recipeId }) {
                 className="w-full sm:w-2/3 order-2 sm:order-1 bg-linear-to-r from-orange-500 to-rose-500 text-white font-black text-xs uppercase tracking-wider rounded-2xl h-12 shadow-lg shadow-orange-500/20 hover:opacity-95 disabled:opacity-50 transition-all active:scale-[0.99] flex items-center justify-center gap-2 mx-auto"
               >
                 {isSubmitting ?
-                  <div className="flexs-center gap-2">
+                  <div className="flex items-center gap-2">
                     <Spinner color="white" size="sm" />
                     <span>Updating Recipe...</span>
                   </div>
