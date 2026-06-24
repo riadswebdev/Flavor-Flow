@@ -108,7 +108,6 @@ export const toggleFavoriteRecipe = async (recipeId, favRecipe, action) => {
 };
 
 export const reportRecipe = async (recipeReportData) => {
-  console.log("Reporting recipe with data:", recipeReportData);
   try {
     const res = await fetch(`${baseUrl}/api/recipes/report`, {
       method: "POST",
@@ -117,7 +116,7 @@ export const reportRecipe = async (recipeReportData) => {
       },
       body: JSON.stringify(recipeReportData),
     });
-    console.log(res)
+
     if (!res.ok) {
       throw new Error("Failed to report recipe");
     }

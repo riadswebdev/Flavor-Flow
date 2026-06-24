@@ -41,7 +41,6 @@ export const getFavoriteRecipesStatus = async (recipeId, userId) => {
 export const getFavoriteRecipes = async (userId) => {
   const res = await fetch(`${baseUrl}/api/user/${userId}/favorite-recipes`);
   const data = await res.json();
-  console.log("Fetched Favorite Recipes:", data.favoriteRecipes);
   return data.favoriteRecipes;
 };
 
@@ -49,3 +48,11 @@ export const getFeatureAndPopularRecipe = async () => {
   const res = await fetch(`${baseUrl}/api/feature&popularRecipe`);
   return await res.json();
 };
+
+export const getSubscriptionsPlans = async () => {
+  const res = await fetch(`${baseUrl}/api/subscription-plans`);
+  console.log("res", res);
+  const data = await res.json();
+  console.log("data", data);
+  return data;
+}
