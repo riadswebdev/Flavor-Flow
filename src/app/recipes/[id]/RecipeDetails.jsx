@@ -16,13 +16,16 @@ import {
   CreditCard,
   X,
 } from "lucide-react";
-import { likeToggle, toggleFavoriteRecipe } from "@/lib/actions/recipe";
+import {
+  likeToggle,
+  reportRecipe,
+  toggleFavoriteRecipe,
+} from "@/lib/actions/recipe";
 import {
   Button,
+  FieldError,
+  Label,
   Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
   Radio,
   RadioGroup,
   Separator,
@@ -36,17 +39,25 @@ export default function RecipeDetails({
   likeStatus,
   favoriteRecipesStatus,
 }) {
-  // States for interactive features
+  // States for like feature
   const [likesCount, setLikesCount] = useState(recipeData.likesCount);
   const [isLiked, setIsLiked] = useState(likeStatus?.isLiked || false);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
+
+  // States for favorite feature
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [isFavorite, setIsFavorite] = useState(
     favoriteRecipesStatus?.isFavorite || false,
   );
-  const [favoriteLoading, setFavoriteLoading] = useState(false);
-  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const [reportReason, setReportReason] = useState("");
+
+  // States for Stripe Checkout
   const [isPurchasing, setIsPurchasing] = useState(false);
+
+  // Report modal states
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [selectedReason, setSelectedReason] = useState("");
+  const [isInvalid, setIsInvalid] = useState(false);
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
 
   const apiBaseUrl =
     process.env.NEXT_PUBLIC_RECIPES_API_URL || "http://localhost:8000";
@@ -66,9 +77,13 @@ export default function RecipeDetails({
       const data = await likeToggle(recipeData._id, currentUser.id, action);
       if (!data.success) {
         setIsLiked(!newLikedState);
+        toast.error("Failed to update like. Please try again.");
         setLikesCount((prev) => (newLikedState ? prev - 1 : prev + 1));
       } else {
         setLikesCount(data.likesCount);
+        toast.success(
+          `Recipe ${newLikedState ? "liked" : "unliked"} successfully!`,
+        );
       }
     } catch (error) {
       console.error("Error updating like:", error);
@@ -108,14 +123,15 @@ export default function RecipeDetails({
         favoriteRecipes,
         action,
       );
-      console.log("Toggle Favorite Response:", data);
       if (!data.success) {
         setIsFavorite(!newFavoriteState);
       }
+      toast.success(
+        `Recipe ${newFavoriteState ? "added to" : "removed from"} favorites!`,
+      );
       setIsFavorite(newFavoriteState);
     } catch (error) {
-      console.log("Error toggling favorite:", error);
-      console.error("Error updating favorite");
+      toast.error("Error updating favorite");
     } finally {
       setFavoriteLoading(false);
     }
@@ -123,15 +139,40 @@ export default function RecipeDetails({
   };
 
   // 3. Report Submit Handler
-  const handleReportSubmit = (e) => {
-    e.preventDefault();
-    console.log("Reported Reason:", reportReason);
+  const handleReasonChange = (value) => {
+    setSelectedReason(value);
+    if (isInvalid) setIsInvalid(false);
+  };
+  const handleSubmitReport = async () => {
+    if (!selectedReason) {
+      return;
+    }
 
-    setIsReportModalOpen(false);
-    setReportReason("");
-    toast.success(
-      "Thank you for your report. We will review this recipe shortly.",
-    );
+    setIsSubmittingReport(true);
+
+    const reportData = {
+      recipeId: recipeData?._id,
+      reporterEmail: currentUser?.email || "anonymous@flavorflow.com",
+      reason: selectedReason,
+      status: "Pending",
+      createdAt: new Date().toISOString(),
+    };
+    try {
+      const response = await reportRecipe(reportData);
+      if (response.success) {
+        setSelectedReason("");
+        setIsInvalid(false);
+        toast.success(
+          "Thank you for your report. We will review this recipe shortly.",
+        );
+        setIsReportModalOpen(false); // Closes modal programmatically on success
+      }
+    } catch (error) {
+      console.error("Error submitting recipe report:", error);
+      toast.error("Failed to submit the report. Please try again.");
+    } finally {
+      setIsSubmittingReport(false);
+    }
   };
 
   // 4. Stripe Checkout Payment Handler
@@ -396,106 +437,84 @@ export default function RecipeDetails({
       </div>
 
       {/* ================= HEROUI PREMIUM REPORT MODAL ================= */}
-      <Modal
-        isOpen={isReportModalOpen}
-        onOpenChange={setIsReportModalOpen}
-        backdrop="blur"
-        motionProps={{
-          variants: {
-            enter: {
-              y: 0,
-              opacity: 1,
-              transition: { duration: 0.3, ease: "easeOut" },
-            },
-            exit: {
-              y: 20,
-              opacity: 0,
-              transition: { duration: 0.2, ease: "easeIn" },
-            },
-          },
-        }}
-        classNames={{
-          backdrop: "bg-black/30 backdrop-blur-md",
-          base: "border border-default-200/60 bg-white/80 dark:bg-[#131b2e]/90 backdrop-blur-xl rounded-3xl max-w-md shadow-2xl overflow-hidden text-neutral-800 dark:text-neutral-200",
-          closeButton:
-            "hover:bg-default-100 active:bg-default-200 transition-colors rounded-full top-4 right-4",
-        }}
-      >
-        <Modal.Container>
-          {(onClose) => (
-            <>
-              {/* Modal Header */}
-              <ModalHeader className="flex flex-col gap-1 pt-6 px-6">
-                <div className="flex items-center gap-2 text-rose-500 text-xl font-extrabold tracking-tight">
+      <Modal isOpen={isReportModalOpen} onOpenChange={setIsReportModalOpen}>
+        <Modal.Backdrop className="bg-black/30 backdrop-blur-md">
+          <Modal.Container>
+            <Modal.Dialog className="border border-default-200/60 bg-white/80 dark:bg-[#131b2e]/90 backdrop-blur-xl rounded-3xl max-w-md shadow-2xl overflow-hidden text-neutral-800 dark:text-neutral-200 w-full mx-4">
+              <Modal.CloseTrigger className="hover:bg-default-100 active:bg-default-200 transition-colors rounded-full top-4 right-4 text-neutral-400 absolute" />
+
+              <Modal.Header className="flex flex-col gap-1 pt-6 px-6">
+                <Modal.Heading className="flex items-center gap-2 text-rose-500 text-xl font-extrabold tracking-tight">
                   <span>🚩</span>
-                  <h2>Report Recipe</h2>
-                </div>
+                  <span>Report Recipe</span>
+                </Modal.Heading>
                 <p className="text-default-500 dark:text-neutral-400 font-normal text-xs sm:text-sm mt-1 leading-normal">
                   Help us keep FlavorFlow safe by reporting inappropriate
                   recipes.
                 </p>
-              </ModalHeader>
+              </Modal.Header>
 
               <Separator className="my-2 opacity-60" />
 
               {/* Modal Body with Radio Options */}
-              <ModalBody className="py-4 px-6">
+              <Modal.Body className="py-4 px-6">
                 <RadioGroup
-                  label="Select a reason for reporting:"
                   value={selectedReason}
-                  onValueChange={handleReasonChange}
+                  onChange={handleReasonChange}
                   isInvalid={isInvalid}
-                  errorMessage={
-                    isInvalid ? "Please select a reason before submitting." : ""
-                  }
-                  classNames={{
-                    label:
-                      "text-default-700 dark:text-default-300 font-semibold text-sm mb-2",
-                    errorMessage:
-                      "text-danger text-xs font-medium mt-1 animate-pulse",
-                  }}
+                  className="flex flex-col gap-3 w-full"
                 >
-                  <Radio
-                    value="Spam"
-                    classNames={{
-                      base: "inline-flex m-0 bg-default-100/50 dark:bg-[#1a233d]/50 hover:bg-default-100 dark:hover:bg-zinc-800 max-w-full items-center justify-start cursor-pointer rounded-2xl gap-2 p-3 border border-transparent data-[selected=true]:border-rose-500/50 transition-all w-full",
-                      label:
-                        "text-default-800 dark:text-default-200 text-sm font-medium",
-                    }}
-                  >
-                    Spam
+                  <Label className="text-default-700 dark:text-default-300 font-semibold text-sm mb-1">
+                    Select a reason for reporting:
+                  </Label>
+
+                  {/* Spam Option */}
+                  <Radio value="Spam" className="w-full">
+                    <Radio.Content className="inline-flex m-0 bg-default-100/50 dark:bg-[#1a233d]/50 hover:bg-default-100 dark:hover:bg-zinc-800 max-w-full items-center justify-start cursor-pointer rounded-2xl gap-2 p-3 border border-transparent data-[selected=true]:border-rose-500/50 transition-all w-full text-default-800 dark:text-default-200 text-sm font-medium">
+                      <Radio.Control>
+                        <Radio.Indicator />
+                      </Radio.Control>
+                      Spam
+                    </Radio.Content>
                   </Radio>
-                  <Radio
-                    value="Offensive Content"
-                    classNames={{
-                      base: "inline-flex m-0 bg-default-100/50 dark:bg-[#1a233d]/50 hover:bg-default-100 dark:hover:bg-zinc-800 max-w-full items-center justify-start cursor-pointer rounded-2xl gap-2 p-3 border border-transparent data-[selected=true]:border-rose-500/50 transition-all w-full",
-                      label:
-                        "text-default-800 dark:text-default-200 text-sm font-medium",
-                    }}
-                  >
-                    Offensive Content
+
+                  {/* Offensive Content Option */}
+                  <Radio value="Offensive Content" className="w-full">
+                    <Radio.Content className="inline-flex m-0 bg-default-100/50 dark:bg-[#1a233d]/50 hover:bg-default-100 dark:hover:bg-zinc-800 max-w-full items-center justify-start cursor-pointer rounded-2xl gap-2 p-3 border border-transparent data-[selected=true]:border-rose-500/50 transition-all w-full text-default-800 dark:text-default-200 text-sm font-medium">
+                      <Radio.Control>
+                        <Radio.Indicator />
+                      </Radio.Control>
+                      Offensive Content
+                    </Radio.Content>
                   </Radio>
-                  <Radio
-                    value="Copyright Issue"
-                    classNames={{
-                      base: "inline-flex m-0 bg-default-100/50 dark:bg-[#1a233d]/50 hover:bg-default-100 dark:hover:bg-zinc-800 max-w-full items-center justify-start cursor-pointer rounded-2xl gap-2 p-3 border border-transparent data-[selected=true]:border-rose-500/50 transition-all w-full",
-                      label:
-                        "text-default-800 dark:text-default-200 text-sm font-medium",
-                    }}
-                  >
-                    Copyright Issue
+
+                  {/* Copyright Issue Option */}
+                  <Radio value="Copyright Issue" className="w-full">
+                    <Radio.Content className="inline-flex m-0 bg-default-100/50 dark:bg-[#1a233d]/50 hover:bg-default-100 dark:hover:bg-zinc-800 max-w-full items-center justify-start cursor-pointer rounded-2xl gap-2 p-3 border border-transparent data-[selected=true]:border-rose-500/50 transition-all w-full text-default-800 dark:text-default-200 text-sm font-medium">
+                      <Radio.Control>
+                        <Radio.Indicator />
+                      </Radio.Control>
+                      Copyright Issue
+                    </Radio.Content>
                   </Radio>
+
+                  {/* Error Message */}
+                  {isInvalid && (
+                    <FieldError className="text-danger text-xs font-medium mt-1 animate-pulse">
+                      Please select a reason before submitting.
+                    </FieldError>
+                  )}
                 </RadioGroup>
-              </ModalBody>
+              </Modal.Body>
 
               {/* Modal Footer */}
-              <ModalFooter className="pb-6 pt-2 px-6 gap-3">
+              <Modal.Footer className="pb-6 pt-2 px-6 gap-3 flex">
                 <Button
                   variant="bordered"
                   onPress={() => {
                     setSelectedReason("");
                     setIsInvalid(false);
-                    onClose();
+                    setIsReportModalOpen(false);
                   }}
                   disabled={isSubmittingReport}
                   className="rounded-xl font-semibold border-default-300 text-default-700 dark:text-default-300 hover:bg-default-100 dark:hover:bg-zinc-800 transition-colors flex-1"
@@ -504,7 +523,7 @@ export default function RecipeDetails({
                 </Button>
                 <Button
                   color="danger"
-                  onPress={() => handleSubmitReport(onClose)}
+                  onPress={handleSubmitReport}
                   disabled={isSubmittingReport}
                   className="bg-linear-to-r from-red-500 to-rose-600 text-white font-bold rounded-xl shadow-lg shadow-red-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex-1"
                   startContent={isSubmittingReport ? null : <FiAlertTriangle />}
@@ -516,10 +535,10 @@ export default function RecipeDetails({
                     </div>
                   : "Submit Report"}
                 </Button>
-              </ModalFooter>
-            </>
-          )}
-        </Modal.Container>
+              </Modal.Footer>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
       </Modal>
     </div>
   );

@@ -79,7 +79,6 @@ export const deleteFavRecipe = async (recipeId, userId) => {
   }
 };
 
-
 export const likeToggle = async (recipeId, userId, action) => {
   const res = await fetch(`${baseUrl}/api/recipes/${recipeId}/like`, {
     method: "PATCH",
@@ -106,4 +105,27 @@ export const toggleFavoriteRecipe = async (recipeId, favRecipe, action) => {
   });
 
   return await res.json();
+};
+
+export const reportRecipe = async (recipeReportData) => {
+  console.log("Reporting recipe with data:", recipeReportData);
+  try {
+    const res = await fetch(`${baseUrl}/api/recipes/report`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(recipeReportData),
+    });
+    console.log(res)
+    if (!res.ok) {
+      throw new Error("Failed to report recipe");
+    }
+    const data = await res.json();
+
+    return data;
+  } catch (error) {
+    console.error("Error reporting recipe:", error);
+    throw error;
+  }
 };
