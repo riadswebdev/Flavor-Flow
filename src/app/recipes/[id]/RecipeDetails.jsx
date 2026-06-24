@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { FiAlertTriangle } from "react-icons/fi";
 import {
   Heart,
   Flag,
@@ -15,13 +16,34 @@ import {
   CreditCard,
   X,
 } from "lucide-react";
+import { likeToggle, toggleFavoriteRecipe } from "@/lib/actions/recipe";
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Radio,
+  RadioGroup,
+  Separator,
+  Spinner,
+  toast,
+} from "@heroui/react";
 
-export default function RecipeDetails({ recipeData, currentUser, likeStatus }) {
+export default function RecipeDetails({
+  recipeData,
+  currentUser,
+  likeStatus,
+  favoriteRecipesStatus,
+}) {
   // States for interactive features
   const [likesCount, setLikesCount] = useState(recipeData.likesCount);
   const [isLiked, setIsLiked] = useState(likeStatus?.isLiked || false);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(
+    favoriteRecipesStatus?.isFavorite || false,
+  );
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportReason, setReportReason] = useState("");
   const [isPurchasing, setIsPurchasing] = useState(false);
@@ -31,31 +53,17 @@ export default function RecipeDetails({ recipeData, currentUser, likeStatus }) {
 
   // 1. Like / Unlike Button Handler with Optimistic UI Updates
   const handleLikeToggle = async () => {
-    if (isLikeLoading || !currentUser?.id) return;
-
+    if (isLikeLoading || !currentUser?.id) {
+      return toast.error("Please log in to like this recipe.");
+    }
     const newLikedState = !isLiked;
     const action = newLikedState ? "like" : "unlike";
-
     // ২. Optimistic UI Update
     setIsLiked(newLikedState);
     setLikesCount((prev) => (newLikedState ? prev + 1 : prev - 1));
     setIsLikeLoading(true);
-
     try {
-      const res = await fetch(
-        `${apiBaseUrl}/api/recipes/${recipeData._id}/like`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action,
-            userId: currentUser.id,
-          }),
-        },
-      );
-
-      const data = await res.json();
-
+      const data = await likeToggle(recipeData._id, currentUser.id, action);
       if (!data.success) {
         setIsLiked(!newLikedState);
         setLikesCount((prev) => (newLikedState ? prev - 1 : prev + 1));
@@ -73,9 +81,45 @@ export default function RecipeDetails({ recipeData, currentUser, likeStatus }) {
   };
 
   // 2. Favorite Button Handler
-  const handleFavoriteToggle = () => {
+  const handleFavoriteToggle = async () => {
+    if (!currentUser?.id) {
+      toast.error("Please log in to add this recipe to your favorites.");
+      return;
+    }
+    const newFavoriteState = !isFavorite;
+    const action = newFavoriteState ? "favorite" : "unfavorite";
+    setIsFavorite(newFavoriteState);
+    setFavoriteLoading(true);
+
+    const favoriteRecipes = {
+      userId: currentUser?.id,
+      userEmail: currentUser?.email,
+      recipeId: recipeData?._id,
+      recipeName: recipeData?.recipeName,
+      recipeImage: recipeData?.recipeImage,
+      category: recipeData?.category,
+      authorName: recipeData?.author?.name,
+      addedAt: new Date().toISOString(),
+    };
+
+    try {
+      const data = await toggleFavoriteRecipe(
+        recipeData._id,
+        favoriteRecipes,
+        action,
+      );
+      console.log("Toggle Favorite Response:", data);
+      if (!data.success) {
+        setIsFavorite(!newFavoriteState);
+      }
+      setIsFavorite(newFavoriteState);
+    } catch (error) {
+      console.log("Error toggling favorite:", error);
+      console.error("Error updating favorite");
+    } finally {
+      setFavoriteLoading(false);
+    }
     setIsFavorite(!isFavorite);
-    // LocalStorage বা ব্যাকএন্ডে সেভ করার লজিক এখানে হবে
   };
 
   // 3. Report Submit Handler
@@ -85,7 +129,9 @@ export default function RecipeDetails({ recipeData, currentUser, likeStatus }) {
 
     setIsReportModalOpen(false);
     setReportReason("");
-    alert("Thank you for your report. We will review this recipe shortly.");
+    toast.success(
+      "Thank you for your report. We will review this recipe shortly.",
+    );
   };
 
   // 4. Stripe Checkout Payment Handler
@@ -227,6 +273,7 @@ export default function RecipeDetails({ recipeData, currentUser, likeStatus }) {
               <div className="grid grid-cols-2 gap-2">
                 {/* Favorite Toggle Button */}
                 <button
+                  disabled={favoriteLoading}
                   onClick={handleFavoriteToggle}
                   className={`py-2.5 px-4 rounded-xl border font-semibold text-xs flex items-center justify-center gap-1.5 transition-all ${
                     isFavorite ?
@@ -345,56 +392,135 @@ export default function RecipeDetails({ recipeData, currentUser, likeStatus }) {
               {recipeData?.author?.email}
             </p>
           </div>
-          
         </div>
       </div>
 
-      {/* ================= REPORT MODAL COMPONENT ================= */}
-      {isReportModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#131b2e] border border-neutral-200 dark:border-neutral-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
-            <button
-              onClick={() => setIsReportModalOpen(false)}
-              className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
-            >
-              <X size={20} />
-            </button>
+      {/* ================= HEROUI PREMIUM REPORT MODAL ================= */}
+      <Modal
+        isOpen={isReportModalOpen}
+        onOpenChange={setIsReportModalOpen}
+        backdrop="blur"
+        motionProps={{
+          variants: {
+            enter: {
+              y: 0,
+              opacity: 1,
+              transition: { duration: 0.3, ease: "easeOut" },
+            },
+            exit: {
+              y: 20,
+              opacity: 0,
+              transition: { duration: 0.2, ease: "easeIn" },
+            },
+          },
+        }}
+        classNames={{
+          backdrop: "bg-black/30 backdrop-blur-md",
+          base: "border border-default-200/60 bg-white/80 dark:bg-[#131b2e]/90 backdrop-blur-xl rounded-3xl max-w-md shadow-2xl overflow-hidden text-neutral-800 dark:text-neutral-200",
+          closeButton:
+            "hover:bg-default-100 active:bg-default-200 transition-colors rounded-full top-4 right-4",
+        }}
+      >
+        <Modal.Container>
+          {(onClose) => (
+            <>
+              {/* Modal Header */}
+              <ModalHeader className="flex flex-col gap-1 pt-6 px-6">
+                <div className="flex items-center gap-2 text-rose-500 text-xl font-extrabold tracking-tight">
+                  <span>🚩</span>
+                  <h2>Report Recipe</h2>
+                </div>
+                <p className="text-default-500 dark:text-neutral-400 font-normal text-xs sm:text-sm mt-1 leading-normal">
+                  Help us keep FlavorFlow safe by reporting inappropriate
+                  recipes.
+                </p>
+              </ModalHeader>
 
-            <h3 className="text-xl font-bold mb-2 flex items-center gap-2 text-rose-500">
-              <Flag size={20} /> Report Content
-            </h3>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-4">
-              Please clarify what issue you found regarding this recipe entry.
-            </p>
+              <Separator className="my-2 opacity-60" />
 
-            <form onSubmit={handleReportSubmit} className="space-y-4">
-              <textarea
-                required
-                rows={4}
-                value={reportReason}
-                onChange={(e) => setReportReason(e.target.value)}
-                placeholder="Write your details report message here..."
-                className="w-full p-3 text-sm bg-neutral-100 dark:bg-[#1a233d]/70 border border-neutral-200 dark:border-neutral-800 rounded-xl focus:outline-none focus:border-rose-500 dark:text-white"
-              />
-              <div className="flex justify-end gap-2 text-xs font-bold uppercase tracking-wider">
-                <button
-                  type="button"
-                  onClick={() => setIsReportModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800"
+              {/* Modal Body with Radio Options */}
+              <ModalBody className="py-4 px-6">
+                <RadioGroup
+                  label="Select a reason for reporting:"
+                  value={selectedReason}
+                  onValueChange={handleReasonChange}
+                  isInvalid={isInvalid}
+                  errorMessage={
+                    isInvalid ? "Please select a reason before submitting." : ""
+                  }
+                  classNames={{
+                    label:
+                      "text-default-700 dark:text-default-300 font-semibold text-sm mb-2",
+                    errorMessage:
+                      "text-danger text-xs font-medium mt-1 animate-pulse",
+                  }}
+                >
+                  <Radio
+                    value="Spam"
+                    classNames={{
+                      base: "inline-flex m-0 bg-default-100/50 dark:bg-[#1a233d]/50 hover:bg-default-100 dark:hover:bg-zinc-800 max-w-full items-center justify-start cursor-pointer rounded-2xl gap-2 p-3 border border-transparent data-[selected=true]:border-rose-500/50 transition-all w-full",
+                      label:
+                        "text-default-800 dark:text-default-200 text-sm font-medium",
+                    }}
+                  >
+                    Spam
+                  </Radio>
+                  <Radio
+                    value="Offensive Content"
+                    classNames={{
+                      base: "inline-flex m-0 bg-default-100/50 dark:bg-[#1a233d]/50 hover:bg-default-100 dark:hover:bg-zinc-800 max-w-full items-center justify-start cursor-pointer rounded-2xl gap-2 p-3 border border-transparent data-[selected=true]:border-rose-500/50 transition-all w-full",
+                      label:
+                        "text-default-800 dark:text-default-200 text-sm font-medium",
+                    }}
+                  >
+                    Offensive Content
+                  </Radio>
+                  <Radio
+                    value="Copyright Issue"
+                    classNames={{
+                      base: "inline-flex m-0 bg-default-100/50 dark:bg-[#1a233d]/50 hover:bg-default-100 dark:hover:bg-zinc-800 max-w-full items-center justify-start cursor-pointer rounded-2xl gap-2 p-3 border border-transparent data-[selected=true]:border-rose-500/50 transition-all w-full",
+                      label:
+                        "text-default-800 dark:text-default-200 text-sm font-medium",
+                    }}
+                  >
+                    Copyright Issue
+                  </Radio>
+                </RadioGroup>
+              </ModalBody>
+
+              {/* Modal Footer */}
+              <ModalFooter className="pb-6 pt-2 px-6 gap-3">
+                <Button
+                  variant="bordered"
+                  onPress={() => {
+                    setSelectedReason("");
+                    setIsInvalid(false);
+                    onClose();
+                  }}
+                  disabled={isSubmittingReport}
+                  className="rounded-xl font-semibold border-default-300 text-default-700 dark:text-default-300 hover:bg-default-100 dark:hover:bg-zinc-800 transition-colors flex-1"
                 >
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2.5 rounded-xl bg-rose-500 text-white shadow-lg shadow-rose-500/20"
+                </Button>
+                <Button
+                  color="danger"
+                  onPress={() => handleSubmitReport(onClose)}
+                  disabled={isSubmittingReport}
+                  className="bg-linear-to-r from-red-500 to-rose-600 text-white font-bold rounded-xl shadow-lg shadow-red-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex-1"
+                  startContent={isSubmittingReport ? null : <FiAlertTriangle />}
                 >
-                  Submit Report
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+                  {isSubmittingReport ?
+                    <div className="flex items-center gap-2">
+                      <Spinner size="sm" color="white" />
+                      <span>Submitting...</span>
+                    </div>
+                  : "Submit Report"}
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </Modal.Container>
+      </Modal>
     </div>
   );
 }

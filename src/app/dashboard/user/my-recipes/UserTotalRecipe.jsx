@@ -18,7 +18,6 @@ import {
   FiChevronDown,
   FiEye,
   FiEdit2,
-  FiTrash2,
   FiHeart,
   FiCalendar,
   FiInbox,
@@ -42,7 +41,6 @@ const statusColorMap = {
 };
 
 const UserTotalRecipe = ({ initialRecipes = [], userId }) => {
- 
   const router = useRouter();
   const [recipes, setRecipes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -412,8 +410,6 @@ const UserTotalRecipe = ({ initialRecipes = [], userId }) => {
                                 recipeId={recipe._id}
                                 recipeName={recipe?.recipeName}
                               />
-
-                            
                             </Tooltip>
                           </div>
                         </Table.Cell>
@@ -521,17 +517,10 @@ const UserTotalRecipe = ({ initialRecipes = [], userId }) => {
                       </Button>
                     </Link>
 
-                    <DeleteRecipe recipeId={recipe._id} />
-
-                    {/* <Button
-                      onClick={() => requestDelete(recipe)}
-                      size="sm"
-                      variant="flat"
-                      color="danger"
-                      className="font-semibold rounded-xl w-full"
-                    >
-                      Delete
-                    </Button> */}
+                    <DeleteRecipe
+                      recipeId={recipe._id}
+                      recipeName={recipe?.recipeName}
+                    />
                   </div>
                 </motion.div>
               ))}

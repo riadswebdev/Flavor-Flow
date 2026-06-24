@@ -1,4 +1,4 @@
-import { getLikeStatus, getSingleRecipe } from "@/lib/api/recipes";
+import { getFavoriteRecipesStatus, getLikeStatus, getSingleRecipe } from "@/lib/api/recipes";
 import RecipeDetails from "./RecipeDetails";
 import { getUserSession } from "@/lib/core/session";
 
@@ -7,7 +7,11 @@ export default async function RecipePage({ params }) {
   const user = await getUserSession();
   const recipe = await getSingleRecipe(id);
   const likeStatus = await getLikeStatus(recipe._id, user?.id);
-
+  const favoriteRecipesStatus = await getFavoriteRecipesStatus(
+    recipe._id,
+    user?.id,
+  );
+  console.log("Favorite Recipes Status:", favoriteRecipesStatus);
   if (!recipe) {
     return (
       <div className="min-h-screen bg-neutral-50 dark:bg-[#0b0f19] flex items-center justify-center text-center p-4">
@@ -29,6 +33,7 @@ export default async function RecipePage({ params }) {
       currentUser={user}
       likeStatus={likeStatus}
       recipeData={recipe}
+      favoriteRecipesStatus={favoriteRecipesStatus}
     />
   );
 }

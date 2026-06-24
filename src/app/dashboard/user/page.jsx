@@ -1,5 +1,8 @@
-import { Card, CardContent, Chip, Button } from "@heroui/react";
+import { getFavoriteRecipes, getRecipesByUserId } from "@/lib/api/recipes";
+import { getUserSession } from "@/lib/core/session";
+import { redirect } from "next/navigation";
 import { FiArrowRight } from "react-icons/fi";
+import { Card, CardContent, Chip } from "@heroui/react";
 import {
   FaBookOpen,
   FaHeart,
@@ -8,11 +11,7 @@ import {
   FaUtensils,
   FaClock,
 } from "react-icons/fa";
-
-
-import { getRecipesByUserId } from "@/lib/api/recipes";
-import { getUserSession } from "@/lib/core/session";
-import { redirect } from "next/navigation";
+import Link from "next/link";
 
 const UserDashboard = async () => {
   const user = await getUserSession();
@@ -20,6 +19,7 @@ const UserDashboard = async () => {
   if (!user) {
     redirect("/login");
   }
+  const totalFavRecipes = await getFavoriteRecipes(user.id);
 
   const usersRecipes = await getRecipesByUserId(user.id);
 
@@ -33,7 +33,7 @@ const UserDashboard = async () => {
   );
 
   // Replace with API later
-  const totalFavorites = 5;
+  const totalFavorites = totalFavRecipes?.length || 0;
 
   // Replace with DB value later
   const isPremium = user?.isPremium || false;
@@ -45,7 +45,7 @@ const UserDashboard = async () => {
       icon: <FaBookOpen className="text-3xl text-orange-500" />,
       hasButton: true,
       buttonText: "View Recipes",
-      link: "/dashboard/my-recipes",
+      link: "/dashboard/user/my-recipes",
     },
     {
       title: "Total Likes",
@@ -59,7 +59,7 @@ const UserDashboard = async () => {
       icon: <FaRegBookmark className="text-3xl text-yellow-500" />,
       hasButton: true,
       buttonText: "View Favorites",
-      link: "/dashboard/favorites",
+      link: "/dashboard/user/favorites",
     },
   ];
 
@@ -115,8 +115,7 @@ const UserDashboard = async () => {
               </div>
 
               {item.hasButton ?
-                <Button
-               
+                <Link
                   href={item.link}
                   size="sm"
                   variant="flat"
@@ -125,7 +124,7 @@ const UserDashboard = async () => {
                 >
                   <span>{item.buttonText}</span>
                   <FiArrowRight className="text-base" />
-                </Button>
+                </Link>
               : <div className="h-8" />}
             </CardContent>
           </Card>

@@ -278,7 +278,7 @@ export default function Navbar() {
                 </div>
                 <div>
                   <Link
-                    href="/dashboard"
+                    href="/dashboard/user"
                     onClick={() => setIsMenuOpen(false)}
                     className="flex items-center gap-3 w-full py-3 px-4 rounded-xl text-base font-medium text-foreground/70 hover:bg-default-100"
                   >
