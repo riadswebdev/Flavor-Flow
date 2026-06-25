@@ -1,6 +1,7 @@
 "use client";
 
 import { deleteFavRecipe } from "@/lib/actions/recipe";
+import { getUserSession } from "@/lib/core/session";
 import { AlertDialog, Button, toast } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { FiTrash2 } from "react-icons/fi";
@@ -9,7 +10,9 @@ export function DeleteFavRecipe({ recipeId, recipeName = "this recipe" }) {
   const router = useRouter();
 
   const handleDelete = async () => {
-    const result = await deleteFavRecipe(recipeId);
+    const user = await getUserSession();
+    const userId = user?.id;
+    const result = await deleteFavRecipe(recipeId, userId);
     if (result.success) {
       toast.success("Recipe deleted successfully");
       router.refresh();

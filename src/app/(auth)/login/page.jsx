@@ -8,6 +8,10 @@ import { UtensilsCrossed, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Icon } from "@iconify/react";
 
 export default function LoginPage() {
+  useEffect(() => {
+    document.title = "Flavor Flow - Login";
+  }, []);
+
   const router = useRouter();
 
   const [email, setEmail] = useState("");

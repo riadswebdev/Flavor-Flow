@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { BiSolidDish } from "react-icons/bi";
@@ -14,6 +13,9 @@ import {
 import { useRouter } from "next/navigation";
 
 export default function Error({ error, reset }) {
+    useEffect(() => {
+      document.title = "Flavor Flow - Error";
+    }, []);
   const router = useRouter();
   const [showDetails, setShowDetails] = useState(false);
 
@@ -33,7 +35,7 @@ export default function Error({ error, reset }) {
       >
         <Card
           className="
-            bg-white/60 dark:bg-default-50/40
+            bg-white/60 dark:bg-zinc-900
             backdrop-blur-xl
             border border-white/40 dark:border-default-100/10
             shadow-2xl rounded-3xl overflow-hidden p-2

@@ -1,130 +1,28 @@
 "use server";
-const baseUrl = process.env.NEXT_PUBLIC_RECIPES_API_URL;
-export const publishRecipe = async (recipeData) => {
-  try {
-    const res = await fetch(`${baseUrl}/api/recipes/publish`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(recipeData),
-    });
-    if (!res.ok) {
-      throw new Error("Failed to publish recipe");
-    }
-    const data = await res.json();
 
-    return data;
-  } catch (error) {
-    console.error("Error publishing recipe:", error);
-    throw error;
-  }
-};
+import { apiClient } from "../server";
 
-export const updateRecipe = async (recipeId, updatedData) => {
-  try {
-    const res = await fetch(`${baseUrl}/api/recipes/${recipeId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedData),
-    });
+export const publishRecipe = async (recipeData) =>
+  apiClient(`/api/recipes/publish`, "POST", recipeData);
 
-    if (!res.ok) {
-      throw new Error("Failed to update recipe");
-    }
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    console.error("Error updating recipe:", error);
-    throw error;
-  }
-};
+export const updateRecipe = async (recipeId, updatedData) =>
+  apiClient(`/api/recipes/${recipeId}`, "PATCH", updatedData);
 
-export const deleteRecipe = async (recipeId) => {
-  try {
-    const res = await fetch(`${baseUrl}/api/recipes/${recipeId}`, {
-      method: "DELETE",
-    });
-    if (!res.ok) {
-      throw new Error("Failed to delete recipe");
-    }
-    const data = await res.json();
+export const deleteRecipe = async (recipeId) =>
+  apiClient(`/api/recipes/${recipeId}`, "DELETE");
 
-    return data;
-  } catch (error) {
-    console.error("Error deleting recipe:", error);
-    throw error;
-  }
-};
+export const deleteFavRecipe = async (recipeId, userId) =>
+  apiClient(`/api/user/${userId}/favorite-recipes/${recipeId}`, "DELETE");
 
-export const deleteFavRecipe = async (recipeId, userId) => {
-  try {
-    const res = await fetch(
-      `${baseUrl}/api/user/${userId}/favorite-recipes/${recipeId}`,
-      {
-        method: "DELETE",
-      },
-    );
-    if (!res.ok) {
-      throw new Error("Failed to delete recipe");
-    }
-    const data = await res.json();
+export const likeToggle = async (recipeId, userId, action) =>
+  apiClient(`/api/recipes/${recipeId}/like`, "PATCH", { action, userId });
 
-    return data;
-  } catch (error) {
-    console.error("Error deleting recipe:", error);
-    throw error;
-  }
-};
-
-export const likeToggle = async (recipeId, userId, action) => {
-  const res = await fetch(`${baseUrl}/api/recipes/${recipeId}/like`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action,
-      userId: userId,
-    }),
+export const toggleFavoriteRecipe = async (recipeId, favRecipe, action) =>
+  apiClient(`/api/recipes/${recipeId}/favorite`, "PATCH", {
+    action,
+    favRecipe,
   });
+export const reportRecipe = async (recipeReportData) =>
+  apiClient(`/api/recipes/report`, "POST", recipeReportData);
 
-  return await res.json();
-};
 
-export const toggleFavoriteRecipe = async (recipeId, favRecipe, action) => {
-  const res = await fetch(`${baseUrl}/api/recipes/${recipeId}/favorite`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      action,
-      favRecipe,
-    }),
-  });
-
-  return await res.json();
-};
-
-export const reportRecipe = async (recipeReportData) => {
-  try {
-    const res = await fetch(`${baseUrl}/api/recipes/report`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(recipeReportData),
-    });
-
-    if (!res.ok) {
-      throw new Error("Failed to report recipe");
-    }
-    const data = await res.json();
-
-    return data;
-  } catch (error) {
-    console.error("Error reporting recipe:", error);
-    throw error;
-  }
-};

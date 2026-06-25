@@ -1,8 +1,9 @@
 import { getFavoriteRecipes, getRecipesByUserId } from "@/lib/api/recipes";
-import { getUserSession } from "@/lib/core/session";
+import { getUserSession, requireRole } from "@/lib/core/session";
 import { redirect } from "next/navigation";
 import { FiArrowRight } from "react-icons/fi";
 import { Card, CardContent, Chip } from "@heroui/react";
+import Link from "next/link";
 import {
   FaBookOpen,
   FaHeart,
@@ -11,15 +12,19 @@ import {
   FaUtensils,
   FaClock,
 } from "react-icons/fa";
-import Link from "next/link";
+
+export const metadata = {
+  title: "Flavor Flow - Dashboard",
+  description:
+    "Welcome to your Flavor Flow dashboard! Here you can manage your recipes, view your favorites, and track your activity. Explore the latest features and insights tailored just for you.",
+};
 
 const UserDashboard = async () => {
   const user = await getUserSession();
 
-  if (!user) {
-    redirect("/login");
-  }
-  const totalFavRecipes = await getFavoriteRecipes(user.id);
+   requireRole("admin")
+  const favoriteRecipesData = await getFavoriteRecipes(user.id);
+  const totalFavorites = favoriteRecipesData?.favoriteRecipes?.length || 0;
 
   const usersRecipes = await getRecipesByUserId(user.id);
 
@@ -31,9 +36,6 @@ const UserDashboard = async () => {
     (total, recipe) => total + (recipe.likesCount || 0),
     0,
   );
-
-  // Replace with API later
-  const totalFavorites = totalFavRecipes?.length || 0;
 
   // Replace with DB value later
   const isPremium = user?.isPremium || false;

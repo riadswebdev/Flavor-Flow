@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Flavor Flow",
+  title: "Flavor Flow - Home",
   description:
     "Discover and share your favorite flavor combinations with Flavor Flow.",
 };

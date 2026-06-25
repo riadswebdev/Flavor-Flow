@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@heroui/react";
@@ -8,7 +8,11 @@ import { Button } from "@heroui/react";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import { FiCompass, FiHome } from "react-icons/fi";
 
+
 export default function NotFound() {
+  useEffect(() => {
+    document.title = "Flavor Flow - 404 Not Found";
+  }, []);
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-linear-to-br from-amber-50 via-zinc-50 to-orange-100 dark:from-zinc-950 dark:via-zinc-900 dark:to-amber-950/20 px-4">
       {/* Decorative Premium Ambient Orbs */}

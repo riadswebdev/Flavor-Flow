@@ -14,11 +14,9 @@ import {
   Chip,
   Separator,
   Tooltip,
-  Spinner,
 } from "@heroui/react";
 import {
   FiHeart,
-  FiTrash2,
   FiEye,
   FiUser,
   FiTag,
@@ -28,38 +26,6 @@ import {
 
 const UserFavoritesPage = ({ favoriteRecipes }) => {
   const router = useRouter();
-
-  const [favorites, setFavorites] = useState(favoriteRecipes);
-  const [deletingId, setDeletingId] = useState(null);
-  const [message, setMessage] = useState({ type: "", text: "" });
-
-  // ================= Delete Favorite Recipe in Collection Logic =================
-  const handleRemoveFavorite = async (id) => {
-    try {
-      setDeletingId(id);
-      setMessage({ type: "", text: "" });
-
-      const response = await axios.delete(`/api/favorites/${id}`);
-
-      if (response.status === 200 || response.status === 204) {
-        setFavorites((prev) => prev.filter((item) => item._id !== id));
-        setMessage({
-          type: "success",
-          text: "Recipe removed from your favorites.",
-        });
-      }
-    } catch (error) {
-      console.error("Failed to remove favorite recipe:", error);
-      setMessage({
-        type: "error",
-        text:
-          error.response?.data?.message ||
-          "Something went wrong. Could not remove recipe.",
-      });
-    } finally {
-      setDeletingId(null);
-    }
-  };
 
   const formatDate = (isoString) => {
     if (!isoString) return "";
@@ -83,7 +49,8 @@ const UserFavoritesPage = ({ favoriteRecipes }) => {
               variant="flat"
               className="bg-orange-500/10 text-orange-600 dark:text-orange-400 font-black text-xs h-6"
             >
-              {favorites.length} {favorites.length === 1 ? "Item" : "Items"}
+              {favoriteRecipes.length}{" "}
+              {favoriteRecipes.length === 1 ? "Item" : "Items"}
             </Chip>
           </div>
           <p className="text-sm text-foreground/60">
@@ -93,30 +60,9 @@ const UserFavoritesPage = ({ favoriteRecipes }) => {
         </div>
       </div>
 
-      <AnimatePresence>
-        {message.text && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className={`flex items-center gap-2.5 p-4 rounded-2xl text-xs font-bold mb-6 border ${
-              message.type === "success" ?
-                "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-              : "bg-rose-500/10 text-rose-500 border-rose-500/20"
-            }`}
-          >
-            <FiHeart
-              size={14}
-              className={message.type === "success" ? "fill-current" : ""}
-            />
-            {message.text}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* ================= Empty State (if no favorite recipes exist) ================= */}
       <AnimatePresence>
-        {favorites.length === 0 && (
+        {favoriteRecipes.length === 0 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -149,7 +95,7 @@ const UserFavoritesPage = ({ favoriteRecipes }) => {
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
       >
         <AnimatePresence mode="popLayout">
-          {favorites.map((recipe) => (
+          {favoriteRecipes.map((recipe) => (
             <motion.div
               key={recipe._id}
               layout
@@ -232,23 +178,9 @@ const UserFavoritesPage = ({ favoriteRecipes }) => {
                     closeDelay={0}
                   >
                     <DeleteFavRecipe
-                      recipeId={recipe._id}
+                      recipeId={recipe?.recipeId}
                       recipeName={recipe?.recipeName}
                     />
-                    <Button
-                      isIconOnly
-                      size="sm"
-                      radius="xl"
-                      variant="flat"
-                      color="danger"
-                      disabled={deletingId === recipe._id}
-                      onClick={() => handleRemoveFavorite(recipe._id)}
-                      className="bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white min-w-9 h-9 transition-colors"
-                    >
-                      {deletingId === recipe._id ?
-                        <Spinner size="sm" color="danger" />
-                      : <FiTrash2 size={14} />}
-                    </Button>
                   </Tooltip>
                 </CardFooter>
               </Card>

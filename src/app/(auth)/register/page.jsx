@@ -18,6 +18,9 @@ import {
 } from "lucide-react";
 
 const RegisterPage = () => {
+    useEffect(() => {
+      document.title = "Flavor Flow - Register";
+    }, []);
   const router = useRouter();
 
   const [name, setName] = useState("");

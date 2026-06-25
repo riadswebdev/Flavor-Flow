@@ -1,17 +1,28 @@
-import { getFavoriteRecipesStatus, getLikeStatus, getSingleRecipe } from "@/lib/api/recipes";
+import {
+  getFavoriteRecipesStatus,
+  getLikeStatus,
+  getSingleRecipe,
+} from "@/lib/api/recipes";
 import RecipeDetails from "./RecipeDetails";
 import { getUserSession } from "@/lib/core/session";
+
+export const metadata = {
+  title: "Flavor Flow - Recipe Details",
+  description: "View detailed information about a specific recipe on Flavor Flow.",
+};
 
 export default async function RecipePage({ params }) {
   const { id } = await params;
   const user = await getUserSession();
-  const recipe = await getSingleRecipe(id);
+  const recipeData = await getSingleRecipe(id);
+  const recipe = recipeData?.data;
+
   const likeStatus = await getLikeStatus(recipe._id, user?.id);
   const favoriteRecipesStatus = await getFavoriteRecipesStatus(
     recipe._id,
     user?.id,
   );
-  console.log("Favorite Recipes Status:", favoriteRecipesStatus);
+
   if (!recipe) {
     return (
       <div className="min-h-screen bg-neutral-50 dark:bg-[#0b0f19] flex items-center justify-center text-center p-4">

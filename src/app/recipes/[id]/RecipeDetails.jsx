@@ -116,10 +116,9 @@ export default function RecipeDetails({
       authorName: recipeData?.author?.name,
       addedAt: new Date().toISOString(),
     };
-
     try {
       const data = await toggleFavoriteRecipe(
-        recipeData._id,
+        recipeData?._id,
         favoriteRecipes,
         action,
       );
