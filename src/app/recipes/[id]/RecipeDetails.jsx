@@ -150,6 +150,7 @@ export default function RecipeDetails({
     setIsSubmittingReport(true);
 
     const reportData = {
+      recipeName: recipeData?.recipeName,
       recipeId: recipeData?._id,
       reporterEmail: currentUser?.email || "anonymous@flavorflow.com",
       reason: selectedReason,

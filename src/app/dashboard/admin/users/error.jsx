@@ -24,7 +24,7 @@ const error = () => {
           </p>
           <Button
             className="mt-2 bg-linear-to-r from-orange-500 to-red-600 text-white font-medium rounded-full"
-            onClick={"fetchUsers"}
+            onPress={() => window.location.reload()}
           >
             Try Again
           </Button>

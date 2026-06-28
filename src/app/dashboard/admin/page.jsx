@@ -3,11 +3,16 @@ import AdminDashboardOverview from "./AdminDashboardOverview";
 import { redirect } from "next/navigation";
 import { getAdminDashboardOverviewDataByAdminId } from "@/lib/api/recipes";
 
+export const metadata = {
+  title: "Admin Dashboard - Overview",
+  description: "Overview of the admin dashboard",
+};
+
 const AdminDashboardPage = async () => {
-    const user = await getUserSession();
-    if (!user && user.role !== "admin")return redirect("/login");
-    const adminDashboardOverviewData = await getAdminDashboardOverviewDataByAdminId(user?.id);
- 
+  const user = await getUserSession();
+  if (!user && user.role !== "admin") return redirect("/login");
+  const adminDashboardOverviewData =
+    await getAdminDashboardOverviewDataByAdminId(user?.id);
 
   return <AdminDashboardOverview data={adminDashboardOverviewData} />;
 };
