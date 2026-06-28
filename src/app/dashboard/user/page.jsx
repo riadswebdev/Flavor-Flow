@@ -1,6 +1,5 @@
 import { getFavoriteRecipes, getRecipesByUserId } from "@/lib/api/recipes";
 import { getUserSession, requireRole } from "@/lib/core/session";
-import { redirect } from "next/navigation";
 import { FiArrowRight } from "react-icons/fi";
 import { Card, CardContent, Chip } from "@heroui/react";
 import Link from "next/link";
@@ -12,6 +11,7 @@ import {
   FaUtensils,
   FaClock,
 } from "react-icons/fa";
+import UserStatusBadge from "./profile/UserStatusChips";
 
 export const metadata = {
   title: "Flavor Flow - Dashboard",
@@ -22,7 +22,8 @@ export const metadata = {
 const UserDashboard = async () => {
   const user = await getUserSession();
 
-   requireRole("admin")
+  await requireRole("user");
+
   const favoriteRecipesData = await getFavoriteRecipes(user.id);
   const totalFavorites = favoriteRecipesData?.favoriteRecipes?.length || 0;
 
@@ -38,7 +39,8 @@ const UserDashboard = async () => {
   );
 
   // Replace with DB value later
-  const isPremium = user?.isPremium || false;
+  const isPremium = user?.planId;
+  console.log("isPremium", isPremium);
 
   const stats = [
     {
@@ -137,11 +139,13 @@ const UserDashboard = async () => {
           <CardContent className="flex items-center justify-between p-6 h-full">
             <div>
               <p className="text-default-500">Membership</p>
-              <Chip color={isPremium ? "warning" : "default"} className="mt-3">
-                {isPremium ? "Premium Member" : "Free Member"}
-              </Chip>
+              <FaCrown className="text-4xl text-warning mb-3 mx-auto mt-1" />
+              <UserStatusBadge
+                role={user?.role}
+                planId={user?.planId || user?.plan}
+                size="md"
+              />
             </div>
-            <FaCrown className="text-4xl text-warning" />
           </CardContent>
         </Card>
       </div>

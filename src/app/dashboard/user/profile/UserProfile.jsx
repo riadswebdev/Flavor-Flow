@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Card, Input, Button, Chip, toast, ToastProvider } from "@heroui/react";
+import { Card, Input, Button, Chip, toast } from "@heroui/react";
 import {
   Calendar,
   Shield,
@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { authClient } from "@/app/lib/auth-client";
 import { uploadToImgBB } from "@/lib/actions/uploadImage";
+import { FreeBadge, LifetimeBadge, PremiumBadge } from "./UserStatusChips";
 
 export default function UserProfile({ data }) {
   const [userData, setUserData] = useState(data);
@@ -100,7 +101,7 @@ export default function UserProfile({ data }) {
               className="w-full h-full text-large rounded-2xl object-cover"
               fallback={userData?.name.charAt(0)}
             />
-            {userData.plan === "premium" && (
+            {userData.planId === "premium" && (
               <div className="absolute -bottom-2 -right-2 bg-linear-to-tr from-amber-500 to-orange-600 text-white p-1.5 rounded-xl shadow-md">
                 <Sparkles className="size-4 animate-pulse" />
               </div>
@@ -125,14 +126,18 @@ export default function UserProfile({ data }) {
             >
               {userData.role}
             </Chip>
-            <Chip
-              size="sm"
-              variant="flat"
-              color={userData.plan === "premium" ? "success" : "default"}
-              className="text-[10px] font-bold uppercase tracking-wider px-2"
+            <div
+            
+             
+              // className="text-[10px] font-bold uppercase tracking-wider px-2"
             >
-              {userData.plan} Account
-            </Chip>
+              {userData.planId === "premium" ?
+                <PremiumBadge />
+              : userData.planId === "lifetime" ?
+                <LifetimeBadge />
+              : <FreeBadge />}{" "}
+       
+            </div>
           </div>
 
           <div className="w-full border-t border-neutral-100 dark:border-neutral-800/60 mt-6 pt-5 text-left space-y-3.5">

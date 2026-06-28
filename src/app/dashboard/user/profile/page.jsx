@@ -6,6 +6,7 @@ export const metadata = {
 };
 const ProfilePage = async () => {
   const user = await getUserSession();
+ 
   return <UserProfile data={user} />;
 };
 

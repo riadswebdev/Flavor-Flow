@@ -13,7 +13,7 @@ export const apiClient = async (
     headers: {},
     cache: "no-store",
   };
-
+console.log("API Client called with path:", path, "method:", method, "data:", data, "token:", token);
   if (data && method !== "GET") {
     options.headers["Content-Type"] = "application/json";
     options.body = JSON.stringify(data);
@@ -24,12 +24,14 @@ export const apiClient = async (
   }
 
   const res = await fetch(`${baseUrl}${path}`, options);
-
+console.log(res)
   if (!res.ok) {
     const errorData = await res.json().catch(() => null);
-
+console.log(
+  errorData?.message || `API Error: ${res?.status} ${res?.statusText}`,
+);
     throw new Error(
-      errorData?.message || `API Error: ${res.status} ${res.statusText}`,
+      errorData?.message || `API Error: ${res?.status} ${res?.statusText}`,
     );
   }
 

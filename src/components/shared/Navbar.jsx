@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Button, Dropdown, Avatar, Badge, Label } from "@heroui/react";
+import { Button, Dropdown, Avatar, Label } from "@heroui/react";
 import { signOut, useSession } from "@/app/lib/auth-client";
 import {
   Sun,
@@ -12,7 +12,6 @@ import {
   User,
   LayoutDashboard,
   LogOut,
-  Bell,
   ChevronDown,
   UtensilsCrossed,
   Menu,
@@ -25,7 +24,7 @@ export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
-  const { data: session, isPending, error } = useSession();
+  const { data: session } = useSession();
 
   // Prevent hydration mismatch by waiting until component is mounted
   useEffect(() => {
@@ -46,6 +45,7 @@ export default function Navbar() {
     { label: "Browse Recipes", path: "/recipes" },
     { label: "About", path: "/about" },
     { label: "Contact", path: "/contact" },
+    {label: "Pricing", path: "/plans"},
   ];
 
   const handleLogOutBtn = async () => {
@@ -119,9 +119,6 @@ export default function Navbar() {
             {/* Conditional Layout: Authenticated vs Unauthenticated */}
             {user ?
               <>
-               
-
-              
                 {/* User Dropdown Profile  */}
                 <Dropdown placement="bottom-end" backdrop="blur">
                   <Dropdown.Trigger className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-orange-500">
@@ -157,7 +154,7 @@ export default function Navbar() {
                         id="profile"
                         textValue="Profile"
                         as={Link}
-                        href="/profile"
+                        href="/dashboard/user/profile"
                       >
                         <div className="flex w-full items-center justify-between gap-2">
                           <Label className="cursor-pointer font-normal">
@@ -170,7 +167,7 @@ export default function Navbar() {
                         id="dashboard"
                         textValue="Dashboard"
                         as={Link}
-                        href="/dashboard/user"
+                        href={`/dashboard/${user?.role === "admin" ? "admin" : "user"}`}
                       >
                         <div className="flex w-full items-center justify-between gap-2">
                           <Label className="cursor-pointer font-normal">
@@ -278,7 +275,7 @@ export default function Navbar() {
                 </div>
                 <div>
                   <Link
-                    href="/dashboard/user"
+                    href={`/dashboard/${user?.role === "admin" ? "admin" : "user"}`}
                     onClick={() => setIsMenuOpen(false)}
                     className="flex items-center gap-3 w-full py-3 px-4 rounded-xl text-base font-medium text-foreground/70 hover:bg-default-100"
                   >

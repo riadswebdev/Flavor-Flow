@@ -13,11 +13,11 @@ const SubscriptionsPage = async () => {
   const user = await getUserSession()
   const subscriptionPlans = await getSubscriptionsPlans();
  
-
+console.log("subscriptionPlans", subscriptionPlans);
   return (
     <PricingSection
       plans={subscriptionPlans}
-      currentPlan={user?.plan}
+      currentPlan={user?.planId}
     />
   );
 };

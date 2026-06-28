@@ -87,7 +87,9 @@ export default function DashboardSidebar({ role = "user", userSession }) {
               <p className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mt-0.5">
                 {role === "admin" ?
                   "Platform Admin"
-                : userSession?.plan !== "free" ?
+                : userSession?.planId === "lifetime" ?
+                  "Lifetime Member"
+                : userSession?.planId === "premium" ?
                   "Premium Chef"
                 : "Free Member"}
               </p>
@@ -98,7 +100,7 @@ export default function DashboardSidebar({ role = "user", userSession }) {
         </div>
 
         <div className="space-y-4 w-full">
-          {role === "user" && userSession?.plan === "free" && (
+          {role === "user" && userSession?.planId === "free" && (
             <div className="relative rounded-2xl p-4 bg-linear-to-br from-neutral-900 via-neutral-900 to-[#1e1415] dark:from-[#131a30] dark:to-[#221215] border border-neutral-200/10 overflow-hidden shadow-xl">
               <p className="text-[10px] font-bold text-orange-400 flex items-center gap-1 uppercase tracking-wider">
                 <FiAlertCircle /> Unlimited Access
@@ -109,12 +111,15 @@ export default function DashboardSidebar({ role = "user", userSession }) {
               <p className="text-[11px] text-neutral-400 mt-0.5 leading-tight">
                 Unlock unlimited recipe submissions.
               </p>
-              <Button
-                size="sm"
-                className="w-full mt-3 font-bold text-xs bg-linear-to-r from-orange-500 to-rose-600 text-white rounded-xl border-0"
-              >
-                Upgrade Now
-              </Button>
+              <Link href="/plans">
+                <Button
+                  variant="filled"
+                  size="sm"
+                  className="w-full mt-3 font-bold text-xs bg-linear-to-r from-orange-500 to-rose-600 text-white rounded-xl border-0"
+                >
+                  Upgrade Now
+                </Button>
+              </Link>
             </div>
           )}
 

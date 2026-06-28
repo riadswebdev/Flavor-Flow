@@ -20,13 +20,19 @@ export const auth = betterAuth({
   user: {
     additionalFields: {
       role: {
-        default: "user",
+        defaultValue: "user",
       },
       isBlocked: {
-        default: false,
+        defaultValue: false,
       },
-      plan: {
-        default: "free",
+      planId: {
+        defaultValue: "free",
+      },
+      expireAt: {
+        defaultValue: null,
+      },
+      recipeLimit: {
+        defaultValue: 2,
       },
     },
   },

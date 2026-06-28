@@ -1,0 +1,15 @@
+import { getUserSession } from "@/lib/core/session";
+import AdminDashboardOverview from "./AdminDashboardOverview";
+import { redirect } from "next/navigation";
+import { getAdminDashboardOverviewDataByAdminId } from "@/lib/api/recipes";
+
+const AdminDashboardPage = async () => {
+    const user = await getUserSession();
+    if (!user && user.role !== "admin")return redirect("/login");
+    const adminDashboardOverviewData = await getAdminDashboardOverviewDataByAdminId(user?.id);
+ 
+
+  return <AdminDashboardOverview data={adminDashboardOverviewData} />;
+};
+
+export default AdminDashboardPage;

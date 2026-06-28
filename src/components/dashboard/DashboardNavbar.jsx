@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Button, Dropdown, Label } from "@heroui/react";
+import { Avatar, Button, Dropdown, Label } from "@heroui/react";
 import { FiChevronRight, FiHome } from "react-icons/fi";
 import { authClient } from "@/app/lib/auth-client";
 import Image from "next/image";
@@ -22,7 +22,6 @@ export default function DashboardNavbar({ user }) {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
@@ -83,14 +82,18 @@ export default function DashboardNavbar({ user }) {
         <Dropdown placement="bottom-end" backdrop="blur">
           <Dropdown.Trigger className="rounded-full outline-none">
             <div className="flex items-center gap-1.5 group cursor-pointer">
-              <Image
-                width={20}
-                height={20}
-                alt={user?.name}
+              <Avatar
+                color="warning"
+                radius="full"
                 size="sm"
-                className="w-8 h-8 text-xs "
-                src={user?.image}
-              />
+                className="w-8 h-8 text-xs ring-offset-background"
+              >
+                <Avatar.Image alt={user?.name} src={user?.image} />
+                <Avatar.Fallback delayMs={600}>
+                  {user?.name.charAt(0)}
+                </Avatar.Fallback>
+              </Avatar>
+
               <ChevronDown className="w-3 h-3 text-neutral-400 group-hover:text-neutral-600 transition-colors hidden sm:block" />
             </div>
           </Dropdown.Trigger>
@@ -101,7 +104,7 @@ export default function DashboardNavbar({ user }) {
                 Signed in as
               </p>
               <p className="font-bold text-xs text-orange-500 truncate">
-                djriad157764@gmail.com
+                {user?.email}
               </p>
             </div>
 

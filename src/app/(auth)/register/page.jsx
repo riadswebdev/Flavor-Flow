@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input, Button, Separator, toast } from "@heroui/react";
 import { authClient } from "@/app/lib/auth-client";
 import { uploadToImgBB } from "@/lib/actions/uploadImage";
-import { updateUserAdditionalField } from "@/lib/actions/user";
+
 
 import {
   UtensilsCrossed,
@@ -18,9 +18,9 @@ import {
 } from "lucide-react";
 
 const RegisterPage = () => {
-    useEffect(() => {
-      document.title = "Flavor Flow - Register";
-    }, []);
+  useEffect(() => {
+    document.title = "Flavor Flow - Register";
+  }, []);
   const router = useRouter();
 
   const [name, setName] = useState("");
@@ -68,36 +68,26 @@ const RegisterPage = () => {
       }
 
       const { data, error } = await authClient.signUp.email({
-        name: name,
-        email: email,
-        password: password,
+        name,
+        email,
+        password,
         image: uploadedImageUrl,
-        role: "user",
+        role: role,
         isBlocked: false,
-        plan: "free",
-      });
-
-      const userId = data?.user?.id;
-
-      const additionalField = {
-        recipesAddedCount: 0,
-        totalFavorites: 0,
-        totalLikesReceived: 0,
+        planId: "free",
         expireAt: null,
-        recipeLimit: 3,
-      };
+        recipeLimit: 2,
+      });
 
       if (error) {
         setSignUpError(
-          error.message || "Failed to create account. Please try again.",
+          error.message || "Registration failed. Please try again.",
         );
-        return;
       }
-
-      if (userId) {
-        toast.success("Account created successfully! Please log in.");
-        const data = await updateUserAdditionalField(additionalField, userId);
-      }
+      toast.success(
+        "Registration successful! Please check your email to verify your account.",
+      );
+      router.push("/login");
     } finally {
       setLoading(false);
       setImageUploading(false);

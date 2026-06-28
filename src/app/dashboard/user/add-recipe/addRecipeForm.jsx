@@ -29,10 +29,11 @@ import {
   FiActivity,
   FiBookOpen,
 } from "react-icons/fi";
+import Link from "next/link";
 
-export default function AddRecipeForm({ loggedInUser }) {
+export default function AddRecipeForm({ loggedInUser, usersRecipes }) {
   const router = useRouter();
-
+  console.log(usersRecipes.data.length);
   // ================= Form States =================
   const [recipeName, setRecipeName] = useState("");
   const [category, setCategory] = useState(new Set([]));
@@ -220,13 +221,14 @@ export default function AddRecipeForm({ loggedInUser }) {
 
   if (
     loggedInUser.recipeLimit !== -1 &&
-    loggedInUser.recipesCount >= loggedInUser.recipeLimit
+    usersRecipes?.data?.length >= loggedInUser?.recipeLimit
   ) {
     //  redirect("/plans");
   }
   const isLimitReached =
-    loggedInUser.plan !== "free" && loggedInUser.recipeCount >= 2;
-
+    loggedInUser.planId === "free" &&
+    loggedInUser.recipeLimit >= usersRecipes?.data?.length;
+  console.log(isLimitReached);
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -245,7 +247,7 @@ export default function AddRecipeForm({ loggedInUser }) {
             <h1 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight sm:text-4xl">
               Add New Recipe
             </h1>
-            {loggedInUser.plan === "premium" ?
+            {loggedInUser.planId === "premium" ?
               <Chip className="bg-linear-to-r from-orange-500 to-rose-500 text-white font-black text-[10px] uppercase border-0 px-2.5 shadow-md shadow-orange-500/20">
                 Premium Member
               </Chip>
@@ -254,7 +256,8 @@ export default function AddRecipeForm({ loggedInUser }) {
                 variant="flat"
                 className="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold"
               >
-                Free Tier ({loggedInUser.recipeCount}/2)
+                Free Tier ({usersRecipes?.data?.length}/
+                {loggedInUser.recipeLimit})
               </Chip>
             }
           </div>
@@ -610,7 +613,8 @@ export default function AddRecipeForm({ loggedInUser }) {
                       Limit Reached
                     </div>
                     <h4 className="text-base sm:text-lg font-black text-white tracking-tight">
-                      Free members can create up to 2 recipes.
+                      Free members can create up to {loggedInUser.recipeLimit}{" "}
+                      recipes.
                     </h4>
                     <p className="text-xs text-zinc-400 font-medium max-w-xl">
                       Upgrade to Premium to unlock unlimited recipe uploads,
@@ -618,9 +622,12 @@ export default function AddRecipeForm({ loggedInUser }) {
                       analytics.
                     </p>
                   </div>
-                  <Button className="w-full md:w-auto bg-linear-to-r from-orange-500 to-rose-500 text-white font-black text-xs uppercase tracking-wider rounded-2xl px-8 h-12 shadow-lg shadow-orange-500/20 active:scale-[0.96] transition-transform shrink-0">
+                  <Link
+                    href="/plans"
+                    className="w-full md:w-auto bg-linear-to-r from-orange-500 to-rose-500 text-white font-black text-xs uppercase tracking-wider rounded-2xl px-8 h-12 shadow-lg shadow-orange-500/20 active:scale-[0.96] transition-transform shrink-0 flex items-center justify-center hover:opacity-95"
+                  >
                     Upgrade Now
-                  </Button>
+                  </Link>
                 </motion.div>
               : <Button
                   type="submit"

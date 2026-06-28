@@ -1,9 +1,22 @@
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardNavbar from "@/components/dashboard/DashboardNavbar";
 import { getUserSession } from "@/lib/core/session";
+import Link from "next/link";
+
 
 const DashboardLayout = async ({ children }) => {
+
   const user = await getUserSession();
+  if(!user) {
+    return (
+      <div className="flex h-screen bg-neutral-50 dark:bg-[#0b0f19] text-neutral-900 dark:text-neutral-100 transition-colors duration-300 overflow-hidden">
+        <p className="text-lg font-medium">Please log in to access the dashboard.</p>
+        <Link href="/login" className="text-blue-500 hover:underline ml-2">
+          Go to Login
+        </Link>
+      </div>
+    );
+  }
 
   return (
     

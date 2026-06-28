@@ -11,12 +11,12 @@ export const metadata = {
 const AddRecipePage = async () => {
   const user = await getUserSession();
   const usersRecipes = await getRecipesByUserId(user?.id);
-  console.log(usersRecipes);
-  if (!user) {
-    redirect("/login");
+
+  if (!user || user?.role !== "user") {
+    redirect("/unauthorized");
   }
 
-  return <AddRecipeForm loggedInUser={user} />;
+  return <AddRecipeForm usersRecipes={usersRecipes} loggedInUser={user} />;
 };
 
 export default AddRecipePage;

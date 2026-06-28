@@ -8,7 +8,6 @@ import { Button } from "@heroui/react";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import { FiCompass, FiHome } from "react-icons/fi";
 
-
 export default function NotFound() {
   useEffect(() => {
     document.title = "Flavor Flow - 404 Not Found";
@@ -54,28 +53,26 @@ export default function NotFound() {
 
           {/* Functional Navigation Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button
-              as={Link}
+            <Link
               href="/"
               color="warning"
               variant="shadow"
               size="lg"
-              className="w-full sm:w-auto font-semibold text-white bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 rounded-xl shadow-lg shadow-orange-500/20 px-8 transition-transform duration-200 active:scale-95"
-              startContent={<FiHome className="text-lg" />}
+              className="w-full sm:w-auto font-semibold text-white bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 rounded-xl shadow-lg shadow-orange-500/20 px-8 transition-transform duration-200 active:scale-95 flex items-center gap-2 justify-center p-3"
             >
+              <FiHome className="text-lg" />
               Back Home
-            </Button>
+            </Link>
 
-            <Button
-              as={Link}
+            <Link
               href="/recipes"
               variant="bordered"
               size="lg"
-              className="w-full sm:w-auto font-medium border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl px-6 transition-all"
-              startContent={<FiCompass className="text-lg" />}
+              className="w-full sm:w-auto font-medium border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl px-6 transition-all flex items-center gap-2 justify-center p-3"
             >
+              <FiCompass className="text-lg" />
               Explore Menu
-            </Button>
+            </Link>
           </div>
         </div>
       </motion.div>

@@ -13,9 +13,9 @@ import {
 import { useRouter } from "next/navigation";
 
 export default function Error({ error, reset }) {
-    useEffect(() => {
-      document.title = "Flavor Flow - Error";
-    }, []);
+  useEffect(() => {
+    document.title = "Flavor Flow - Error";
+  }, []);
   const router = useRouter();
   const [showDetails, setShowDetails] = useState(false);
 
@@ -103,7 +103,7 @@ export default function Error({ error, reset }) {
           <Card.Footer className="flex flex-col sm:flex-row items-center gap-3 px-6 pb-6 pt-2">
             {/* Try Again Button (Orange to Red linear) */}
             <Button
-              onPress={() => reset()}
+              onPress={() => window.location.reload()}
               size="md"
               className="
                 w-full sm:flex-1 font-bold text-sm rounded-2xl text-white shadow-lg
@@ -117,7 +117,7 @@ export default function Error({ error, reset }) {
 
             {/* Back Home Button */}
             <Button
-              onPress={() => router(-1)}
+              onPress={() => router.back()}
               size="md"
               variant="flat"
               className="
@@ -126,8 +126,8 @@ export default function Error({ error, reset }) {
                 dark:bg-default-100/10 dark:hover:bg-default-100/20
                 text-default-700 dark:text-default-200 transition-all
               "
-              startContent={<HiHome size={18} />}
             >
+              <HiHome size={18} />
               Back Home
             </Button>
           </Card.Footer>

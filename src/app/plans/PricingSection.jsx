@@ -1,6 +1,5 @@
 "use client";
 
-
 import { FaUser, FaCrown, FaGem, FaCheck } from "react-icons/fa6";
 import { motion } from "framer-motion";
 import {
@@ -40,10 +39,6 @@ const cardVariants = {
 };
 
 export default function PricingSection({ plans = [], currentPlan }) {
-  const handleStripeCheckout = (planId) => {
-    console.log(`Redirecting to Stripe checkout for: ${planId}`);
-  };
-
   return (
     <section className="relative py-24 px-4 max-w-7xl mx-auto overflow-hidden">
       {/* Background Glows */}
@@ -96,7 +91,6 @@ export default function PricingSection({ plans = [], currentPlan }) {
         {plans.map((plan) => {
           const isUserCurrentPlan = currentPlan === plan.planId;
 
-          
           let cardStyle =
             "bg-white/60 dark:bg-zinc-900/60 border border-default-200/60 dark:border-zinc-800/60 text-default-900 dark:text-white shadow-xl";
           let iconStyle =
@@ -194,19 +188,27 @@ export default function PricingSection({ plans = [], currentPlan }) {
                 </Card.Content>
 
                 <CardFooter>
-                  <Button
-                    isDisabled={isUserCurrentPlan}
-                    onClick={() =>
-                      !isUserCurrentPlan && handleStripeCheckout(plan.planId)
-                    }
-                    className={
-                      isUserCurrentPlan ?
-                        "w-full h-12 rounded-2xl font-semibold bg-default-100 text-default-400 dark:bg-zinc-800 dark:text-zinc-600"
-                      : buttonStyle
-                    }
+                  <form
+                    className="w-full"
+                    action="/api/checkout_sessions"
+                    method="POST"
                   >
-                    {isUserCurrentPlan ? "Current Plan" : plan.buttonText}
-                  </Button>
+                    <input type="hidden" name="priceId" value={plan.planId} />
+                    <section>
+                      <button
+                        disabled={isUserCurrentPlan}
+                        type="submit"
+                        role="link"
+                        className={
+                          isUserCurrentPlan ?
+                            "w-full h-12 rounded-2xl font-semibold bg-default-100 text-default-400 cursor-pointer dark:bg-zinc-800 dark:text-zinc-600"
+                          : buttonStyle
+                        }
+                      >
+                        {isUserCurrentPlan ? "Current Plan" : plan.buttonText}
+                      </button>
+                    </section>
+                  </form>
                 </CardFooter>
               </Card>
             </motion.div>
