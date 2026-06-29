@@ -1,17 +1,18 @@
 "use client";
 
-import { deleteRecipe } from "@/lib/actions/recipe";
+import {  deleteRecipeWithReport } from "@/lib/actions/recipe";
 import { refreshRoute } from "@/lib/revalidatePagh";
 import { AlertDialog, Button, toast } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { FiTrash2 } from "react-icons/fi";
 
-export function DeleteRecipe({ recipeId, recipeName = "this recipe", path }) {
+export function DeleteRecipe({ recipeId, recipeName = "this recipe",reportId, path }) {
   console.log("DeleteRecipe component rendered with recipeId:", recipeId, "recipeName:", recipeName, "path:", path);
   const router = useRouter();
 
   const handleDelete = async () => {
-    const result = await deleteRecipe(recipeId);
+      const result = await deleteRecipeWithReport(recipeId, reportId);
+      console.log("Delete result:", result);
     if (result.success) {
       toast.success("Recipe deleted successfully");
       await refreshRoute(path);

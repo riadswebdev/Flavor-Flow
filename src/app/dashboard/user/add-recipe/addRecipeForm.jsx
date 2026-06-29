@@ -34,6 +34,7 @@ import Link from "next/link";
 export default function AddRecipeForm({ loggedInUser, usersRecipes }) {
   const router = useRouter();
   console.log(usersRecipes.data.length);
+  console.log(loggedInUser);
   // ================= Form States =================
   const [recipeName, setRecipeName] = useState("");
   const [category, setCategory] = useState(new Set([]));
@@ -227,7 +228,7 @@ export default function AddRecipeForm({ loggedInUser, usersRecipes }) {
   }
   const isLimitReached =
     loggedInUser.planId === "free" &&
-    loggedInUser.recipeLimit >= usersRecipes?.data?.length;
+    loggedInUser.recipeLimit <= usersRecipes?.data?.length;
   console.log(isLimitReached);
   return (
     <motion.div

@@ -7,8 +7,7 @@ import { FiUser } from "react-icons/fi";
 import { toggleUserBlockStatus } from "@/lib/actions/user";
 import { toast } from "@heroui/react";
 import { useRouter } from "next/navigation";
-
-
+import { refreshRoute } from "@/lib/revalidatePagh";
 
 // ================= CUSTOM INLINE SVG ICONS (FOR ZERO COMPILE ERRORS) =================
 const SearchIcon = ({ className = "w-5 h-5" }) => (
@@ -227,7 +226,7 @@ const Skeleton = ({ className = "" }) => (
   />
 );
 
-export default function ManageUsersPage({ totalUsers, user }) {
+export default function ManageUsersPage({ totalUsers }) {
   const router = useRouter();
 
   // States
@@ -257,13 +256,13 @@ export default function ManageUsersPage({ totalUsers, user }) {
     const result = await toggleUserBlockStatus(userId);
 
     if (result?.success) {
-      // router.refresh();
+      router.refresh();
       setUsers((prevUsers) =>
         prevUsers.map((u) =>
           u.id === userId ? { ...u, isBlocked: result.isBlocked } : u,
         ),
       );
-     window.location.reload();
+      await refreshRoute("/dashboard/admin/users");
       setTimeout(() => {
         toast.success(
           `User ${result.isBlocked ? "blocked" : "unblocked"} successfully!`,
@@ -345,21 +344,25 @@ export default function ManageUsersPage({ totalUsers, user }) {
 
         {/* Circular totalUsers Counter Badge */}
         <div className="relative group shrink-0">
-          <div className="absolute inset-0 bg-orange-500/20 rounded-full blur-md opacity-75 group-hover:scale-110 transition-all duration-300" />
-          <div className="relative  h-16 md:h-16 rounded-full bg-zinc-900/90 dark:bg-zinc-900/90 border border-orange-500/40 flex items-center justify-center p-2 text-white">
-            <div className="flex items-center ">
+          {/* Glow Effect */}
+          <div className="absolute inset-0 dark:bg-orange-500/20 rounded-full blur-md opacity-75 group-hover:scale-105 transition-all duration-500" />
+
+          <div className="relative h-14 md:h-16 px-5 rounded-full dark:bg-zinc-900/90 border border-orange-500/40 flex items-center gap-3 text-white shadow-2xl backdrop-blur-sm">
+            {/* Icon Container */}
+            <div className="p-2 rounded-full bg-orange-500/10 border border-orange-500/20">
               <UsersIcon className="w-5 h-5 text-orange-500 animate-pulse" />
-              <div className="flex items-center text-left leading-none">
-                <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">
-                  Total
-                </span>
-                <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">
-                  Users:
-                </span>
-                <span className="text-sm font-black text-orange-400 font-mono mt-0.5">
-                  {loading ? "..." : filteredUsers.length}
-                </span>
-              </div>
+            </div>
+
+            {/* Text Info */}
+            <div className="flex flex-col justify-center leading-none">
+              <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400">
+                Total Users
+              </span>
+              <span className="text-lg font-black font-mono mt-0.5 tracking-tight text-zinc-500 dark:text-zinc-400">
+                {loading ?
+                  <span className="animate-pulse">...</span>
+                : filteredUsers.length.toLocaleString()}
+              </span>
             </div>
           </div>
         </div>
@@ -380,7 +383,7 @@ export default function ManageUsersPage({ totalUsers, user }) {
               placeholder="Search by name or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm bg-zinc-100 dark:bg-zinc-800 border-none outline-hidden focus:ring-2 focus:ring-orange-500/50 rounded-full h-10 transition-all text-zinc-800 dark:text-zinc-150"
+              className="w-full pl-10 pr-4 py-2  text-sm bg-zinc-100 dark:bg-zinc-800 border-none outline-hidden focus:ring-2 focus:ring-orange-500/50 rounded-full h-10 transition-all  dark:text-zinc-150"
             />
           </div>
 

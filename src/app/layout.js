@@ -4,6 +4,9 @@ import Navbar from "@/components/shared/Navbar";
 import { ToastProvider } from "@heroui/react";
 import Footer from "@/components/shared/Footer";
 import { Providers } from "@/components/shared/ThemeProvider";
+import { auth } from "./lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -16,7 +19,21 @@ export const metadata = {
     "Discover and share your favorite flavor combinations with Flavor Flow.",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (session && session.user.isBlocked) {
+    // Sign out on the server side first
+    await auth.api.signOut({
+      headers: await headers(),
+    });
+
+    // Then redirect
+    redirect("/login");
+  }
+
   return (
     <html
       lang="en"

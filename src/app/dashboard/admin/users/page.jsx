@@ -1,6 +1,7 @@
-import { getTotalUsers } from "@/lib/api/recipes";
+import { getTotalUsers } from "@/lib/api/user";
 import ManageUsersPage from "./ManageUser";
 import { getUserSession } from "@/lib/core/session";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Manage Users - Admin Dashboard",
@@ -10,11 +11,14 @@ export const metadata = {
 const ManageUser = async () => {
   const user = await getUserSession();
 
+  if (!user || user?.role !== "admin") {
+    redirect("/unauthorized");
+  }
   const totalUsers = await getTotalUsers();
 
   const users = totalUsers?.totalUsers || [];
 
-  return <ManageUsersPage totalUsers={users} user={user} />;
+  return <ManageUsersPage totalUsers={users} />;
 };
 
 export default ManageUser;

@@ -6,7 +6,6 @@ import {
   Card,
   CardHeader,
   CardFooter,
-  Button,
   Chip,
   Separator,
 } from "@heroui/react";

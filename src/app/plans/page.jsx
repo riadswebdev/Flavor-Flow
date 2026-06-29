@@ -1,4 +1,5 @@
-import { getSubscriptionsPlans } from "@/lib/api/recipes";
+
+import { getSubscriptionsPlans } from "@/lib/api/subscription";
 import PricingSection from "./PricingSection";
 import { getUserSession } from "@/lib/core/session";
 

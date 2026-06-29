@@ -15,6 +15,10 @@ const UsersTotalRecipesPage = async () => {
     redirect("/login");
   }
 
+  if (user && user?.role !== "user") {
+    redirect("/unauthorized");
+  }
+
   const usersRecipes = await getRecipesByUserId(user.id);
   const initialRecipes = usersRecipes?.data || [];
 

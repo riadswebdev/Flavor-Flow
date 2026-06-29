@@ -1,9 +1,9 @@
 import AboutSection from "@/components/home/AboutSection";
 import BannerSection from "@/components/home/BannerSection";
 import ContactSection from "@/components/home/ContactSection";
-import FeaturedRecipes from "@/components/home/FeaturedRecipes";
 import HomeRecipesContainer from "@/components/home/HomeRecipesContainer";
-import PopularRecipes from "@/components/home/PopularRecipes";
+import { auth } from "./lib/auth";
+import { headers } from "next/headers";
 
 export const metadata = {
   title: "Flavor Flow - Home",
@@ -11,13 +11,18 @@ export const metadata = {
     "Discover and share your favorite flavor combinations with Flavor Flow.",
 };
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  console.log("User session data:", session);
+
   return (
     <>
       <BannerSection />
       {/* <FeaturedRecipes />
       <PopularRecipes /> */}
-      <HomeRecipesContainer/>
+      <HomeRecipesContainer />
       <AboutSection />
       <ContactSection />
     </>

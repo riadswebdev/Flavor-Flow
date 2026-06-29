@@ -1,7 +1,7 @@
 import { getUserSession } from "@/lib/core/session";
 import AdminDashboardOverview from "./AdminDashboardOverview";
 import { redirect } from "next/navigation";
-import { getAdminDashboardOverviewDataByAdminId } from "@/lib/api/recipes";
+import { getAdminDashboardOverviewDataByAdminId } from "@/lib/api/admin";
 
 export const metadata = {
   title: "Admin Dashboard - Overview",

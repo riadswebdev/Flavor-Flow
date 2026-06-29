@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Input, Button, Separator } from "@heroui/react";
+import { Input, Button, Separator, toast } from "@heroui/react";
 import { authClient, signIn } from "@/app/lib/auth-client";
 import { UtensilsCrossed, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Icon } from "@iconify/react";
@@ -11,8 +11,6 @@ export default function LoginPage() {
   useEffect(() => {
     document.title = "Flavor Flow - Login";
   }, []);
-
-  const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,8 +34,7 @@ export default function LoginPage() {
       if (authError) {
         setError(authError.message || "Invalid email or password");
       } else {
-        router.push("/");
-        router.refresh();
+        toast.success("Successfully Login");
       }
     } catch (err) {
       setError("Something went wrong. Please try again.");

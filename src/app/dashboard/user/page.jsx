@@ -12,6 +12,7 @@ import {
   FaClock,
 } from "react-icons/fa";
 import UserStatusBadge from "./profile/UserStatusChips";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Flavor Flow - Dashboard",
@@ -22,7 +23,9 @@ export const metadata = {
 const UserDashboard = async () => {
   const user = await getUserSession();
 
-  await requireRole("user");
+  if (!user || user?.role !== "user") {
+    redirect("/unauthorized");
+  }
 
   const favoriteRecipesData = await getFavoriteRecipes(user.id);
   const totalFavorites = favoriteRecipesData?.favoriteRecipes?.length || 0;

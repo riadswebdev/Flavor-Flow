@@ -10,12 +10,13 @@ export async function POST(request) {
 
     const formData = await request.formData();
     // Accept either planId or priceId from the request form
-    const planId =
-      formData.get("planId") || formData.get("priceId") || "premium";
-    const priceId = PLAN_PRICE_ID[planId];
+      const recipeName = formData.get("recipeName")
+      const recipeId = formData.get("recipeId")
+      const recipePrice = formData.get("recipePrice")
 
     // Retrieve logged-in user details
     let user = await getUserSession();
+
 
     // Create Checkout Session with populated metadata object
     const session = await stripe.checkout.sessions.create({
@@ -28,14 +29,17 @@ export async function POST(request) {
           quantity: 1,
         },
       ],
-
-      mode: "subscription",
+      mode: "payment",
       metadata: {
-        userId: user?.id || user?._id || "unknown",
-        planId: planId,
-        planName: planId === "lifetime" ? "Lifetime Plan" : "Premium Plan",
+          userId: user?.id || user?._id,
+          userEmail: user.email,
+          userName: user.name,
+          recipeId: recipeId,
+          recipeName: recipeName,
+          Price: recipePrice,
+       
       },
-      success_url: `${origin}/plans/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${origin}/plans/payment/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/subscriptions`,
     });
 

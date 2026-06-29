@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input, Button, Separator, toast } from "@heroui/react";
-import { authClient } from "@/app/lib/auth-client";
 import { uploadToImgBB } from "@/lib/actions/uploadImage";
-
 
 import {
   UtensilsCrossed,
@@ -16,6 +14,7 @@ import {
   Check,
   X,
 } from "lucide-react";
+import { signUp } from "@/app/lib/auth-client";
 
 const RegisterPage = () => {
   useEffect(() => {
@@ -64,21 +63,32 @@ const RegisterPage = () => {
       if (imageFile) {
         setImageUploading(true);
         uploadedImageUrl = await uploadToImgBB(imageFile);
+        console.log(uploadedImageUrl)
         setImageUploading(false);
       }
 
-      const { data, error } = await authClient.signUp.email({
+      const { error } = await signUp.email({
         name,
         email,
         password,
         image: uploadedImageUrl,
-        role: role,
+        role: "user",
         isBlocked: false,
         planId: "free",
         expireAt: null,
         recipeLimit: 2,
       });
-
+      console.log({
+        name,
+        email,
+        password,
+        image: uploadedImageUrl,
+        role: "user",
+        isBlocked: false,
+        planId: "free",
+        expireAt: null,
+        recipeLimit: 2,
+      });
       if (error) {
         setSignUpError(
           error.message || "Registration failed. Please try again.",

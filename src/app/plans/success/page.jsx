@@ -6,7 +6,7 @@ import Stripe from "stripe";
 // Initialize Stripe Client with secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
-// Icon Components using lightweight SVGs for guaranteed compilation
+// Icon Components using lightweight SVGs
 const CheckCircleIcon = ({ className = "w-12 h-12" }) => (
   <svg
     className={className}
@@ -183,7 +183,6 @@ const CalendarIcon = ({ className = "w-4 h-4" }) => (
   </svg>
 );
 
-// High-Fidelity UI Components built statically to match HeroUI
 const SuccessCard = ({ children }) => (
   <div className="w-full max-w-2xl rounded-3xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white/80 dark:bg-[#0c0d12]/80 backdrop-blur-xl shadow-2xl p-6 md:p-8 overflow-hidden relative transition-all duration-300">
     <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-bl from-orange-500/20 to-transparent rounded-bl-full pointer-events-none" />
@@ -198,10 +197,8 @@ const ErrorCard = ({ children }) => (
 );
 
 export default async function Success({ searchParams }) {
-  // Await searchParams as mandated by Next.js 15
   const { session_id } = await searchParams;
 
-  // Render a beautiful, styled error page if session_id is completely missing
   if (!session_id) {
     return (
       <div className="relative min-h-[90vh] flex items-center justify-center py-16 px-4 bg-zinc-50 dark:bg-[#0a0a0c]">
@@ -215,8 +212,7 @@ export default async function Success({ searchParams }) {
             </h2>
             <p className="text-zinc-600 dark:text-zinc-400 text-sm md:text-base leading-relaxed mb-6 max-w-md">
               No transaction token was provided. We couldn&apos;t locate your
-              Stripe Checkout Session. Please return to the plans page or
-              contact support.
+              Stripe Checkout Session.
             </p>
             <div className="w-full bg-red-500/5 rounded-2xl p-4 border border-red-500/10 text-left text-xs text-red-500/80 font-mono mb-6">
               Code: MISSING_SESSION_ID
@@ -233,70 +229,53 @@ export default async function Success({ searchParams }) {
     );
   }
 
-  let session;
-  let sessionStatus = null;
-  let customerEmail = null;
-  let amountTotal = null;
-  let transactionId = null;
-  let loggedInUserId = null;
-  let planId = null;
-  let dateString = null;
-  let errorMessage = null;
-  
+  const session = await stripe.checkout.sessions.retrieve(session_id, {
+    expand: ["line_items", "payment_intent"],
+  });
 
-  try {
-    // Retrieve Stripe Session with expansion fields directly on the Server Side
-    session = await stripe.checkout.sessions.retrieve(session_id, {
-      expand: ["line_items", "payment_intent"],
-    });
+  const {
+    status,
+    metadata,
+    amount_total,
+    id: transactionId,
+    payment_method_types,
+    customer_details,
+  } = session;
 
-    // If session is incomplete or open, set status for rendering
-    if (session?.status === "open") {
-      sessionStatus = "incomplete";
-    } else {
-      // Extract all data before returning
-      customerEmail = session.customer_details?.email || "customer@example.com";
-      amountTotal = session.amount_total ? session.amount_total / 100 : 9.99;
-      transactionId = session.payment_intent?.id || session.id;
-      loggedInUserId = session.metadata?.userId || "6a38f5444247b059dc3279c5";
-      planId = session.metadata?.planId || "premium";
+  const customerEmail = customer_details?.email || "N/A";
 
-      // Build Payload Object as requested
-      const paymentPayload = {
-        userEmail: customerEmail,
-        userId: loggedInUserId,
-        amount: amountTotal,
-        transactionId: transactionId,
-        paymentStatus: "Paid",
-        planId: planId,
-      };
-      const result =
-        await updateSubscriptionStatusAndSaveTransaction(paymentPayload);
-      console.log("Subscription update result:", result);
-      dateString = new Date().toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
+  const amountTotal = amount_total ? amount_total / 100 : 0;
 
-      sessionStatus = "success";
-    }
-  } catch (err) {
-    console.error("Stripe Retrieval Server Error:", err);
-    errorMessage = err?.message || "ERR_STRIPE_RETRIEVE_FAILED";
-    sessionStatus = "error";
-  }
+  const dateString = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
-  // Render based on session status
-  if (sessionStatus === "success") {
+  const planId = metadata?.planId || "premium";
+
+  const payload = {
+    planId: planId,
+    planName:
+      metadata?.planName ||
+      (planId === "lifetime" ? "Lifetime Plan" : "Premium Plan"),
+    transactionId: transactionId,
+    amount: amount_total,
+    paymentStatus: "paid",
+    userId: metadata?.userId || "unknown",
+    userEmail: customerEmail,
+    paymentMethod: payment_method_types?.[0] || "card",
+  };
+
+  if (status === "complete") {
+    await updateSubscriptionStatusAndSaveTransaction(payload);
+
     return (
       <div className="relative min-h-[90vh] flex items-center justify-center py-16 px-4 bg-zinc-50 dark:bg-[#0a0a0c] overflow-hidden">
-        {/* Dynamic Glowing Accents */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-87.5 md:w-150 h-87.5 md:h-150 bg-orange-500/10 dark:bg-orange-500/5 blur-[120px] rounded-full pointer-events-none -z-10" />
         <div className="absolute bottom-10 right-10 w-80 h-80 bg-rose-500/10 dark:bg-rose-500/5 blur-[100px] rounded-full pointer-events-none -z-10" />
 
         <SuccessCard>
-          {/* Animated Success Circle */}
           <div className="flex flex-col items-center text-center">
             <div className="p-4 rounded-full bg-linear-to-br from-emerald-100 to-green-100 dark:from-emerald-950/40 dark:to-green-950/40 text-emerald-600 dark:text-emerald-400 mb-5 shadow-lg shadow-emerald-500/10 animate-pulse">
               <CheckCircleIcon />
@@ -316,7 +295,6 @@ export default async function Success({ searchParams }) {
             </p>
           </div>
 
-          {/* Quick Stats Grid */}
           <div className="grid grid-cols-2 gap-4 my-6">
             <div className="bg-zinc-100/40 dark:bg-zinc-900/40 border border-zinc-200/40 dark:border-zinc-800/40 rounded-2xl p-4 flex flex-col justify-between">
               <span className="text-xs text-zinc-400 uppercase font-bold tracking-wider">
@@ -341,7 +319,6 @@ export default async function Success({ searchParams }) {
             </div>
           </div>
 
-          {/* Transaction Metadata Detail List */}
           <div className="bg-zinc-100/50 dark:bg-zinc-900/20 border border-zinc-200/50 dark:border-zinc-800/20 rounded-2xl p-5 space-y-3">
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2 text-zinc-500">
@@ -384,7 +361,6 @@ export default async function Success({ searchParams }) {
             </div>
           </div>
 
-          {/* Success Alert Box */}
           <div className="my-6 border border-emerald-500/20 bg-emerald-500/5 rounded-2xl p-4 flex gap-3">
             <div className="p-1 rounded-full bg-emerald-500/10 text-emerald-500 self-start">
               <SparklesIcon />
@@ -401,93 +377,29 @@ export default async function Success({ searchParams }) {
             </div>
           </div>
 
-          {/* Perks Summary Grid */}
-          <div className="mb-8 border-t border-zinc-200/60 dark:border-zinc-800/60 pt-6">
-            <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4">
-              Included Premium Perks
-            </h4>
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <li className="flex items-center gap-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                <span className="p-0.5 rounded-full bg-orange-500/15 text-orange-500 dark:text-orange-400">
-                  <CheckCircleIcon className="w-3.5 h-3.5" />
-                </span>
-                Unlimited Recipe Uploads
-              </li>
-              <li className="flex items-center gap-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                <span className="p-0.5 rounded-full bg-orange-500/15 text-orange-500 dark:text-orange-400">
-                  <CheckCircleIcon className="w-3.5 h-3.5" />
-                </span>
-                Premium Profile Badge
-              </li>
-              <li className="flex items-center gap-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                <span className="p-0.5 rounded-full bg-orange-500/15 text-orange-500 dark:text-orange-400">
-                  <CheckCircleIcon className="w-3.5 h-3.5" />
-                </span>
-                Priority Support
-              </li>
-              <li className="flex items-center gap-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                <span className="p-0.5 rounded-full bg-orange-500/15 text-orange-500 dark:text-orange-400">
-                  <CheckCircleIcon className="w-3.5 h-3.5" />
-                </span>
-                Future Premium Features
-              </li>
-            </ul>
-          </div>
-
-          {/* Action Links */}
           <div className="flex flex-col sm:flex-row gap-3 w-full border-t border-zinc-200/60 dark:border-zinc-800/60 pt-6">
             <Link
               href="/recipes"
               className="flex-1 h-12 rounded-2xl font-bold border border-zinc-200/60 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center gap-2 active:scale-95 transition-all"
             >
-              <UtensilsIcon />
-              Browse Recipes
+              <UtensilsIcon /> Browse Recipes
             </Link>
 
             <Link
               href="/dashboard/user/add-recipe"
               className="flex-1 h-12 rounded-2xl font-bold text-orange-500 dark:text-orange-400 border border-orange-500/20 bg-orange-500/5 hover:bg-orange-500/10 flex items-center justify-center gap-2 active:scale-95 transition-all"
             >
-              <PlusIcon />
-              Add Recipe
+              <PlusIcon /> Add Recipe
             </Link>
 
             <Link
               href="/dashboard/user"
               className="flex-1 h-12 rounded-2xl font-bold text-white bg-linear-to-r from-orange-500 to-rose-600 hover:opacity-95 flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-orange-500/20"
             >
-              Go to Dashboard
-              <ArrowRightIcon />
+              Go to Dashboard <ArrowRightIcon />
             </Link>
           </div>
         </SuccessCard>
-      </div>
-    );
-  }
-
-  if (sessionStatus === "incomplete") {
-    return (
-      <div className="relative min-h-[90vh] flex items-center justify-center py-16 px-4 bg-zinc-50 dark:bg-[#0a0a0c]">
-        <ErrorCard>
-          <div className="flex flex-col items-center text-center">
-            <div className="p-4 rounded-full bg-orange-100 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 mb-6 animate-pulse">
-              <XCircleIcon />
-            </div>
-            <h2 className="text-2xl md:text-3xl font-black text-orange-600 dark:text-orange-400 tracking-tight mb-3">
-              Payment Pending
-            </h2>
-            <p className="text-zinc-600 dark:text-zinc-400 text-sm md:text-base leading-relaxed mb-6 max-w-md">
-              Your payment is still processing. Please wait a few minutes and
-              refresh this page to verify the transaction.
-            </p>
-            <Link
-              href="/"
-              className="w-full h-12 rounded-2xl font-bold flex items-center justify-center gap-2 text-white bg-linear-to-r from-orange-500 to-rose-600 hover:opacity-95 transition-opacity shadow-md"
-            >
-              Return Home
-            </Link>
-          </div>
-        </ErrorCard>
       </div>
     );
   }
@@ -496,19 +408,16 @@ export default async function Success({ searchParams }) {
     <div className="relative min-h-[90vh] flex items-center justify-center py-16 px-4 bg-zinc-50 dark:bg-[#0a0a0c]">
       <ErrorCard>
         <div className="flex flex-col items-center text-center">
-          <div className="p-4 rounded-full bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 mb-6 animate-pulse">
+          <div className="p-4 rounded-full bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 mb-6">
             <XCircleIcon />
           </div>
           <h2 className="text-2xl md:text-3xl font-black text-red-600 dark:text-red-400 tracking-tight mb-3">
             Payment Verification Failed
           </h2>
           <p className="text-zinc-600 dark:text-zinc-400 text-sm md:text-base leading-relaxed mb-6 max-w-md">
-            We couldn't verify your payment. Please contact support if money was
-            deducted from your account.
+            We couldn&apos;t verify your payment. Status is: {status}. Please
+            contact support if money was deducted.
           </p>
-          <div className="w-full bg-red-500/5 rounded-2xl p-4 border border-red-500/10 text-left text-xs text-red-500/80 font-mono mb-6">
-            {errorMessage}
-          </div>
           <Link
             href="/"
             className="w-full h-12 rounded-2xl font-bold flex items-center justify-center gap-2 text-white bg-linear-to-r from-red-500 to-rose-600 hover:opacity-95 transition-opacity shadow-md"

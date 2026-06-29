@@ -21,13 +21,4 @@ export const getFavoriteRecipes = async (userId) =>
 export const getFeatureAndPopularRecipe = async () =>
   apiClient(`/api/feature&popularRecipe`);
 
-export const getSubscriptionsPlans = async () =>
-  apiClient("/api/subscription-plans");
-
-export const getAdminDashboardOverviewDataByAdminId = async (adminId) =>
-  apiClient(`/api/admin/${adminId}/dashboard-overview`);
-
-export const getTotalUsers = async () => apiClient("/api/users/total-users");
-
-export const getTotalTransactions = async () =>
-  apiClient("/api/transactions/total-transactions");
+export const getAllRecipes = async () => apiClient(`/recipes`);
