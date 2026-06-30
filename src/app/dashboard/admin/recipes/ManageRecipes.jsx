@@ -29,110 +29,6 @@ import Image from "next/image";
 import { DeleteRecipe } from "../../user/my-recipes/[updateRecipe]/DeleteRecipe";
 import { recipeFeatureUnFeatured } from "@/lib/actions/recipe";
 
-// ─── Mock Data ───────────────────────────────────────────────────────────────
-// const MOCK_RECIPES = [
-//   {
-//     _id: "1",
-//     recipeName: "Butter Chicken",
-//     recipeImage:
-//       "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=120&q=80",
-//     category: "Dinner",
-//     cuisineType: "Indian",
-//     difficultyLevel: "Medium",
-//     preparationTime: 45,
-//     likesCount: 850,
-//     isFeatured: true,
-//     status: "published",
-//     author: {
-//       id: "user_023",
-//       name: "Amit Patel",
-//       email: "amit@example.com",
-//       avatar: "https://randomuser.me/api/portraits/men/23.jpg",
-//     },
-//     createdAt: "2026-06-13T18:30:00Z",
-//   },
-//   {
-//     _id: "2",
-//     recipeName: "Margherita Pizza",
-//     recipeImage:
-//       "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=120&q=80",
-//     category: "Lunch",
-//     cuisineType: "Italian",
-//     difficultyLevel: "Easy",
-//     preparationTime: 30,
-//     likesCount: 620,
-//     isFeatured: false,
-//     status: "published",
-//     author: {
-//       id: "user_041",
-//       name: "Sofia Rossi",
-//       email: "sofia@example.com",
-//       avatar: "https://randomuser.me/api/portraits/women/41.jpg",
-//     },
-//     createdAt: "2026-06-15T10:00:00Z",
-//   },
-//   {
-//     _id: "3",
-//     recipeName: "Chicken Shawarma",
-//     recipeImage:
-//       "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=120&q=80",
-//     category: "Dinner",
-//     cuisineType: "Middle Eastern",
-//     difficultyLevel: "Medium",
-//     preparationTime: 60,
-//     likesCount: 1240,
-//     isFeatured: true,
-//     status: "published",
-//     author: {
-//       id: "user_007",
-//       name: "Layla Hassan",
-//       email: "layla@example.com",
-//       avatar: "https://randomuser.me/api/portraits/women/7.jpg",
-//     },
-//     createdAt: "2026-06-17T14:15:00Z",
-//   },
-//   {
-//     _id: "4",
-//     recipeName: "Beef Tacos",
-//     recipeImage:
-//       "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=120&q=80",
-//     category: "Lunch",
-//     cuisineType: "Mexican",
-//     difficultyLevel: "Easy",
-//     preparationTime: 25,
-//     likesCount: 390,
-//     isFeatured: false,
-//     status: "published",
-//     author: {
-//       id: "user_055",
-//       name: "Carlos Mendez",
-//       email: "carlos@example.com",
-//       avatar: "https://randomuser.me/api/portraits/men/55.jpg",
-//     },
-//     createdAt: "2026-06-20T09:45:00Z",
-//   },
-//   {
-//     _id: "5",
-//     recipeName: "Chocolate Lava Cake",
-//     recipeImage:
-//       "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=120&q=80",
-//     category: "Dessert",
-//     cuisineType: "French",
-//     difficultyLevel: "Hard",
-//     preparationTime: 90,
-//     likesCount: 2100,
-//     isFeatured: true,
-//     status: "published",
-//     author: {
-//       id: "user_012",
-//       name: "Marie Dupont",
-//       email: "marie@example.com",
-//       avatar: "https://randomuser.me/api/portraits/women/12.jpg",
-//     },
-//     createdAt: "2026-06-22T20:00:00Z",
-//   },
-// ];
-
 // ─── Options ─────────────────────────────────────────────────────────────────
 const categoryOptions = [
   { key: "all", label: "All Categories" },
@@ -359,7 +255,7 @@ export default function ManageRecipesPage({ allRecipes }) {
           >
             <CardContent className="p-6 flex flex-row items-center gap-5">
               <div
-                className={`p-4 rounded-2xl bg-gradient-to-br ${card.color} text-white shadow-lg shrink-0`}
+                className={`p-4 rounded-2xl bg-linear-to-br ${card.color} text-white shadow-lg shrink-0`}
               >
                 {card.icon}
               </div>
@@ -401,7 +297,6 @@ export default function ManageRecipesPage({ allRecipes }) {
             />
           </div>
 
-          {/* FIX 1: Dropdown.Item-এ id={item.key} যুক্ত করা হয়েছে */}
           {/* Category Filter */}
           <Dropdown>
             <Button variant="flat" className="capitalize w-full sm:w-auto">
@@ -537,18 +432,12 @@ export default function ManageRecipesPage({ allRecipes }) {
                     <Table.Column isRowHeader className="min-w-40">
                       RECIPE NAME
                     </Table.Column>
-                    <Table.Column className="min-w-[100px]">
-                      CATEGORY
-                    </Table.Column>
-                    <Table.Column className="min-w-[120px]">
-                      CUISINE
-                    </Table.Column>
-                    <Table.Column className="min-w-[180px]">
-                      AUTHOR
-                    </Table.Column>
+                    <Table.Column className="min-w-25">CATEGORY</Table.Column>
+                    <Table.Column className="min-w-30">CUISINE</Table.Column>
+                    <Table.Column className="min-w-45">AUTHOR</Table.Column>
                     <Table.Column className="w-20">LIKES</Table.Column>
                     <Table.Column className="w-24">FEATURED</Table.Column>
-                    <Table.Column className="min-w-[160px]">
+                    <Table.Column className="min-w-40">
                       CREATED DATE
                     </Table.Column>
                     <Table.Column className="w-28 text-center">
@@ -560,7 +449,7 @@ export default function ManageRecipesPage({ allRecipes }) {
                     items={paginatedRecipes}
                     renderEmptyState={() => (
                       <div className="flex flex-col items-center justify-center space-y-4 py-16 text-center">
-                        <div className="p-5 bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-zinc-800 dark:to-zinc-800 rounded-full text-zinc-400 dark:text-zinc-500 shadow-inner">
+                        <div className="p-5 bg-linear-to-br from-neutral-100 to-neutral-200 dark:from-zinc-800 dark:to-zinc-800 rounded-full text-zinc-400 dark:text-zinc-500 shadow-inner">
                           <FiInbox className="text-5xl" />
                         </div>
                         <div className="space-y-1">
@@ -577,7 +466,7 @@ export default function ManageRecipesPage({ allRecipes }) {
                     {(recipe) => (
                       <Table.Row key={recipe?.id} id={recipe?.id}>
                         <Table.Cell>
-                          <div className="w-[60px] h-[60px] rounded-2xl overflow-hidden shadow-md shrink-0">
+                          <div className="w-15 h-15 rounded-2xl overflow-hidden shadow-md shrink-0">
                             <Image
                               src={recipe?.recipeImage}
                               alt={recipe?.recipeName}
@@ -696,7 +585,6 @@ export default function ManageRecipesPage({ allRecipes }) {
                               <DeleteRecipe
                                 recipeId={recipe._id}
                                 recipeName={recipe?.recipeName}
-                                path="/recipes"
                               />
                             </Tooltip>
 

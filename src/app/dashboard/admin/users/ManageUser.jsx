@@ -7,7 +7,6 @@ import { FiUser } from "react-icons/fi";
 import { toggleUserBlockStatus } from "@/lib/actions/user";
 import { toast } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import { refreshRoute } from "@/lib/revalidatePagh";
 
 // ================= CUSTOM INLINE SVG ICONS (FOR ZERO COMPILE ERRORS) =================
 const SearchIcon = ({ className = "w-5 h-5" }) => (
@@ -262,7 +261,7 @@ export default function ManageUsersPage({ totalUsers }) {
           u.id === userId ? { ...u, isBlocked: result.isBlocked } : u,
         ),
       );
-      await refreshRoute("/dashboard/admin/users");
+      router.refresh();
       setTimeout(() => {
         toast.success(
           `User ${result.isBlocked ? "blocked" : "unblocked"} successfully!`,

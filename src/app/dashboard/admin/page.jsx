@@ -14,6 +14,7 @@ const AdminDashboardPage = async () => {
   const adminDashboardOverviewData =
     await getAdminDashboardOverviewDataByAdminId(user?.id);
 
+
   return <AdminDashboardOverview data={adminDashboardOverviewData} />;
 };
 

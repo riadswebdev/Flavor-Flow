@@ -95,7 +95,6 @@ export default function AdminDashboardOverview({ data }) {
 
         {/* Stat 3: Premium Members */}
         <StatCard
-          
           title="Premium Members"
           value={data?.totalPremiumMembers || 0}
           description="Active tier subscribers"
@@ -303,15 +302,13 @@ function StatCard({ title, value, description, icon, btnText, onClick }) {
         </CardContent>
         <CardFooter className="p-0 pt-4">
           <Button
-            endContent={
-              <FaArrowRight
-                size={12}
-                className="group-hover:translate-x-1 transition-transform"
-              />
-            }
             onClick={onClick}
             className="w-full text-xs font-bold bg-linear-to-r from-orange-500 to-rose-500 text-white shadow-md shadow-orange-500/10 hover:opacity-95 rounded-2xl"
           >
+            <FaArrowRight
+              size={12}
+              className="group-hover:translate-x-1 transition-transform"
+            />
             {btnText}
           </Button>
         </CardFooter>

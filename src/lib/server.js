@@ -1,6 +1,8 @@
 "use server";
 
-const baseUrl = "https://flavor-flow-server.onrender.com";
+const baseUrl =
+  process.env.NEXT_PUBLIC_RECIPES_API_URL ||
+  "https://flavor-flow-server.onrender.com";
 
 export const apiClient = async (
   path,

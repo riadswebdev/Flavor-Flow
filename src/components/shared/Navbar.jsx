@@ -32,7 +32,7 @@ export default function Navbar() {
     return () => window.clearTimeout(timeoutId);
   }, []);
 
-  if (pathname.startsWith("/dashboard")) {
+  if (pathname?.startsWith("/dashboard")) {
     return null;
   }
 
