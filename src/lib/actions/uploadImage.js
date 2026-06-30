@@ -1,18 +1,4 @@
-"use server";
-
-import { apiClient } from "../server";
-
 const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
-
-// export const uploadToImgBB = async (file) => {
-//   const formData = new FormData();
-//   formData.append("image", file);
-//   return apiClient(
-//     `https://api.imgbb.com/1/upload?key=${apiKey}`,
-//     "POST",
-//     formData,
-//   );
-// };
 
 export const uploadToImgBB = async (file) => {
   const formData = new FormData();

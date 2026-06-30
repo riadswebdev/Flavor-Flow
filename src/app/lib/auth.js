@@ -3,10 +3,10 @@ import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 
 const client = new MongoClient(process.env.MONGODB_URI);
-const db = client.db(process.env.AUTH_DB_NAME);
+const db = client.db("flavorflow");
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL,
+  baseURL: "https://flavor-flow-one.vercel.app",
   socialProviders: {
     google: {
       clientId: process.env.Client_ID,

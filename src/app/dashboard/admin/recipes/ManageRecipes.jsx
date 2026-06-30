@@ -223,6 +223,7 @@ export default function ManageRecipesPage({ allRecipes }) {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
     fetchRecipes();
   }, []);
@@ -301,7 +302,7 @@ export default function ManageRecipesPage({ allRecipes }) {
         className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
       >
         <div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-linear-to-r from-orange-500 to-red-600 bg-clip-text text-transparent">
             Manage Recipes
           </h1>
           <p className="text-zinc-500 dark:text-zinc-400 mt-1 font-medium">
@@ -533,7 +534,7 @@ export default function ManageRecipesPage({ allRecipes }) {
                 >
                   <Table.Header>
                     <Table.Column className="w-16">IMAGE</Table.Column>
-                    <Table.Column isRowHeader className="min-w-[160px]">
+                    <Table.Column isRowHeader className="min-w-40">
                       RECIPE NAME
                     </Table.Column>
                     <Table.Column className="min-w-[100px]">

@@ -59,9 +59,6 @@ export default function RecipeDetails({
   const [isInvalid, setIsInvalid] = useState(false);
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
 
-  const apiBaseUrl =
-    process.env.NEXT_PUBLIC_RECIPES_API_URL || "http://localhost:8000";
-
   // 1. Like / Unlike Button Handler with Optimistic UI Updates
   const handleLikeToggle = async () => {
     if (isLikeLoading || !currentUser?.id) {

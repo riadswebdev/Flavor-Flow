@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Input, Button, Separator, toast } from "@heroui/react";
-import { authClient, signIn } from "@/app/lib/auth-client";
 import { UtensilsCrossed, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Icon } from "@iconify/react";
+import { authClient } from "@/app/lib/auth-client";
 
 export default function LoginPage() {
   useEffect(() => {
@@ -27,9 +26,10 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const { error: authError } = await signIn.email({
+      const { error: authError } = await authClient.signIn.email({
         email,
         password,
+        callbackURL: "/",
       });
       if (authError) {
         setError(authError.message || "Invalid email or password");

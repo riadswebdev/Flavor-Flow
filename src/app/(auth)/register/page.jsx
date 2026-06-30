@@ -3,49 +3,31 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input, Button, Separator, toast } from "@heroui/react";
-import { uploadToImgBB } from "@/lib/actions/uploadImage";
-
-import {
-  UtensilsCrossed,
-  Eye,
-  EyeOff,
-  Image,
-  Loader2,
-  Check,
-  X,
-} from "lucide-react";
-import { signUp } from "@/app/lib/auth-client";
+import { UtensilsCrossed, Eye, EyeOff, Loader2, Check, X } from "lucide-react";
+import { authClient } from "@/app/lib/auth-client";
+import Link from "next/link";
 
 const RegisterPage = () => {
   useEffect(() => {
     document.title = "Flavor Flow - Register";
   }, []);
+
   const router = useRouter();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [password, setPassword] = useState("");
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState("");
-
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [imageUploading, setImageUploading] = useState(false);
   const [signUpError, setSignUpError] = useState("");
+
   const toggleVisibility = () => setIsVisible(!isVisible);
 
   const hasMinLength = password.length >= 6;
   const hasUppercase = /[A-Z]/.test(password);
   const hasLowercase = /[a-z]/.test(password);
   const isPasswordValid = hasMinLength && hasUppercase && hasLowercase;
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -57,50 +39,42 @@ const RegisterPage = () => {
     }
 
     setLoading(true);
-    let uploadedImageUrl = "";
 
     try {
-      if (imageFile) {
-        setImageUploading(true);
-        uploadedImageUrl = await uploadToImgBB(imageFile);
-        console.log(uploadedImageUrl)
-        setImageUploading(false);
-      }
-
-      const { error } = await signUp.email({
-        name,
-        email,
-        password,
-        image: uploadedImageUrl,
-        role: "user",
-        isBlocked: false,
-        planId: "free",
-        expireAt: null,
-        recipeLimit: 2,
-      });
-      console.log({
-        name,
-        email,
-        password,
-        image: uploadedImageUrl,
-        role: "user",
-        isBlocked: false,
-        planId: "free",
-        expireAt: null,
-        recipeLimit: 2,
-      });
-      if (error) {
-        setSignUpError(
-          error.message || "Registration failed. Please try again.",
-        );
-      }
-      toast.success(
-        "Registration successful! Please check your email to verify your account.",
+      const result = await authClient.signUp.email(
+        {
+          email,
+          password,
+          name,
+          image: imageUrl,
+          role: "user",
+          isBlocked: false,
+          planId: "free",
+          expireAt: null,
+          recipeLimit: 2,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Registration successful! Please check your email.");
+            router.push("/login");
+          },
+          onError: (ctx) => {
+            setSignUpError(ctx.error.message || "Registration failed.");
+            setLoading(false);
+          },
+        },
       );
-      router.push("/login");
-    } finally {
+
+      if (!result.data?.token) {
+        setSignUpError(
+          "Account could not be created. Email may already exist.",
+        );
+        setLoading(false);
+        return;
+      }
+    } catch (err) {
+      setSignUpError("Unexpected error occurred. Please try again.");
       setLoading(false);
-      setImageUploading(false);
     }
   };
 
@@ -123,16 +97,17 @@ const RegisterPage = () => {
             Join us to explore and share master-class recipes.
           </p>
         </div>
+
         {/* Error Feedback */}
         {signUpError && (
           <div className="p-3 text-sm text-rose-500 bg-rose-500/10 rounded-xl border border-rose-500/20 text-center font-medium">
             {signUpError}
           </div>
         )}
+
         {/* Form */}
-        {/* Form Elements */}
         <form onSubmit={handleRegister} className="space-y-4">
-          {/* 1. Full Name Field */}
+          {/* Full Name */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground/90 block">
               Full Name <span className="text-rose-500">*</span>
@@ -149,7 +124,7 @@ const RegisterPage = () => {
             />
           </div>
 
-          {/* 2. Email Address Field */}
+          {/* Email */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground/90 block">
               Email Address <span className="text-rose-500">*</span>
@@ -166,50 +141,31 @@ const RegisterPage = () => {
             />
           </div>
 
-          {/* 3. Image Upload Block */}
+          {/* Profile Image URL */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground/90 block">
-              Profile Picture <span className="text-rose-500">*</span>
+              Profile Image URL <span className="text-rose-500">*</span>
             </label>
-            <div className="flex items-center gap-4 p-3 rounded-xl border-2 border-dashed border-default-200 hover:border-orange-500/50 transition-colors relative bg-default-50/30">
-              {imagePreview ?
-                <img
-                  width={48}
-                  height={48}
-                  src={imagePreview}
-                  alt="Avatar Preview"
-                  className="w-12 h-12 rounded-full object-cover border border-default-200"
-                />
-              : <div className="p-3 rounded-full bg-default-100 text-default-400">
-                  <Image size={20} />
-                </div>
-              }
-              <div className="flex-1">
-                <p className="text-xs font-medium text-foreground">
-                  {imageFile ? imageFile.name : "Choose an image file"}
-                </p>
-                <p className="text-[11px] text-foreground/50">
-                  PNG, JPG up to 5MB
-                </p>
-              </div>
-              <input
-                type="file"
-                accept="image/*"
-                required
-                onChange={handleImageChange}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              />
-            </div>
+            <Input
+              type="url"
+              placeholder="https://example.com/avatar.png"
+              variant="bordered"
+              radius="xl"
+              required
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              className="w-full"
+            />
           </div>
 
-          {/* 4. Password Input Field */}
+          {/* Password */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground/90 block">
               Password <span className="text-rose-500">*</span>
             </label>
             <div className="relative flex items-center">
               <Input
-                placeholder="Create strong password"
+                placeholder="Create a strong password"
                 variant="bordered"
                 radius="xl"
                 required
@@ -218,12 +174,10 @@ const RegisterPage = () => {
                 type={isVisible ? "text" : "password"}
                 className="w-full"
               />
-
-              {/* Absolute positioned toggle button */}
               <button
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 focus:outline-none text-default-400 hover:text-default-600 transition-colors flex items-center justify-center"
                 type="button"
                 onClick={toggleVisibility}
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 text-default-400 hover:text-default-600 transition-colors focus:outline-none"
               >
                 {isVisible ?
                   <EyeOff size={16} />
@@ -231,89 +185,72 @@ const RegisterPage = () => {
               </button>
             </div>
 
-            {/* Password Real-time Rules UI Check */}
+            {/* Password Rules */}
             {password && (
               <div className="p-3 bg-default-50/50 rounded-xl border border-default-100 text-xs space-y-1.5 mt-1 animate-fadeIn">
                 <p className="font-medium text-foreground/70 mb-1">
                   Password Requirements:
                 </p>
-                <div className="flex items-center gap-2">
-                  {hasMinLength ?
-                    <Check size={14} className="text-green-500" />
-                  : <X size={14} className="text-rose-500" />}
-                  <span
-                    className={
-                      hasMinLength ?
-                        "text-green-600 dark:text-green-400"
-                      : "text-foreground/50"
-                    }
-                  >
-                    Minimum 6 characters
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {hasUppercase ?
-                    <Check size={14} className="text-green-500" />
-                  : <X size={14} className="text-rose-500" />}
-                  <span
-                    className={
-                      hasUppercase ?
-                        "text-green-600 dark:text-green-400"
-                      : "text-foreground/50"
-                    }
-                  >
-                    At least one uppercase letter (A-Z)
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {hasLowercase ?
-                    <Check size={14} className="text-green-500" />
-                  : <X size={14} className="text-rose-500" />}
-                  <span
-                    className={
-                      hasLowercase ?
-                        "text-green-600 dark:text-green-400"
-                      : "text-foreground/50"
-                    }
-                  >
-                    At least one lowercase letter (a-z)
-                  </span>
-                </div>
+                {[
+                  { met: hasMinLength, label: "Minimum 6 characters" },
+                  {
+                    met: hasUppercase,
+                    label: "At least one uppercase letter (A–Z)",
+                  },
+                  {
+                    met: hasLowercase,
+                    label: "At least one lowercase letter (a–z)",
+                  },
+                ].map(({ met, label }) => (
+                  <div key={label} className="flex items-center gap-2">
+                    {met ?
+                      <Check size={14} className="text-green-500" />
+                    : <X size={14} className="text-rose-500" />}
+                    <span
+                      className={
+                        met ?
+                          "text-green-600 dark:text-green-400"
+                        : "text-foreground/50"
+                      }
+                    >
+                      {label}
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <Button
             type="submit"
             radius="xl"
-            disabled={loading || imageUploading}
+            disabled={loading}
             className="w-full font-medium bg-linear-to-r from-orange-500 to-rose-500 text-white shadow-lg shadow-orange-500/20 hover:opacity-95 transition-all mt-4"
           >
             {loading ?
-              <div className="flex items-center gap-2">
-                <Loader2 size={18} className="animate-spin text-white" />
-                <span>
-                  {imageUploading ?
-                    "Uploading Image..."
-                  : "Creating Account..."}
-                </span>
-              </div>
+              <span className="flex items-center gap-2">
+                <Loader2 size={18} className="animate-spin" />
+                Creating Account...
+              </span>
             : "Sign Up"}
           </Button>
         </form>
-        <Separator className="my-4" /> {/* Footer Link */}
+
+        <Separator className="my-4" />
+
         <p className="text-center text-sm text-foreground/60">
           Already have an account?{" "}
-          <a
+          <Link
             href="/login"
             className="text-orange-500 font-semibold hover:underline"
           >
             Sign In
-          </a>
+          </Link>
         </p>
       </div>
     </div>
   );
 };
+
 export default RegisterPage;

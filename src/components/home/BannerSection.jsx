@@ -1,128 +1,309 @@
-import { Button } from "@heroui/react";
-import { ArrowRight, Flame, Clock, Star, Play } from "lucide-react";
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { Button, Card, CardContent, Chip, Separator } from "@heroui/react";
+import {
+  ArrowRight,
+  Plus,
+  Flame,
+  Heart,
+  Clock,
+  Star,
+  ChefHat,
+  UtensilsCrossed,
+  Globe,
+  Sparkles,
+} from "lucide-react";
 
-export default function BannerSection() {
+// Framer Motion Animation Variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15, delayChildren: 0.1 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 100, damping: 20 },
+  },
+};
+
+const floatingAnimation = (delay = 0) => ({
+  animate: {
+    y: [0, -12, 0],
+    transition: {
+      duration: 4,
+      repeat: Infinity,
+      repeatType: "reverse",
+      ease: "easeInOut",
+      delay: delay,
+    },
+  },
+});
+
+export default function Hero() {
   return (
-    <section className="relative w-full bg-background overflow-hidden py-12 sm:py-20 lg:py-24">
-      {/* Background Subtle Glows */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl -z-10" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl -z-10" />
+    <section className="relative min-h-[90vh] w-full overflow-hidden bg-background py-12 md:py-20 flex items-center justify-center">
+      {/* --- PREMIUM BACKGROUND ELEMENTS --- */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        {/* Soft Ambient Glows */}
+        <div className="absolute -top-40 -left-40 w-125 h-125 bg-linear-to-tr from-orange-500/20 to-rose-500/20 blur-[120px] rounded-full dark:from-orange-500/10 dark:to-rose-500/10" />
+        <div className="absolute top-1/2 right-[-10%] w-150 h-150 bg-linear-to-br from-rose-500/15 to-orange-600/15 blur-[140px] rounded-full dark:from-rose-500/5 dark:to-orange-600/10" />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Floating Blurred Circles */}
+        <motion.div
+          animate={{ x: [0, 30, 0], y: [0, -40, 0] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[20%] left-[15%] w-72 h-72 bg-orange-400/10 rounded-full blur-3xl dark:bg-orange-500/5"
+        />
+
+        {/* Subtle Grid Pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none mix-blend-overlay"
+          style={{
+            backgroundImage: `radial-linear(circle at 1px 1px, currentColor 1px, transparent 0)`,
+            backgroundSize: "24px 24px",
+          }}
+        />
+      </div>
+
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          {/* Left Column: Text Content & CTA */}
-          <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+          {/* --- LEFT SIDE: CONTENT CONTENT --- */}
+          <motion.div
+            className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left space-y-6 md:space-y-8"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {/* Trending Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 text-xs font-semibold tracking-wide backdrop-blur-sm">
-              <Flame size={14} className="animate-pulse" />
-              #1 Trending Recipe of the Week
-            </div>
+            <motion.div variants={itemVariants}>
+              <Chip
+                variant="flat"
+                className="px-4 py-2 h-auto text-sm font-medium backdrop-blur-md bg-orange-500/10 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 border border-orange-500/20 rounded-full shadow-sm"
+              >
+                {" "}
+                <Flame
+                  className="text-orange-500 fill-orange-500 animate-pulse"
+                  size={16}
+                />
+                🔥 Trending Today: Featured Recipe Collection
+                <Sparkles className="text-rose-500" size={14} />
+              </Chip>
+            </motion.div>
 
-            {/* Title */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.15]">
-              Savor the Perfect{" "}
-              <span className="bg-linear-to-r from-orange-500 to-rose-500 bg-clip-text text-transparent">
-                Roasted Sausage
-              </span>{" "}
-              Traybake
-            </h1>
+            {/* Main Heading */}
+            <motion.h1
+              variants={itemVariants}
+              className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[1.1] text-foreground"
+            >
+              Discover, Cook & Share <br />
+              <span className="bg-linear-to-r from-orange-500 via-amber-500 to-rose-600 bg-clip-text text-transparent drop-shadow-sm">
+                Amazing Recipes
+              </span>
+            </motion.h1>
 
             {/* Description */}
-            <p className="text-base sm:text-lg text-foreground/60 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-              A heartwarming, effortless dish featuring succulent roasted
-              sausages, crispy gold potatoes, and caramelized root vegetables.
-              Perfect for busy weeknights or cozy family gatherings.
-            </p>
-
-            {/* Necessary Quick Info Metrics */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 pt-2 text-sm text-foreground/70">
-              <div className="flex items-center gap-2 bg-default-50 px-3 py-1.5 rounded-xl border border-default-100">
-                <Clock size={16} className="text-rose-500" />
-                <span>
-                  Ready in <b>45 Mins</b>
-                </span>
-              </div>
-              <div className="flex items-center gap-2 bg-default-50 px-3 py-1.5 rounded-xl border border-default-100">
-                <Flame size={16} className="text-orange-500" />
-                <span>
-                  Calories: <b>420 kcal</b>
-                </span>
-              </div>
-              <div className="flex items-center gap-2 bg-default-50 px-3 py-1.5 rounded-xl border border-default-100">
-                <Star size={16} className="text-amber-500 fill-amber-500" />
-                <span>
-                  Rating: <b>4.9 (2.4k)</b>
-                </span>
-              </div>
-            </div>
+            <motion.p
+              variants={itemVariants}
+              className="text-base sm:text-lg text-default-600 max-w-2xl font-normal leading-relaxed"
+            >
+              Join thousands of passionate home cooks and professional chefs.
+              Discover delicious culinary creations, save your absolute
+              favorites, publish your own signature dishes, and become part of
+              the vibrant FlavorFlow community.
+            </motion.p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+            <motion.div
+              variants={itemVariants}
+              className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto pt-2"
+            >
               <Button
+                as={Link}
+                href="/recipes"
                 size="lg"
-                radius="xl"
-                className="w-full sm:w-auto font-medium bg-linear-to-r from-orange-500 to-rose-500 text-white shadow-xl shadow-orange-500/20 hover:opacity-95 transition-all"
-                endContent={<ArrowRight size={18} />}
-                as="a"
-                href="https://www.bbc.co.uk/food/recipes/roasted_sausage_and_39127"
-                target="_blank"
-                rel="noopener noreferrer"
+                className="group font-bold text-white bg-linear-to-r from-orange-500 to-rose-600 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 transition-all transform hover:-translate-y-0.5 rounded-2xl px-8"
               >
-                View Full Recipe
+                <ArrowRight
+                  size={18}
+                  className="group-hover:translate-x-1 transition-transform"
+                />
+                Browse Recipes
               </Button>
               <Button
+                as={Link}
+                href="/dashboard/user/add-recipe"
                 size="lg"
-                radius="xl"
                 variant="bordered"
-                className="w-full sm:w-auto font-medium border-default-200 hover:bg-default-100 transition-all text-foreground"
-                startContent={
-                  <Play
-                    size={16}
-                    className="fill-current text-rose-500 border-none"
-                  />
-                }
+                className="font-semibold border-default-300 dark:border-default-200 hover:bg-default-100 dark:hover:bg-default-50 backdrop-blur-sm rounded-2xl px-6 transition-all"
               >
-                Watch Video Guide
+                <Plus size={18} />
+                Share Your Recipe
               </Button>
-            </div>
-          </div>
+            </motion.div>
 
-          {/* Right Column: Recipe Image Container */}
-          <div className="lg:col-span-5 relative flex justify-center">
-            <div className="relative w-full max-w-110 aspect-square sm:aspect-4/3 lg:aspect-square rounded-3xl overflow-hidden shadow-2xl border-4 border-background group">
-              {/* Recipe Image */}
-              <Image
-                unoptimized
-                width={500}
-                height={500}
-                src="https://ik.imagekit.io/i455l48ls/banner.webp"
-                alt="Roasted Sausage and Potato Traybake"
-                className="w-full h-[90%] object-cover group-hover:scale-105 transition-transform duration-700"
-                loading="lazy"
-              />
-
-              {/* linear Overlay for Text Visibility */}
-              <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/10 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
-
-              {/* Floating Chef Badge */}
-              <div className="absolute bottom-4 left-4 right-4 p-4 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 text-white flex items-center justify-between">
-                <div>
-                  <p className="text-xs text-white/70 font-medium">
-                    Recipe Source
-                  </p>
-                  <p className="text-sm font-bold tracking-tight">
-                    BBC Food Collection
-                  </p>
-                </div>
-                <span className="text-xs font-semibold bg-white/20 px-2.5 py-1 rounded-lg border border-white/10">
-                  Easy Level
-                </span>
+            {/* Quick Statistics Grid */}
+            <motion.div variants={itemVariants} className="w-full pt-4">
+              <Separator className="my-6 opacity-60 max-w-md lg:mx-0 mx-auto" />
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl w-full">
+                {[
+                  {
+                    icon: <ChefHat className="text-orange-500" size={18} />,
+                    label: "10K+ Recipes",
+                  },
+                  {
+                    icon: (
+                      <Heart
+                        className="text-rose-500 fill-rose-500/10"
+                        size={18}
+                      />
+                    ),
+                    label: "25K+ Favorites",
+                  },
+                  {
+                    icon: (
+                      <Star
+                        className="text-amber-500 fill-amber-500"
+                        size={18}
+                      />
+                    ),
+                    label: "4.9 Rating",
+                  },
+                  {
+                    icon: <Globe className="text-blue-500" size={18} />,
+                    label: "100+ Countries",
+                  },
+                ].map((stat, idx) => (
+                  <Card
+                    key={idx}
+                    shadow="none"
+                    className="backdrop-blur-xl bg-background/20 border border-default-200/50 dark:border-white/10 rounded-xl"
+                  >
+                    <CardContent className="p-3 flex flex-row items-center justify-center lg:justify-start gap-2.5">
+                      <div className="p-1.5 rounded-lg bg-default-100/50 shadow-inner">
+                        {stat.icon}
+                      </div>
+                      <span className="text-sm font-semibold text-foreground/80 tracking-tight">
+                        {stat.label}
+                      </span>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-            </div>
+            </motion.div>
+          </motion.div>
 
-            {/* Decorative Background Element */}
-            <div className="absolute -inset-2 rounded-[32px] border-2 border-dashed border-default-200 -z-20 pointer-events-none scale-95 opacity-65 lg:block hidden" />
+          {/* --- RIGHT SIDE: FEATURED IMAGE WITH FLOATING CARDS --- */}
+          <div className="lg:col-span-5 relative flex items-center justify-center pt-8 lg:pt-0">
+            {/* Dashed Border Visual Frame Accent */}
+            <div className="absolute -inset-4 border border-dashed border-default-300/60 dark:border-default-700/40 rounded-[2.5rem] pointer-events-none hidden sm:block" />
+
+            {/* Main Featured Image Container */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="relative w-full max-w-110 aspect-4/5 rounded-[2rem] overflow-hidden group shadow-2xl shadow-orange-900/10 dark:shadow-black/40 border-4 border-white dark:border-default-100 z-10 bg-default-100 mx-3 sm:mx-0"
+            >
+              {/* Premium Image with Hover Zoom */}
+              <Image
+                src="https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&q=80&w=800"
+                alt="Premium Butter Chicken Dish"
+                fill
+                priority
+                sizes="(max-w-7xl) 40vw, 100vw"
+                className="object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
+              />
+              {/* Glass & linear Overlay */}
+              <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-black/10 opacity-60 dark:opacity-80 transition-opacity pointer-events-none" />
+            </motion.div>
+
+            {/* Decorative Orange Dots & Glows */}
+            <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-rose-500/20 rounded-full blur-xl pointer-events-none" />
+            <div className="absolute -top-6 -right-6 w-24 h-24 bg-orange-500/20 rounded-full blur-xl pointer-events-none" />
+
+            {/* --- FLOATING GLASS CARDS --- */}
+
+            {/* Card 1: Featured Recipe */}
+            <motion.div
+              className="absolute top-8 -left-8 sm:-left-12 z-20 hidden xs:block"
+              {...floatingAnimation(0)}
+            >
+              <Card className="backdrop-blur-2xl bg-background/70 border border-white/20 dark:border-white/10 shadow-xl rounded-2xl max-w-47.5">
+                <CardContent className="p-3 flex flex-row items-center gap-3">
+                  <div className="p-2 rounded-xl bg-amber-500 text-white shadow-md">
+                    <UtensilsCrossed size={16} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider text-default-500 font-bold">
+                      ⭐ Featured
+                    </p>
+                    <h4 className="text-sm font-bold text-foreground leading-tight">
+                      Butter Chicken
+                    </h4>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Card 2: Likes Counter */}
+            <motion.div
+              className="absolute top-1/3 -right-6 sm:-right-8 z-20"
+              {...floatingAnimation(1.2)}
+            >
+              <Card className="backdrop-blur-2xl bg-background/70 border border-white/20 dark:border-white/10 shadow-xl rounded-xl">
+                <CardContent className="p-2.5 px-4 flex flex-row items-center gap-2">
+                  <Heart
+                    size={16}
+                    className="text-rose-500 fill-rose-500 animate-pulse"
+                  />
+                  <span className="text-xs font-black text-foreground tracking-tight">
+                    2.5K Likes
+                  </span>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Card 3: Preparation Time */}
+            <motion.div
+              className="absolute bottom-16 -left-6 sm:-left-10 z-20"
+              {...floatingAnimation(0.6)}
+            >
+              <Card className="backdrop-blur-2xl bg-background/70 border border-white/20 dark:border-white/10 shadow-xl rounded-xl">
+                <CardContent className="p-2.5 px-4 flex flex-row items-center gap-2">
+                  <Clock size={16} className="text-orange-500" />
+                  <span className="text-xs font-bold text-foreground tracking-tight">
+                    ⏱ 45 Minutes
+                  </span>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Card 4: Community Badge */}
+            <motion.div
+              className="absolute -bottom-4 right-4 sm:-right-4 z-20"
+              {...floatingAnimation(1.8)}
+            >
+              <Card className="backdrop-blur-2xl bg-background/70 border border-white/20 dark:border-white/10 shadow-xl rounded-xl">
+                <CardContent className="p-2.5 px-3.5 flex flex-row items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
+                  <span className="text-xs font-medium text-foreground">
+                    By{" "}
+                    <strong className="font-bold text-transparent bg-clip-text bg-linear-to-r from-orange-600 to-rose-600">
+                      FlavorFlow
+                    </strong>
+                  </span>
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
         </div>
       </div>

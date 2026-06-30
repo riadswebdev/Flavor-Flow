@@ -6,7 +6,8 @@ import { getUserSession } from "@/lib/core/session";
 export async function POST(request) {
   try {
     const headersList = await headers();
-    const origin = headersList.get("origin") || "http://localhost:3000";
+    const origin =
+      headersList.get("origin") || "https://flavor-flow-one.vercel.app";
 
     const formData = await request.formData();
     // Accept either planId or priceId from the request form
