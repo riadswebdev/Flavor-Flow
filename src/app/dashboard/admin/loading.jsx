@@ -1,5 +1,10 @@
 import { Card, Separator, Skeleton } from "@heroui/react";
 
+const metadata = {
+  title: "Dashboard Loading",
+  description: "Loading state for the dashboard",
+};
+
 // 5. Global Loader Grid Skeleton (HeroUI Structure Match)
 export default function DashboardSkeleton() {
   return (

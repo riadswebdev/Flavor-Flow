@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import Image from "next/image";
+import { recipeFeatureUnFeatured } from "@/lib/actions/recipe";
+import { DeleteRecipe } from "../../user/my-recipes/DeleteRecipe";
+import { useState, useMemo, useEffect } from "react";
+import UpdateRecipeFormModal from "@/components/shared/UpdateRecipeForm";
+import { Dropdown, Label } from "@heroui/react";
+import { motion } from "framer-motion";
 import {
   Card,
   CardContent,
@@ -13,11 +19,8 @@ import {
   Avatar,
   Pagination,
 } from "@heroui/react";
-import { Dropdown, Label } from "@heroui/react";
-import { motion } from "framer-motion";
 import {
   FiRefreshCw,
-  FiEdit2,
   FiStar,
   FiAlertTriangle,
   FiHeart,
@@ -25,9 +28,6 @@ import {
   FiInbox,
   FiSearch,
 } from "react-icons/fi";
-import Image from "next/image";
-import { DeleteRecipe } from "../../user/my-recipes/[updateRecipe]/DeleteRecipe";
-import { recipeFeatureUnFeatured } from "@/lib/actions/recipe";
 
 // ─── Options ─────────────────────────────────────────────────────────────────
 const categoryOptions = [
@@ -174,13 +174,11 @@ export default function ManageRecipesPage({ allRecipes }) {
     toast.info(`Edit recipe with ID: ${id} (functionality not implemented)`);
 
   const handleFeature = async (id) => {
-    console.log("Toggle featured for recipe ID:", id);
     setRecipes((prev) =>
       prev.map((r) => (r._id === id ? { ...r, isFeatured: !r.isFeatured } : r)),
     );
 
     const res = await recipeFeatureUnFeatured(id);
-    console.log("Toggle featured response:", res);
   };
 
   if (!isMounted) return null;
@@ -558,60 +556,62 @@ export default function ManageRecipesPage({ allRecipes }) {
                             {formatDate(recipe.createdAt)}
                           </span>
                         </Table.Cell>
+
+                        {/* ================= ACTIONS CELL (redesigned) ================= */}
                         <Table.Cell>
-                          <div className="flex items-center justify-center gap-1">
+                          <div className="flex items-center justify-center gap-1 space-x-1  rounded-2xl  mx-auto w-fit">
+                            {/* Edit */}
                             <Tooltip
                               content="Edit Recipe"
                               color="primary"
                               closeDelay={100}
                             >
-                              <Button
-                                isIconOnly
-                                size="sm"
-                                variant="light"
-                                color="primary"
-                                onClick={() => handleEdit(recipe._id)}
-                                className="hover:bg-primary-500/10 rounded-xl text-lg transition-all"
-                              >
-                                <FiEdit2 />
-                              </Button>
-                            </Tooltip>
-                            <Tooltip
-                              className="mr-7"
-                              content="Delete Recipe"
-                              color="danger"
-                              closeDelay={100}
-                            >
-                              <DeleteRecipe
-                                recipeId={recipe._id}
-                                recipeName={recipe?.recipeName}
-                              />
+                              <div>
+                                <UpdateRecipeFormModal
+                                  recipe={recipe}
+                                  recipeId={recipe?._id}
+                                />
+                              </div>
                             </Tooltip>
 
+                            {/* Featured Toggle */}
                             <Tooltip
-                              content="Mark as Featured"
+                              content={
+                                recipe.isFeatured ?
+                                  "Remove from Featured"
+                                : "Mark as Featured"
+                              }
                               color="warning"
                               closeDelay={100}
                             >
                               <Button
                                 isIconOnly
                                 size="sm"
-                                variant="light"
-                                color="warning"
                                 onClick={() => handleFeature(recipe._id)}
-                                className="hover:bg-warning-500/10 rounded-xl text-lg transition-all mx-5"
+                                className={
+                                  recipe.isFeatured ?
+                                    "bg-amber-500/15 text-amber-600 dark:text-amber-400 rounded-xl h-8 w-8 min-w-8 hover:bg-amber-500/25 transition-all active:scale-90"
+                                  : "bg-transparent text-zinc-400 dark:text-zinc-500 rounded-xl h-8 w-8 min-w-8 hover:bg-amber-500/10 hover:text-amber-500 transition-all active:scale-90"
+                                }
                               >
-                                {recipe.isFeatured ?
-                                  <Chip
-                                    size="sm"
-                                    variant="flat"
-                                    color="warning"
-                                    className="font-bold text-xs px-2"
-                                  >
-                                    <span>⭐</span> Featured
-                                  </Chip>
-                                : <FiStar />}
+                                <FiStar
+                                  className={`text-base ${recipe.isFeatured ? "fill-amber-500" : ""}`}
+                                />
                               </Button>
+                            </Tooltip>
+
+                            {/* Delete */}
+                            <Tooltip
+                              content="Delete Recipe"
+                              color="danger"
+                              closeDelay={100}
+                            >
+                              <div>
+                                <DeleteRecipe
+                                  recipeId={recipe._id}
+                                  recipeName={recipe?.recipeName}
+                                />
+                              </div>
                             </Tooltip>
                           </div>
                         </Table.Cell>

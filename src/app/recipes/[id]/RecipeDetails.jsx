@@ -15,6 +15,7 @@ import {
   ChevronRight,
   CreditCard,
   X,
+  DollarSign,
 } from "lucide-react";
 import {
   likeToggle,
@@ -220,14 +221,14 @@ export default function RecipeDetails({
           {/* Large Hero Image (Left Side) */}
           <div className="lg:col-span-7 xl:col-span-8 relative rounded-3xl overflow-hidden shadow-2xl border border-neutral-200/60 dark:border-neutral-800/50 h-87.5 sm:h-112.5 lg:h-125">
             <Image
-              src={recipeData.recipeImage}
-              alt={recipeData.recipeName}
+              src={recipeData?.recipeImage}
+              alt={recipeData?.recipeName}
               fill
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
             />
             <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
             <h1 className="absolute bottom-6 left-6 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-              {recipeData.recipeName}
+              {recipeData?.recipeName}
             </h1>
           </div>
 
@@ -239,7 +240,17 @@ export default function RecipeDetails({
               </h3>
 
               {/* Grid Meta Information */}
+
               <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2 text-center flex items-center justify-center gap-2.5 p-3 rounded-xl bg-neutral-100/70 dark:bg-[#1a233d]/50">
+                  <DollarSign className="text-emerald-500" size={18} />
+                  <p className="text-base uppercase font-bold text-neutral-400 text-center">
+                    Price
+                  </p>
+                  <p className="text-lg font-bold text-center">
+                    ${recipeData?.price}
+                  </p>
+                </div>
                 <div className="flex items-center gap-2.5 p-3 rounded-xl bg-neutral-100/70 dark:bg-[#1a233d]/50">
                   <Layers className="text-orange-500" size={18} />
                   <div>
@@ -298,22 +309,44 @@ export default function RecipeDetails({
 
             {/* ACTION BUTTONS GROUP */}
             <div className="space-y-3 mt-8">
-              {/* Purchase Button via Stripe */}
-              <button
-                onClick={handlePurchase}
-                disabled={isPurchasing}
-                className="w-full py-3 bg-linear-to-r from-orange-500 to-rose-500 text-white font-bold rounded-xl shadow-lg shadow-orange-500/20 hover:opacity-95 transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wider"
-              >
-                <CreditCard size={18} />
-                {isPurchasing ? "Processing..." : "Buy Recipe Premium Access"}
-              </button>
+              <form className="w-full" action="/api/payment" method="POST">
+                <input
+                  type="hidden"
+                  name="recipeName"
+                  value={recipeData?.recipeName}
+                />
+                <input type="hidden" name="recipeId" value={recipeData?._id} />
+                <input
+                  type="hidden"
+                  name="recipePrice"
+                  value={recipeData?.price}
+                />
+                <input
+                  type="hidden"
+                  name="recipeImage"
+                  value={recipeData?.recipeImage}
+                />
+                <section>
+                  <button
+                    type="submit"
+                    role="link"
+                    disabled={isPurchasing}
+                    className="w-full py-3 bg-linear-to-r from-orange-500 to-rose-500 text-white font-bold rounded-xl shadow-lg shadow-orange-500/20 hover:opacity-95 transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wider cursor-pointer"
+                  >
+                    <CreditCard size={18} />
+                    {isPurchasing ?
+                      "Processing..."
+                    : "Buy Recipe Premium Access"}
+                  </button>
+                </section>
+              </form>
 
               <div className="grid grid-cols-2 gap-2">
                 {/* Favorite Toggle Button */}
                 <button
                   disabled={favoriteLoading}
                   onClick={handleFavoriteToggle}
-                  className={`py-2.5 px-4 rounded-xl border font-semibold text-xs flex items-center justify-center gap-1.5 transition-all ${
+                  className={`py-2.5 px-4 rounded-xl border font-semibold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                     isFavorite ?
                       "bg-amber-500/10 border-amber-500 text-amber-600 dark:text-amber-400"
                     : "border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800"
@@ -330,7 +363,7 @@ export default function RecipeDetails({
                 <button
                   disabled={isLikeLoading}
                   onClick={handleLikeToggle}
-                  className={`py-2.5 px-4 rounded-xl border font-semibold text-xs flex items-center justify-center gap-1.5 transition-all ${
+                  className={`py-2.5 px-4 rounded-xl border font-semibold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                     isLikeLoading ? "opacity-60 cursor-not-allowed" : ""
                   } ${
                     isLiked ?
@@ -342,11 +375,10 @@ export default function RecipeDetails({
                   {isLiked ? "Liked" : "Like Recipe"}
                 </button>
               </div>
-
               {/* Report Modal Opener Button */}
               <button
                 onClick={() => setIsReportModalOpen(true)}
-                className="w-full py-2 border border-dashed border-rose-500/40 text-rose-500 hover:bg-rose-500/5 dark:hover:bg-rose-500/10 font-bold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
+                className="w-full py-2 border border-dashed border-rose-500/40 text-rose-500 hover:bg-rose-500/5 dark:hover:bg-rose-500/10 font-bold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Flag size={14} /> Report Recipe Issue
               </button>
@@ -523,12 +555,13 @@ export default function RecipeDetails({
                   onPress={handleSubmitReport}
                   disabled={isSubmittingReport}
                   className="bg-linear-to-r from-red-500 to-rose-600 text-white font-bold rounded-xl shadow-lg shadow-red-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex-1"
-                  startContent={isSubmittingReport ? null : <FiAlertTriangle />}
                 >
                   {isSubmittingReport ?
                     <div className="flex items-center gap-2">
                       <Spinner size="sm" color="white" />
-                      <span>Submitting...</span>
+                      <span>
+                        <FiAlertTriangle /> Submitting...
+                      </span>
                     </div>
                   : "Submit Report"}
                 </Button>

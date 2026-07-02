@@ -13,7 +13,7 @@ const SubscriptionsPage = async () => {
 
   const user = await getUserSession()
   const subscriptionPlans = await getSubscriptionsPlans();
-  console.log(subscriptionPlans)
+
  
   return (
     <PricingSection

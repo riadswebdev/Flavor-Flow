@@ -17,7 +17,6 @@ const ManageRecipe = async () => {
   }
 
   const allRecipes = await getAllRecipes();
-
   return (
     <ManageRecipesPage
       allRecipes={allRecipes}

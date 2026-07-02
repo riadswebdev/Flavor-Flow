@@ -4,10 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Avatar, Button, Dropdown, Label } from "@heroui/react";
+import { Avatar, Button, Dropdown, Label, toast } from "@heroui/react";
 import { FiChevronRight, FiHome } from "react-icons/fi";
 import { authClient } from "@/app/lib/auth-client";
-import Image from "next/image";
 import {
   Sun,
   Moon,
@@ -39,7 +38,8 @@ export default function DashboardNavbar({ user }) {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
-          router.replace("/login");
+          router.push("/login");
+          toast("User logged out successfully");
         },
       },
     });

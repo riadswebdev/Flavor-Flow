@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Card, CardContent, CardFooter, Avatar, Chip } from "@heroui/react";
+import { Card, CardContent, CardFooter, Chip } from "@heroui/react";
 import { Utensils, Globe, Clock, ChefHat } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

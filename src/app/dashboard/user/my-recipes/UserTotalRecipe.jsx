@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Table,
   Input,
@@ -25,7 +25,8 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { DeleteRecipe } from "./[updateRecipe]/DeleteRecipe";
+import { DeleteRecipe } from "./DeleteRecipe";
+import UpdateRecipeFormModal from "@/components/shared/UpdateRecipeForm";
 
 // Difficulty & Status Styling Maps
 const difficultyColorMap = {
@@ -282,7 +283,7 @@ const UserTotalRecipe = ({ initialRecipes = [], userId }) => {
                 You haven&apos;t published any recipes matching the filters yet.
               </p>
             </div>
-            <Link href="/dashboard/add-recipe">
+            <Link href="/dashboard/user/add-recipe">
               <Button className="bg-linear-to-r from-orange-500 to-red-600 text-white font-semibold rounded-2xl">
                 Create Your First Recipe
               </Button>
@@ -392,18 +393,10 @@ const UserTotalRecipe = ({ initialRecipes = [], userId }) => {
                               </Link>
                             </Tooltip>
                             <Tooltip content="Edit Recipe">
-                              <Link
-                                href={`/dashboard/user/my-recipes/${recipe._id}`}
-                              >
-                                <Button
-                                  isIconOnly
-                                  size="sm"
-                                  variant="light"
-                                  className="text-default-400 hover:text-secondary text-lg"
-                                >
-                                  <FiEdit2 />
-                                </Button>
-                              </Link>
+                              <UpdateRecipeFormModal
+                                recipeId={recipe._id}
+                                recipe={recipe}
+                              />
                             </Tooltip>
                             <Tooltip color="danger" content="Delete Recipe">
                               <DeleteRecipe
@@ -506,16 +499,11 @@ const UserTotalRecipe = ({ initialRecipes = [], userId }) => {
                         View
                       </Button>
                     </Link>
-                    <Link href={`/dashboard/user/my-recipes/${recipe._id}`}>
-                      <Button
-                        size="sm"
-                        variant="flat"
-                        color="secondary"
-                        className="font-semibold rounded-xl w-full"
-                      >
-                        Edit
-                      </Button>
-                    </Link>
+
+                    <UpdateRecipeFormModal
+                      recipeId={recipe._id}
+                      recipe={recipe}
+                    />
 
                     <DeleteRecipe
                       recipeId={recipe._id}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Table } from "@heroui/react";
 
 // ================= CUSTOM LIGHTWEIGHT INLINE SVG ICONS =================
 const SearchIcon = ({ className = "w-5 h-5" }) => (
@@ -132,6 +133,38 @@ const ChevronDownIcon = ({ className = "w-4 h-4" }) => (
   </svg>
 );
 
+const RepeatIcon = ({ className = "w-3.5 h-3.5" }) => (
+  <svg
+    className={className}
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0114.13-5.36M20 15a9 9 0 01-14.13 5.36"
+    />
+  </svg>
+);
+
+const ShoppingBagIcon = ({ className = "w-3.5 h-3.5" }) => (
+  <svg
+    className={className}
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 11H4L5 9z"
+    />
+  </svg>
+);
+
 // ================= CUSTOM LIGHTWEIGHT HEROUI-MIMIC COMPONENTS =================
 const Card = ({ children, className = "" }) => (
   <div
@@ -166,47 +199,52 @@ const Skeleton = ({ className = "" }) => (
   />
 );
 
-export default function TransactionsClient({ initialData }) {
-  // const initialData = [
-  //   {
-  //     _id: "6a408964a548e70c3fe0215f",
-  //     userId: "6a3fff3afa7e189657a0f6f7",
-  //     userEmail: "sdzx2212@gmail.com",
-  //     amount: 9.99,
-  //     transactionId:
-  //       "cs_test_a1oEyWk1zRFF1LXaBeCDYve0xqWFpJUAmulp7wpHswRZfiECTGSe39xl4m",
-  //     paymentStatus: "Paid",
-  //     planId: "premium",
-  //     createdAt: "2026-06-28T02:39:32.377Z",
-  //   },
-  //   {
-  //     _id: "6a408963a548e70c3fe0215e",
-  //     userId: "6a3fff3afa7e189657a0f6f7",
-  //     userEmail: "sdzx2212@gmail.com",
-  //     amount: 9.99,
-  //     transactionId:
-  //       "cs_test_a1oEyWk1zRFF1LXaBeCDYve0xqWFpJUAmulp7wpHswRZfiECTGSe39xl4m",
-  //     paymentStatus: "Paid",
-  //     planId: "premium",
-  //     createdAt: "2026-06-28T02:39:31.905Z",
-  //   },
-  // ];
+export default function TransactionsClient() {
+  const initialData = [
+    {
+      _id: "6a408964a548e70c3fe0215f",
+      userId: "6a3fff3afa7e189657a0f6f7",
+      userEmail: "sdzx2212@gmail.com",
+      amount: 9.99,
+      transactionId:
+        "cs_test_a1oEyWk1zRFF1LXaBeCDYve0xqWFpJUAmulp7wpHswRZfiECTGSe39xl4m",
+      paymentStatus: "Paid",
+      planId: "premium",
+      createdAt: "2026-06-28T02:39:32.377Z",
+    },
+    {
+      transactionId:
+        "cs_test_a1rzfDY64b5mD06G0Mf1IRqnsYqq5KNIZ3MpiKIRltrGQLZxmGFxDW0edf",
+      amount: 15,
+      paymentStatus: "paid",
+      recipeId: "6a458843f78cc9d1d3b69bc7",
+      userId: "6a435334353053a480f84b09",
+      recipeName: "Strawberry Cheesecake",
+      userEmail: "riadswebdev@gmail.com",
+      paymentMethod: "card",
+      mode: "payment",
+      createdAt: "2026-06-28T02:39:32.377Z",
+    },
+  ];
 
   const [transactions, setTransactions] = useState(initialData);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [planFilter, setPlanFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState(""); // "subscription" | "purchase" | ""
 
   // Custom dropdown states
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const [planDropdownOpen, setPlanDropdownOpen] = useState(false);
+  const [typeDropdownOpen, setTypeDropdownOpen] = useState(false);
 
   // Simulated API fetch
   const fetchTransactions = () => {
     setLoading(true);
     setStatusDropdownOpen(false);
     setPlanDropdownOpen(false);
+    setTypeDropdownOpen(false);
     setTimeout(() => {
       setTransactions(initialData);
       setLoading(false);
@@ -217,8 +255,39 @@ export default function TransactionsClient({ initialData }) {
     fetchTransactions();
   }, []);
 
+  // ============= Transaction Type Helper =============
+  // Recipe purchases carry `recipeId`, subscriptions carry `planId`.
+  // This keeps the distinction in one place so the rest of the UI stays consistent.
+  const getTransactionType = (item) => {
+    if (item.recipeId) return "purchase";
+    if (item.planId) return "subscription";
+    return "unknown";
+  };
+
+  const typeMeta = {
+    subscription: {
+      label: "Subscription",
+      icon: <RepeatIcon />,
+      badgeClass:
+        "bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border border-blue-200/50",
+    },
+    purchase: {
+      label: "Purchase",
+      icon: <ShoppingBagIcon />,
+      badgeClass:
+        "bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 border border-purple-200/50",
+    },
+    unknown: {
+      label: "Unknown",
+      icon: null,
+      badgeClass:
+        "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-200/50",
+    },
+  };
+
   // Date Formatter Helper
   const formatDate = (dateString) => {
+    if (!dateString) return "—";
     const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, "0");
     const month = date.toLocaleString("en-US", { month: "short" });
@@ -235,6 +304,22 @@ export default function TransactionsClient({ initialData }) {
     .filter((t) => t.paymentStatus?.toLowerCase() === "paid")
     .reduce((sum, t) => sum + (t.amount || 0), 0);
 
+  const subscriptionRevenue = transactions
+    .filter(
+      (t) =>
+        t.paymentStatus?.toLowerCase() === "paid" &&
+        getTransactionType(t) === "subscription",
+    )
+    .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+  const purchaseRevenue = transactions
+    .filter(
+      (t) =>
+        t.paymentStatus?.toLowerCase() === "paid" &&
+        getTransactionType(t) === "purchase",
+    )
+    .reduce((sum, t) => sum + (t.amount || 0), 0);
+
   const premiumMembersCount = new Set(
     transactions.filter((t) => t.planId === "premium").map((t) => t.userId),
   ).size;
@@ -246,9 +331,9 @@ export default function TransactionsClient({ initialData }) {
   // Search & Filter Logic
   const filteredTransactions = transactions.filter((item) => {
     const matchesSearch =
-      item.userEmail ?
-        item.userEmail.toLowerCase().includes(searchQuery.toLowerCase())
-      : true;
+      searchQuery === "" ||
+      item.userEmail?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.recipeName?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus =
       statusFilter ?
         item.paymentStatus?.toLowerCase() === statusFilter.toLowerCase()
@@ -257,7 +342,9 @@ export default function TransactionsClient({ initialData }) {
       planFilter ?
         item.planId?.toLowerCase() === planFilter.toLowerCase()
       : true;
-    return matchesSearch && matchesStatus && matchesPlan;
+    const matchesType =
+      typeFilter ? getTransactionType(item) === typeFilter : true;
+    return matchesSearch && matchesStatus && matchesPlan && matchesType;
   });
 
   // Framer Motion Variants
@@ -292,7 +379,7 @@ export default function TransactionsClient({ initialData }) {
             Transactions
           </h1>
           <p className="text-gray-500 dark:text-zinc-400 mt-1 text-sm font-medium">
-            View and monitor all premium membership payment transactions.
+            View and monitor all subscription and recipe purchase transactions.
           </p>
         </div>
         <Chip className="bg-orange-100 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 border border-orange-200/50 font-semibold px-4 py-2">
@@ -311,20 +398,22 @@ export default function TransactionsClient({ initialData }) {
             color: "from-blue-500 to-indigo-600",
           },
           {
-            title: "Total Revenue",
+            title: "Subscription Revenue",
             value:
               loading ?
                 <Skeleton className="w-20 h-6" />
-              : `$${totalRevenue.toFixed(2)}`,
-            icon: <DollarIcon className="text-xl" />,
-            color: "from-emerald-500 to-teal-600",
+              : `$${subscriptionRevenue.toFixed(2)}`,
+            icon: <RepeatIcon className="w-5 h-5" />,
+            color: "from-blue-500 to-cyan-600",
           },
           {
-            title: "Premium Members",
+            title: "Recipe Purchase Revenue",
             value:
-              loading ? <Skeleton className="w-12 h-6" /> : premiumMembersCount,
-            icon: <UsersIcon className="text-xl" />,
-            color: "from-orange-500 to-red-600",
+              loading ?
+                <Skeleton className="w-20 h-6" />
+              : `$${purchaseRevenue.toFixed(2)}`,
+            icon: <ShoppingBagIcon className="w-5 h-5" />,
+            color: "from-purple-500 to-pink-600",
           },
           {
             title: "Successful Payments",
@@ -333,7 +422,7 @@ export default function TransactionsClient({ initialData }) {
                 <Skeleton className="w-12 h-6" />
               : successfulPaymentsCount,
             icon: <CheckCircleIcon className="text-xl" />,
-            color: "from-purple-500 to-pink-600",
+            color: "from-emerald-500 to-teal-600",
           },
         ].map((card, idx) => (
           <motion.div
@@ -367,7 +456,7 @@ export default function TransactionsClient({ initialData }) {
       <div
         className={`${glassClass} p-4 flex flex-col lg:flex-row gap-4 items-center justify-between shadow-md relative z-20`}
       >
-        <div className="flex flex-col sm:flex-row w-full gap-3 items-center flex-1">
+        <div className="flex flex-col sm:flex-row w-full gap-3 items-center flex-1 flex-wrap">
           {/* Search Input Box */}
           <div className="relative w-full sm:max-w-xs flex items-center">
             <span className="absolute left-3.5 text-zinc-400 z-10">
@@ -375,11 +464,71 @@ export default function TransactionsClient({ initialData }) {
             </span>
             <input
               type="text"
-              placeholder="Search by user email..."
+              placeholder="Search by user email or recipe..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 text-sm bg-zinc-100 dark:bg-zinc-800 border-none outline-hidden focus:ring-2 focus:ring-orange-500/50 rounded-full h-10 transition-all  dark:text-zinc-150"
             />
+          </div>
+
+          {/* Transaction Type Filter (Subscription vs Recipe Purchase) */}
+          <div className="relative w-full sm:max-w-44 z-30">
+            <button
+              onClick={() => {
+                setTypeDropdownOpen(!typeDropdownOpen);
+                setStatusDropdownOpen(false);
+                setPlanDropdownOpen(false);
+              }}
+              className="w-full dark:bg-zinc-850 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all rounded-full h-10 px-4 flex items-center justify-between text-sm font-semibold border-none text-zinc-700 dark:text-zinc-250 cursor-pointer"
+            >
+              <span className="flex items-center gap-1.5">
+                {typeFilter && typeMeta[typeFilter]?.icon}
+                {typeFilter ? typeMeta[typeFilter]?.label : "Transaction Type"}
+              </span>
+              <ChevronDownIcon
+                className={`w-3.5 h-3.5 text-zinc-400 transition-transform ${typeDropdownOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+            <AnimatePresence>
+              {typeDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 5 }}
+                  className="absolute left-0 right-0 mt-2 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-850 rounded-2xl shadow-2xl p-1 z-50 overflow-hidden"
+                >
+                  <ul className="space-y-0.5">
+                    {["subscription", "purchase"].map((opt) => (
+                      <li key={opt}>
+                        <button
+                          onClick={() => {
+                            setTypeFilter(opt);
+                            setTypeDropdownOpen(false);
+                          }}
+                          className="w-full text-left rounded-xl p-2.5 cursor-pointer text-xs font-semibold hover:bg-orange-500/10 hover:text-orange-500 transition-all text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5"
+                        >
+                          {typeMeta[opt].icon}
+                          {typeMeta[opt].label}
+                        </button>
+                      </li>
+                    ))}
+                    {typeFilter && (
+                      <li className="border-t border-zinc-100 dark:border-zinc-800 mt-1 pt-1">
+                        <button
+                          onClick={() => {
+                            setTypeFilter("");
+                            setTypeDropdownOpen(false);
+                          }}
+                          className="w-full text-left rounded-xl p-2.5 cursor-pointer text-xs font-bold text-red-500 hover:bg-red-500/10 transition-all"
+                        >
+                          Clear Type
+                        </button>
+                      </li>
+                    )}
+                  </ul>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Status Select Filter Component */}
@@ -388,6 +537,7 @@ export default function TransactionsClient({ initialData }) {
               onClick={() => {
                 setStatusDropdownOpen(!statusDropdownOpen);
                 setPlanDropdownOpen(false);
+                setTypeDropdownOpen(false);
               }}
               className="w-full dark:bg-zinc-850 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all rounded-full h-10 px-4 flex items-center justify-between text-sm font-semibold border-none text-zinc-700 dark:text-zinc-250 cursor-pointer"
             >
@@ -445,12 +595,13 @@ export default function TransactionsClient({ initialData }) {
             </AnimatePresence>
           </div>
 
-          {/* Plan Select Filter Component */}
+          {/* Plan Select Filter Component (only relevant for subscriptions) */}
           <div className="relative w-full sm:max-w-40 z-30">
             <button
               onClick={() => {
                 setPlanDropdownOpen(!planDropdownOpen);
                 setStatusDropdownOpen(false);
+                setTypeDropdownOpen(false);
               }}
               className="w-full dark:bg-zinc-850 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all rounded-full h-10 px-4 flex items-center justify-between text-sm font-semibold border-none text-zinc-700 dark:text-zinc-250 cursor-pointer"
             >
@@ -527,7 +678,7 @@ export default function TransactionsClient({ initialData }) {
         {loading ?
           <Card className="p-6 space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-zinc-800">
-              {[...Array(6)].map((_, i) => (
+              {[...Array(7)].map((_, i) => (
                 <Skeleton key={i} className="h-4 w-24" />
               ))}
             </div>
@@ -537,6 +688,7 @@ export default function TransactionsClient({ initialData }) {
                 className="flex items-center justify-between py-2 border-b border-zinc-100/50 dark:border-zinc-850/50"
               >
                 <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-6 w-24 rounded-full" />
                 <Skeleton className="h-5 w-20" />
                 <Skeleton className="h-5 w-16" />
                 <Skeleton className="h-5 w-28" />
@@ -555,100 +707,107 @@ export default function TransactionsClient({ initialData }) {
               No Transactions Match Filters
             </h2>
             <p className="text-gray-400 dark:text-zinc-500 text-sm mt-2 max-w-sm">
-              Try adjusting your plan, transaction status, or keyword search
-              query filters.
+              Try adjusting your type, plan, transaction status, or keyword
+              search query filters.
             </p>
           </Card>
         : /* ================= THE STYLED PREMIUM RESPONSIVE TABLE ================= */
           <div
             className={`${glassClass} overflow-x-auto relative shadow-2xl z-10`}
           >
-            <table className="min-w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-50/50 dark:bg-zinc-800/40 border-b border-gray-200/50 dark:border-zinc-800/80">
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
-                    User (Email)
-                  </th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
-                    Membership Plan
-                  </th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
-                    Amount
-                  </th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
-                    Payment Date
-                  </th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
-                    Payment Status
-                  </th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
-                    Transaction ID
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTransactions.map((item, idx) => (
-                  <tr
-                    key={item._id}
-                    className={`border-b border-gray-100/60 dark:border-zinc-800/40 transition-colors duration-250 hover:bg-orange-500/5 ${
-                      idx % 2 === 0 ?
-                        "bg-transparent"
-                      : "bg-gray-50/30 dark:bg-zinc-800/10"
-                    }`}
-                  >
-                    {/* User Email */}
-                    <td className="p-4 text-sm font-semibold text-gray-700 dark:text-zinc-300">
-                      {item.userEmail}
-                    </td>
+            <Table aria-label="Transactions table">
+              <Table.ScrollContainer>
+                <Table.Content aria-label="Transactions table">
+                  <Table.Header>
+                    <Table.Column isRowHeader>User (Email)</Table.Column>
+                    <Table.Column>Type</Table.Column>
+                    <Table.Column>Plan / Item</Table.Column>
+                    <Table.Column>Amount</Table.Column>
+                    <Table.Column>Payment Date</Table.Column>
+                    <Table.Column>Payment Status</Table.Column>
+                    <Table.Column>Transaction ID</Table.Column>
+                  </Table.Header>
+                  <Table.Body>
+                    {filteredTransactions.map((item) => {
+                      const type = getTransactionType(item);
+                      const meta = typeMeta[type];
+                      return (
+                        <Table.Row key={item._id || item.transactionId}>
+                          {/* User Email */}
+                          <Table.Cell className="text-sm font-semibold text-gray-700 dark:text-zinc-300">
+                            {item.userEmail}
+                          </Table.Cell>
 
-                    {/* Membership Plan */}
-                    <td className="p-4 text-sm">
-                      <span className="capitalize px-2.5 py-1 rounded-lg text-xs font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
-                        {item.planId}
-                      </span>
-                    </td>
+                          {/* Transaction Type Badge (Subscription vs Recipe Purchase) */}
+                          <Table.Cell>
+                            <Chip className={meta.badgeClass}>
+                              {meta.icon}
+                              {meta.label}
+                            </Chip>
+                          </Table.Cell>
 
-                    {/* Amount */}
-                    <td className="p-4 text-sm font-bold font-mono text-gray-800 dark:text-zinc-200">
-                      ${item.amount?.toFixed(2)}
-                    </td>
+                          {/* Plan / Item — plan name for subscriptions, recipe name for purchases */}
+                          <Table.Cell>
+                            {type === "subscription" ?
+                              <span className="capitalize px-2.5 py-1 rounded-lg text-xs font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                                {item.planId}
+                              </span>
+                            : type === "purchase" ?
+                              <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                                Recipe
+                              </span>
+                            : <span className="text-zinc-400">—</span>}
+                          </Table.Cell>
 
-                    {/* Payment Date */}
-                    <td className="p-4 text-sm text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
-                      {formatDate(item.createdAt)}
-                    </td>
+                          {/* Amount */}
+                          <Table.Cell className="text-sm font-bold font-mono text-gray-800 dark:text-zinc-200">
+                            ${item.amount?.toFixed(2)}
+                          </Table.Cell>
 
-                    {/* Payment Status */}
-                    <td className="p-4 text-sm">
-                      <Chip
-                        className={`capitalize font-bold px-3 py-1 rounded-full border ${
-                          item.paymentStatus?.toLowerCase() === "paid" ?
-                            "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200/50"
-                          : item.paymentStatus?.toLowerCase() === "pending" ?
-                            "bg-warning-50 dark:bg-warning-950/30 text-warning-600 dark:text-warning-400 border-warning-200/50"
-                          : "bg-danger-50 dark:bg-danger-950/30 text-danger-600 dark:text-danger-400 border-danger-200/50"
-                        }`}
-                      >
-                        {item.paymentStatus || "Unknown"}
-                      </Chip>
-                    </td>
+                          {/* Payment Date */}
+                          <Table.Cell className="text-sm text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
+                            {formatDate(item.createdAt)}
+                          </Table.Cell>
 
-                    {/* Transaction ID with custom Hover Tooltip */}
-                    <td className="p-4 text-sm font-mono text-gray-400 dark:text-zinc-500 whitespace-nowrap relative group">
-                      <span className="cursor-help border-b border-dashed border-gray-300 dark:border-zinc-700 pb-0.5">
-                        {item.transactionId && item.transactionId.length > 20 ?
-                          `${item.transactionId.substring(0, 19)}...`
-                        : item.transactionId}
-                      </span>
-                      {/* CSS Tooltip */}
-                      <div className="absolute right-4 bottom-12 hidden group-hover:block z-50 bg-zinc-950 text-white dark:bg-white dark:text-zinc-900 text-[10px] font-mono p-2 rounded-xl shadow-2xl max-w-xs break-all border border-zinc-800 dark:border-zinc-200 pointer-events-none">
-                        {item.transactionId}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                          {/* Payment Status */}
+                          <Table.Cell>
+                            <Chip
+                              className={`capitalize font-bold px-3 py-1 rounded-full border ${
+                                item.paymentStatus?.toLowerCase() === "paid" ?
+                                  "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200/50"
+                                : (
+                                  item.paymentStatus?.toLowerCase() ===
+                                  "pending"
+                                ) ?
+                                  "bg-warning-50 dark:bg-warning-950/30 text-warning-600 dark:text-warning-400 border-warning-200/50"
+                                : "bg-danger-50 dark:bg-danger-950/30 text-danger-600 dark:text-danger-400 border-danger-200/50"
+                              }`}
+                            >
+                              {item.paymentStatus || "Unknown"}
+                            </Chip>
+                          </Table.Cell>
+
+                          {/* Transaction ID with native title tooltip */}
+                          <Table.Cell
+                            className="text-sm font-mono text-gray-400 dark:text-zinc-500 whitespace-nowrap"
+                            title={item.transactionId}
+                          >
+                            <span className="cursor-help border-b border-dashed border-gray-300 dark:border-zinc-700 pb-0.5">
+                              {(
+                                item.transactionId &&
+                                item.transactionId.length > 20
+                              ) ?
+                                `${item.transactionId.substring(0, 19)}...`
+                              : item.transactionId}
+                            </span>
+                          </Table.Cell>
+                        </Table.Row>
+                      );
+                    })}
+                  </Table.Body>
+                </Table.Content>
+              </Table.ScrollContainer>
+            </Table>
           </div>
         }
       </motion.div>

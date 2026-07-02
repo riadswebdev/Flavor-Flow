@@ -1,8 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Button } from "@heroui/react";
-import { Flame, ArrowRight } from "lucide-react";
+import { Flame } from "lucide-react";
 import RecipeCard from "../shared/RecipeCard";
 import Link from "next/link";
 
@@ -26,7 +25,7 @@ export default function PopularRecipes({ recipes }) {
         className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12"
       >
         <div className="max-w-2xl space-y-3">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/10 to-orange-500/10 text-orange-600 dark:text-orange-400 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border border-orange-500/20">
+          <div className="inline-flex items-center gap-2 bg-linear-to-r from-amber-500/10 to-orange-500/10 text-orange-600 dark:text-orange-400 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border border-orange-500/20">
             <Flame className="w-3.5 h-3.5 fill-current animate-pulse" /> 🔥
             Popular Recipes
           </div>

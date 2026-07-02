@@ -4,7 +4,8 @@ import { apiClient } from "../server";
 
 export const updateSubscriptionStatusAndSaveTransaction = async (
   transactionData,
-) => {
-  console.log(transactionData);
-  return apiClient(`/api/users/subscription/update`, "POST", transactionData);
+) => apiClient(`/api/users/subscription/update`, "POST", transactionData);
+
+export const saveRecipePurchaseTransaction = async (transactionData) => {
+  return apiClient(`/api/users/recipe-purchase/save`, "POST", transactionData);
 };

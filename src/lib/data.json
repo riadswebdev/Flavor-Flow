@@ -586,5 +586,33 @@
     },
     "createdAt": "2026-06-19T12:00:00Z",
     "updatedAt": "2026-06-19T12:00:00Z"
-  }
+  },
+  [
+    {
+      "transactionId": "cs_test_a1rzfDY64b5mD06G0Mf1IRqnsYqq5KNIZ3MpiKIRltrGQLZxmGFxDW0edf",
+      "amount": 15,
+      "paymentStatus": "paid",
+      "recipeId": "6a458843f78cc9d1d3b69bc7",
+      "userId": "6a435334353053a480f84b09",
+      "recipeName": "Strawberry Cheesecake",
+      "recipeImage": "https://images.unsplash.com/photo-1533134242443-d4fd215305ad",
+      "userEmail": "riadswebdev@gmail.com",
+      "paymentMethod": "card",
+      "mode": "payment",
+      "purchaseDate": "2026-06-15"
+    },
+    {
+      "transactionId": "cs_test_b7yxkEM52c9mF04G0Mf1IRqnsYqq5KNIZ3MpiKIRltrGQLZxmGFxDW0abc",
+      "amount": 25,
+      "paymentStatus": "paid",
+      "recipeId": "7b458843f78cc9d1d3b69bd8",
+      "userId": "6a435334353053a480f84b09",
+      "recipeName": "Premium Beef Ramen",
+      "recipeImage": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624",
+      "userEmail": "riadswebdev@gmail.com",
+      "paymentMethod": "crypto",
+      "mode": "payment",
+      "purchaseDate": "2026-07-01"
+    }
+  ]
 ]

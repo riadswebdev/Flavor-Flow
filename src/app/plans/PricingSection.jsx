@@ -38,7 +38,7 @@ const cardVariants = {
 };
 
 export default function PricingSection({ plans = [], currentPlan }) {
-  console.log(plans)
+ 
   return (
     <section className="relative py-24 px-4 max-w-7xl mx-auto overflow-hidden">
       {/* Background Glows */}

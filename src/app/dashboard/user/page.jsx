@@ -1,7 +1,7 @@
 import { getFavoriteRecipes, getRecipesByUserId } from "@/lib/api/recipes";
-import { getUserSession, requireRole } from "@/lib/core/session";
+import { getUserSession } from "@/lib/core/session";
 import { FiArrowRight } from "react-icons/fi";
-import { Card, CardContent, Chip } from "@heroui/react";
+import { Card, CardContent } from "@heroui/react";
 import Link from "next/link";
 import {
   FaBookOpen,
@@ -43,7 +43,6 @@ const UserDashboard = async () => {
 
   // Replace with DB value later
   const isPremium = user?.planId;
-  console.log("isPremium", isPremium);
 
   const stats = [
     {

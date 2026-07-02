@@ -25,13 +25,13 @@ export const apiClient = async (
   }
 
   const res = await fetch(`${baseUrl}${path}`, options);
+
   if (!res.ok) {
     const errorData = await res.json().catch(() => null);
-    console.log(
-      errorData?.message || `API Error: ${res?.status} ${res?.statusText}`,
-    );
+
     throw new Error(
-      errorData?.message || `API Error: ${res?.status} ${res?.statusText}`,
+      errorData?.message ||
+        `API Error: ${res?.status} ${res?.statusText} ${res?.message || ""}`,
     );
   }
 

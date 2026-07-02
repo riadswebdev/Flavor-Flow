@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardHeader,
@@ -22,7 +23,6 @@ import {
   FaUserPlus,
   FaInbox,
 } from "react-icons/fa";
-import { useRouter } from "next/navigation";
 
 // Framer Motion Variants for Staggered Animations
 const containerVariants = {

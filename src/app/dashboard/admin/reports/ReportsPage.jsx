@@ -16,8 +16,6 @@ import {
 import { motion } from "framer-motion";
 import {
   FiRefreshCw,
-  FiTrash2,
-  FiCheck,
   FiAlertTriangle,
   FiClock,
   FiShield,
@@ -413,7 +411,7 @@ export default function RecipeReportsPage({ initialReports }) {
                               variant="light"
                               onClick={() => handleDismissReport(report._id)}
                             >
-                              <FiCheck />
+                              Dismiss Report
                             </Button>
                           </div>
                         </Table.Cell>

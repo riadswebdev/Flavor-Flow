@@ -3,6 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Card, Input, Button, Chip, toast } from "@heroui/react";
+import { authClient } from "@/app/lib/auth-client";
+import { uploadToImgBB } from "@/lib/actions/uploadImage";
+import { FreeBadge, LifetimeBadge, PremiumBadge } from "./UserStatusChips";
 import {
   Calendar,
   Shield,
@@ -11,9 +14,6 @@ import {
   Save,
   Image as ImageIcon,
 } from "lucide-react";
-import { authClient } from "@/app/lib/auth-client";
-import { uploadToImgBB } from "@/lib/actions/uploadImage";
-import { FreeBadge, LifetimeBadge, PremiumBadge } from "./UserStatusChips";
 
 export default function UserProfile({ data }) {
   const [userData, setUserData] = useState(data);
@@ -53,7 +53,7 @@ export default function UserProfile({ data }) {
       if (imageFile) {
         setImageUploading(true);
         uploadedImageUrl = await uploadToImgBB(imageFile);
-        console.log("Uploaded URL:", uploadedImageUrl);
+
         updateData.image = uploadedImageUrl;
         setImageUploading(false);
       }
@@ -127,16 +127,14 @@ export default function UserProfile({ data }) {
               {userData.role}
             </Chip>
             <div
-            
-             
-              // className="text-[10px] font-bold uppercase tracking-wider px-2"
+
+            // className="text-[10px] font-bold uppercase tracking-wider px-2"
             >
               {userData.planId === "premium" ?
                 <PremiumBadge />
               : userData.planId === "lifetime" ?
                 <LifetimeBadge />
               : <FreeBadge />}{" "}
-       
             </div>
           </div>
 

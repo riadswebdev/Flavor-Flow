@@ -6,6 +6,11 @@ import Stripe from "stripe";
 // Initialize Stripe Client with secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
+const metadata = {
+  title: "Subscription Payment Success",
+  description: "Thank you for your subscription! Your plan is now active.",
+};
+
 // Icon Components using lightweight SVGs
 const CheckCircleIcon = ({ className = "w-12 h-12" }) => (
   <svg
@@ -240,6 +245,7 @@ export default async function Success({ searchParams }) {
     id: transactionId,
     payment_method_types,
     customer_details,
+    mode,
   } = session;
 
   const customerEmail = customer_details?.email || "N/A";
@@ -260,11 +266,12 @@ export default async function Success({ searchParams }) {
       metadata?.planName ||
       (planId === "lifetime" ? "Lifetime Plan" : "Premium Plan"),
     transactionId: transactionId,
-    amount: amount_total,
+    amount: amount_total / 100, // Convert cents to dollars
     paymentStatus: "paid",
     userId: metadata?.userId || "unknown",
     userEmail: customerEmail,
     paymentMethod: payment_method_types?.[0] || "card",
+    mode: mode || "subscription",
   };
 
   if (status === "complete") {

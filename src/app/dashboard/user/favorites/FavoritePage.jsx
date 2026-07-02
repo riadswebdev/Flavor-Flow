@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,7 +15,6 @@ import {
   Tooltip,
 } from "@heroui/react";
 import {
-  FiHeart,
   FiEye,
   FiUser,
   FiTag,
@@ -80,7 +78,7 @@ const UserFavoritesPage = ({ favoriteRecipes }) => {
             </p>
             <Button
               radius="xl"
-              onClick={() => router.push("/dashboard/recipes")}
+              onClick={() => router.push("/recipes")}
               className="font-bold bg-linear-to-r from-orange-500 to-rose-500 text-white shadow-lg shadow-orange-500/20 px-6 h-11 text-xs uppercase tracking-wider"
             >
               Browse Recipes

@@ -1,10 +1,8 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Button } from "@heroui/react";
-// import { FiHome, FiCompass } from "react-router-icons";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import { FiCompass, FiHome } from "react-icons/fi";
 

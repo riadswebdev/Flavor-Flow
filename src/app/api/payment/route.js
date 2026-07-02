@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { PLAN_PRICE_ID, stripe } from "@/lib/stripe";
+import { stripe } from "@/lib/stripe";
 import { getUserSession } from "@/lib/core/session";
 
 export async function POST(request) {
@@ -11,13 +11,14 @@ export async function POST(request) {
 
     const formData = await request.formData();
     // Accept either planId or priceId from the request form
-      const recipeName = formData.get("recipeName")
-      const recipeId = formData.get("recipeId")
-      const recipePrice = formData.get("recipePrice")
+    const recipeName = formData.get("recipeName");
+    const recipeId = formData.get("recipeId");
+    const recipePrice = formData.get("recipePrice");
+    const recipeImage = formData.get("recipeImage");
+  
 
     // Retrieve logged-in user details
     let user = await getUserSession();
-
 
     // Create Checkout Session with populated metadata object
     const session = await stripe.checkout.sessions.create({
@@ -26,19 +27,25 @@ export async function POST(request) {
       billing_address_collection: "auto",
       line_items: [
         {
-          price: priceId,
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: recipeName,
+            },
+            unit_amount: parseInt(recipePrice) * 100, // Convert to cents
+          },
           quantity: 1,
         },
       ],
       mode: "payment",
       metadata: {
-          userId: user?.id || user?._id,
-          userEmail: user.email,
-          userName: user.name,
-          recipeId: recipeId,
-          recipeName: recipeName,
-          Price: recipePrice,
-       
+        userId: user?.id || user?._id,
+        userEmail: user?.email,
+        userName: user?.name,
+        recipeId: recipeId,
+        recipeName: recipeName,
+        recipeImage: recipeImage,
+        Price: recipePrice,
       },
       success_url: `${origin}/plans/payment/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/subscriptions`,

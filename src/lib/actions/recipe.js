@@ -28,7 +28,5 @@ export const reportRecipe = async (recipeReportData) =>
 export const recipeFeatureUnFeatured = async (id) =>
   apiClient(`/api/recipes/${id}/toggle-featured`, "PATCH");
 
-export const deleteRecipeWithReport = async (recipeId, reportId) => {
-  console.log("deleteRecipeWithReport called with recipeId:", recipeId, "reportId:", reportId);
- return apiClient(`/api/recipes/${recipeId}/report/${reportId}`, "DELETE");
-}
+export const deleteRecipeWithReport = async (recipeId, reportId) =>
+  apiClient(`/api/recipes/${recipeId}/report/${reportId}`, "DELETE");

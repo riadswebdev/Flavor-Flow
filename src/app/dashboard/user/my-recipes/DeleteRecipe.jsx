@@ -21,10 +21,11 @@ export function DeleteRecipe({ recipeId, recipeName = "this recipe" }) {
   return (
     <AlertDialog>
       <Button
-        variant="light"
-        className="text-default-400 hover:text-danger text-lg"
+        size="sm"
+        className="bg-rose-500/10 text-rose-500 dark:text-rose-400 rounded-2xl h-9 w-9 hover:bg-rose-500/20 hover:text-rose-600 transition-all active:scale-[0.95]"
       >
         <FiTrash2 />
+     
       </Button>
       <AlertDialog.Backdrop>
         <AlertDialog.Container>
