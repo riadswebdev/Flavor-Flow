@@ -1,8 +1,8 @@
-import { redirect } from "next/navigation";
 import { saveRecipePurchaseTransaction } from "@/lib/actions/payment";
 import Stripe from "stripe";
 import Link from "next/link";
-import Toast from "../../success/Toast";
+import SuccessfullyPaymentToast from "./Toast";
+
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
@@ -70,8 +70,14 @@ export default async function RecipePurchaseSuccess({ searchParams }) {
   if (status === "complete") {
     await saveRecipePurchaseTransaction(payload);
 
-    <Toast recipeName={metadata?.recipeName} />;
-    // redirect("/");
+      return (
+        <div className="min-h-[90vh] flex items-center justify-center py-16 px-4">
+          <SuccessfullyPaymentToast
+            recipeName={metadata?.recipeName}
+            redirectTo="/dashboard/user/purchased"
+          />
+        </div>
+      );
   }
 
   return (
