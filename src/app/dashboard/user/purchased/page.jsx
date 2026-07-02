@@ -12,7 +12,7 @@ const PurchasedRecipesPage = async () => {
   const purchasedRecipes = (await getTransactionsByUserId(user?.id)) || [];
   const hasPurchasedRecipes = purchasedRecipes?.data || purchasedRecipes;
 
-  return <MyPurchasedRecipes purchasedRecipes={hasPurchasedRecipes} />;
+  return <MyPurchasedRecipes purchasesData={hasPurchasedRecipes} />;
 };
 
 export default PurchasedRecipesPage;

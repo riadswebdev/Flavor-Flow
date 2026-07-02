@@ -199,35 +199,9 @@ const Skeleton = ({ className = "" }) => (
   />
 );
 
-export default function TransactionsClient() {
-  const initialData = [
-    {
-      _id: "6a408964a548e70c3fe0215f",
-      userId: "6a3fff3afa7e189657a0f6f7",
-      userEmail: "sdzx2212@gmail.com",
-      amount: 9.99,
-      transactionId:
-        "cs_test_a1oEyWk1zRFF1LXaBeCDYve0xqWFpJUAmulp7wpHswRZfiECTGSe39xl4m",
-      paymentStatus: "Paid",
-      planId: "premium",
-      createdAt: "2026-06-28T02:39:32.377Z",
-    },
-    {
-      transactionId:
-        "cs_test_a1rzfDY64b5mD06G0Mf1IRqnsYqq5KNIZ3MpiKIRltrGQLZxmGFxDW0edf",
-      amount: 15,
-      paymentStatus: "paid",
-      recipeId: "6a458843f78cc9d1d3b69bc7",
-      userId: "6a435334353053a480f84b09",
-      recipeName: "Strawberry Cheesecake",
-      userEmail: "riadswebdev@gmail.com",
-      paymentMethod: "card",
-      mode: "payment",
-      createdAt: "2026-06-28T02:39:32.377Z",
-    },
-  ];
-
+export default function TransactionsClient({ initialData }) {
   const [transactions, setTransactions] = useState(initialData);
+
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");

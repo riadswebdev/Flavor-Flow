@@ -62,42 +62,42 @@ export default function MyPurchasedRecipes({ purchasesData }) {
     fetchPurchases();
   }, []);
 
-  const filteredPurchases = purchases.filter((item) => {
+  const filteredPurchases = purchases?.filter((item) => {
     const matchesSearch =
       searchQuery.trim() === "" ||
-      item.recipeName?.toLowerCase().includes(searchQuery.toLowerCase());
+      item?.recipeName?.toLowerCase().includes(searchQuery.toLowerCase());
 
     const statusValue = Array.from(selectedStatus)[0];
     const matchesStatus =
       !statusValue ||
       statusValue === "all" ||
-      item.paymentStatus?.toLowerCase() === statusValue.toLowerCase();
+      item?.paymentStatus?.toLowerCase() === statusValue?.toLowerCase();
 
     const methodValue = Array.from(selectedMethod)[0];
     const matchesMethod =
       !methodValue ||
       methodValue === "all" ||
-      (item.paymentMethod || "card").toLowerCase() ===
+      (item?.paymentMethod || "card").toLowerCase() ===
         methodValue.toLowerCase();
 
     return matchesSearch && matchesStatus && matchesMethod;
   });
 
   // Dynamic Statistics Calculations from Hardcoded Data
-  const totalPurchased = filteredPurchases.length;
+  const totalPurchased = filteredPurchases?.length;
 
-  const totalSpent = filteredPurchases.reduce((sum, item) => {
-    if (item.paymentStatus === "paid") return sum + (item.amount || 0);
+  const totalSpent = filteredPurchases?.reduce((sum, item) => {
+    if (item?.paymentStatus === "paid") return sum + (item?.amount || 0);
     return sum;
   }, 0);
 
-  const successfulPayments = filteredPurchases.filter(
-    (item) => item.paymentStatus === "paid",
+  const successfulPayments = filteredPurchases?.filter(
+    (item) => item?.paymentStatus === "paid",
   ).length;
 
   const getPrimaryPaymentMethod = () => {
-    if (filteredPurchases.length === 0) return "None";
-    const methods = filteredPurchases.map((p) => p.paymentMethod || "card");
+    if (filteredPurchases?.length === 0) return "None";
+    const methods = filteredPurchases?.map((p) => p?.paymentMethod || "card");
     const counts = methods.reduce((acc, m) => {
       acc[m] = (acc[m] || 0) + 1;
       return acc;
@@ -269,7 +269,7 @@ export default function MyPurchasedRecipes({ purchasesData }) {
             className=" w-full focus:border-none focus:ring-0 shadow-inner"
             placeholder="Search by recipe name..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => setSearchQuery(e?.target?.value)}
           />
         </div>
 
@@ -281,7 +281,7 @@ export default function MyPurchasedRecipes({ purchasesData }) {
               radius="2xl"
               className="capitalize bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-sm p-1 rounded-md"
             >
-              Status: {Array.from(selectedStatus)[0]}
+              Status: {Array?.from(selectedStatus)[0]}
             </Dropdown.Trigger>
 
             <Dropdown.Popover>
@@ -319,7 +319,7 @@ export default function MyPurchasedRecipes({ purchasesData }) {
               radius="2xl"
               className="capitalize bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-sm p-1 rounded-md"
             >
-              Method: {Array.from(selectedMethod)[0]}
+              Method: {Array?.from(selectedMethod)[0]}
             </Dropdown.Trigger>
 
             <Dropdown.Popover>
@@ -398,7 +398,7 @@ export default function MyPurchasedRecipes({ purchasesData }) {
             Try Again
           </Button>
         </div>
-      : filteredPurchases.length === 0 ?
+      : filteredPurchases?.length === 0 ?
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -429,9 +429,9 @@ export default function MyPurchasedRecipes({ purchasesData }) {
           animate="visible"
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {filteredPurchases.map((item, index) => (
+          {filteredPurchases?.map((item, index) => (
             <motion.div
-              key={`${item.transactionId}-${index}`}
+              key={`${item?.transactionId}-${index}`}
               variants={itemVariants}
               whileHover={{ y: -6, transition: { duration: 0.2 } }}
               className="group"
@@ -441,13 +441,12 @@ export default function MyPurchasedRecipes({ purchasesData }) {
                 <CardHeader className="p-0 relative overflow-hidden aspect-video">
                   <Image
                     fill
-                    alt={item.recipeName}
+                    alt={item?.recipeName}
                     className="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-500"
                     src={
-                      item.recipeImage ||
+                      item?.recipeImage ||
                       "https://images.unsplash.com/photo-1495521821757-a1efb6729352"
                     }
-                    fill
                     radius="none"
                   />
                   <div className="absolute inset-0 bg-linear-to-b from-black/40 via-transparent to-transparent z-10 opacity-60" />
@@ -468,7 +467,7 @@ export default function MyPurchasedRecipes({ purchasesData }) {
                       className="bg-black/60 backdrop-blur-md text-white font-bold border border-white/10"
                       size="sm"
                     >
-                      ${item.amount}
+                      ${item?.amount}
                     </Chip>
                   </div>
                 </CardHeader>
@@ -477,7 +476,7 @@ export default function MyPurchasedRecipes({ purchasesData }) {
                 <CardContent className="p-5 flex flex-col justify-between gap-4">
                   <div className="space-y-2">
                     <h3 className="text-lg font-bold text-zinc-800 dark:text-zinc-100 line-clamp-1 group-hover:text-orange-500 transition-colors">
-                      {item.recipeName}
+                      {item?.recipeName}
                     </h3>
 
                     <div className="grid grid-cols-2 gap-y-2 gap-x-1 text-xs text-zinc-500 dark:text-zinc-400 pt-1">
@@ -486,12 +485,12 @@ export default function MyPurchasedRecipes({ purchasesData }) {
                           Method:
                         </span>
                         <span className="capitalize bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded-md font-semibold text-zinc-600 dark:text-zinc-300">
-                          {item.paymentMethod || "card"}
+                          {item?.paymentMethod || "card"}
                         </span>
                       </div>
 
                       <div className="flex items-center gap-1.5 justify-end">
-                        {renderStatusChip(item.paymentStatus)}
+                        {renderStatusChip(item?.paymentStatus)}
                       </div>
                     </div>
                   </div>
@@ -503,25 +502,25 @@ export default function MyPurchasedRecipes({ purchasesData }) {
                     <div className="flex items-center justify-between">
                       <span>Transaction ID:</span>
                       <Tooltip
-                        content={item.transactionId}
+                        content={item?.transactionId}
                         placement="top"
                         closeDelay={150}
                       >
                         <span className="font-mono text-zinc-600 dark:text-zinc-300 cursor-help underline decoration-dotted decoration-zinc-400">
-                          {item.transactionId ?
-                            `${item.transactionId.slice(0, 12)}...${item.transactionId.slice(-6)}`
+                          {item?.transactionId ?
+                            `${item?.transactionId.slice(0, 12)}...${item?.transactionId.slice(-6)}`
                           : "N/A"}
                         </span>
                       </Tooltip>
                     </div>
 
-                    {item.purchaseDate && (
+                    {item?.purchaseDate && (
                       <div className="flex items-center justify-between pt-1">
                         <span className="flex items-center gap-1">
                           <FiCalendar size={12} /> Purchased:
                         </span>
                         <span className="font-medium text-zinc-600 dark:text-zinc-300">
-                          {item.purchaseDate}
+                          {item?.purchaseDate}
                         </span>
                       </div>
                     )}
@@ -533,7 +532,7 @@ export default function MyPurchasedRecipes({ purchasesData }) {
                   <Button
                     className="w-full font-bold text-zinc-700 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-800/80 hover:bg-linear-to-r hover:from-orange-500 hover:to-red-500 hover:text-white transition-all duration-300 shadow-sm"
                     radius="2xl"
-                    onClick={() => router.push(`/recipes/${item.recipeId}`)}
+                    onClick={() => router.push(`/recipes/${item?.recipeId}`)}
                   >
                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
                     View Details
