@@ -130,7 +130,7 @@ export default function Hero() {
                 as={Link}
                 href="/recipes"
                 size="lg"
-                className="group font-bold text-white bg-linear-to-r from-orange-500 to-rose-600 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 transition-all transform hover:-translate-y-0.5 rounded-2xl px-8"
+                className="group font-bold text-white bg-linear-to-r from-orange-500 to-rose-600 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 transition-all transform hover:-translate-y-0.5 rounded-2xl px-8 mx-auto"
               >
                 <ArrowRight
                   size={18}
@@ -143,7 +143,7 @@ export default function Hero() {
                 href="/dashboard/user/add-recipe"
                 size="lg"
                 variant="bordered"
-                className="font-semibold border-default-300 dark:border-default-200 hover:bg-default-100 dark:hover:bg-default-50 backdrop-blur-sm rounded-2xl px-6 transition-all"
+                className="font-semibold border-default-300 dark:border-default-200 hover:bg-default-100 dark:hover:bg-default-50 backdrop-blur-sm rounded-2xl px-6 transition-all mx-auto"
               >
                 <Plus size={18} />
                 Share Your Recipe
