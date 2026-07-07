@@ -6,7 +6,35 @@ import { Utensils, Globe, Clock, ChefHat } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function RecipeCard({ recipe, variant = "featured", rank }) {
+export default function RecipeCard({
+  recipe,
+  variant = "featured",
+  rank,
+  isLoading = false,
+}) {
+  // ================= ⏳ Skeleton / Loading UI State =================
+  if (isLoading) {
+    return (
+      <Card className="h-full bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800/80 rounded-3xl p-3 shadow-sm animate-pulse">
+        <div className="relative aspect-video w-full bg-zinc-200 dark:bg-zinc-800 rounded-3xl" />
+        <CardContent className="px-3 pt-4 pb-2 space-y-3">
+          <div className="h-6 bg-zinc-200 dark:bg-zinc-800 rounded-lg w-3/4" />
+          <div className="grid grid-cols-2 gap-2">
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={i}
+                className="h-8 bg-zinc-100 dark:bg-zinc-800/50 rounded-xl"
+              />
+            ))}
+          </div>
+        </CardContent>
+        <CardFooter className="px-3 pb-1 pt-2">
+          <div className="h-11 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-full" />
+        </CardFooter>
+      </Card>
+    );
+  }
+
   const getRankStyle = (rankNumber) => {
     switch (rankNumber) {
       case 1:
@@ -28,12 +56,13 @@ export default function RecipeCard({ recipe, variant = "featured", rank }) {
   };
 
   return (
-    <Card className="group relative h-full bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800/80 rounded-3xl overflow-hidden p-3 shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between">
+    
+    <Card className="group relative h-full bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800/80 rounded-3xl overflow-hidden p-3 shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between transform-gpu will-change-transform">
       {/* ================= Image Section ================= */}
-      <div className="relative aspect-video w-full overflow-hidden rounded-3xl shadow-inner">
+      <div className="relative aspect-video w-full overflow-hidden rounded-3xl shadow-inner transform-gpu">
         <Image
-          src={recipe.recipeImage}
-          alt={recipe.recipeName || "Recipe image"}
+          src={recipe?.recipeImage}
+          alt={recipe?.recipeName || "Recipe image"}
           fill
           className="object-cover transform group-hover:scale-105 transition-transform duration-500 ease-out"
           sizes="100vw"
@@ -54,18 +83,20 @@ export default function RecipeCard({ recipe, variant = "featured", rank }) {
               ease: "easeInOut",
               delay: (rank || 1) * 0.2,
             }}
-            className={`absolute top-3 left-3 z-20 flex items-center justify-center px-3 py-1 rounded-xl text-xs shadow-md ${getRankStyle(rank)}`}
+            className={`absolute top-3 left-3 z-20 flex items-center justify-center px-3 py-1 rounded-xl text-xs shadow-md transform-gpu ${getRankStyle(rank)}`}
           >
             {getRankLabel(rank)}
           </motion.div>
         }
 
+       
         <div className="absolute top-3 right-3 z-10">
-          <Chip className="bg-rose-500/90 backdrop-blur-md text-white text-[10px] font-black px-2.5 h-6 border-0">
+          <Chip className="bg-rose-600 text-white text-[10px] font-black px-2.5 h-6 border-0 shadow-md">
             ❤️ {recipe?.likesCount}
           </Chip>
         </div>
 
+      
         <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/90 via-black/40 to-transparent p-4 pt-8 flex flex-col justify-end">
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-2">
@@ -77,10 +108,10 @@ export default function RecipeCard({ recipe, variant = "featured", rank }) {
                 className="w-7 h-7 rounded-lg border border-white/20 object-contain"
               />
               <span className="text-xs text-white/90 font-bold truncate max-w-30">
-                {recipe.author?.name}
+                {recipe?.author?.name}
               </span>
             </div>
-            <Chip className="bg-white/10 backdrop-blur-md text-white border border-white/10 text-[10px] font-bold px-2 h-5">
+            <Chip className="bg-zinc-950/80 text-white border border-white/10 text-[10px] font-bold px-2 h-5oram">
               {recipe?.category}
             </Chip>
           </div>
@@ -126,7 +157,7 @@ export default function RecipeCard({ recipe, variant = "featured", rank }) {
       {/* ================= Card Footer Action ================= */}
       <CardFooter className="px-3 pb-1 pt-2 flex items-center gap-2">
         <Link
-          href={`/recipes/${recipe._id}`}
+          href={`/recipes/${recipe?._id}`}
           className="flex items-center justify-center grow bg-linear-to-r from-orange-500 to-rose-500 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-md shadow-orange-500/10 h-11 active:scale-98 transition-all"
         >
           View Details

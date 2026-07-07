@@ -15,7 +15,8 @@ const itemVariants = {
   visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } },
 };
 
-export default function PopularRecipes({ recipes }) {
+// isLoading = false 
+export default function PopularRecipes({ recipes, isLoading = false }) {
   const hasRecipes = recipes && recipes.length > 0;
 
   return (
@@ -40,7 +41,7 @@ export default function PopularRecipes({ recipes }) {
             lovers around the world.
           </p>
         </div>
-        {hasRecipes && (
+        {!isLoading && hasRecipes && (
           <Link
             href="/recipes"
             className="flex items-center justify-center bg-linear-to-r from-orange-500 to-rose-500 text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl px-6 h-12 shadow-lg"
@@ -50,8 +51,23 @@ export default function PopularRecipes({ recipes }) {
         )}
       </motion.div>
 
-      {/* ================= Conditional Rendering Section ================= */}
-      {hasRecipes ?
+      {/* ================= Three-Way Conditional Rendering ================= */}
+      {isLoading ?
+       
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          {[...Array(3)].map((_, index) => (
+            <motion.div variants={itemVariants} key={`skeleton-${index}`}>
+              <RecipeCard isLoading={true} />
+            </motion.div>
+          ))}
+        </motion.div>
+      : hasRecipes ?
+        
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -65,7 +81,7 @@ export default function PopularRecipes({ recipes }) {
             </motion.div>
           ))}
         </motion.div>
-      : /* ================= Empty State UI ================= */
+      : 
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -78,8 +94,9 @@ export default function PopularRecipes({ recipes }) {
           <h3 className="text-xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">
             No Popular Recipes Found
           </h3>
+       
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-2 max-w-sm font-medium leading-relaxed">
-            It looks like there arne&apos;t any recipes trending at the moment.
+            It looks like there aren&apos;t any recipes trending at the moment.
             Try checking back later or explore other delicious content!
           </p>
           <Link
