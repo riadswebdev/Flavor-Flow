@@ -1,7 +1,8 @@
 import AboutSection from "@/components/home/AboutSection";
 import BannerSection from "@/components/home/BannerSection";
 import ContactSection from "@/components/home/ContactSection";
-import HomeRecipesContainer from "@/components/home/HomeRecipesContainer";
+import PopularPage from "./popular/page";
+import FeaturedPage from "./featured/page";
 
 export const metadata = {
   title: "Flavor Flow - Home",
@@ -13,7 +14,8 @@ export default async function Home() {
   return (
     <>
       <BannerSection />
-      <HomeRecipesContainer />
+      <FeaturedPage />
+      <PopularPage />
       <AboutSection />
       <ContactSection />
     </>

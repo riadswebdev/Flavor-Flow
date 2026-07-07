@@ -26,7 +26,7 @@ export default function RecipeCard({ recipe, variant = "featured", rank }) {
     if (rankNumber === 3) return "🥉 #3";
     return `#${rankNumber}`;
   };
-  
+
   return (
     <Card className="group relative h-full bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800/80 rounded-3xl overflow-hidden p-3 shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between">
       {/* ================= Image Section ================= */}
