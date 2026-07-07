@@ -465,7 +465,7 @@ export default function RecipeDetails({
         </div>
       </div>
 
-      {/* ================= HEROUI PREMIUM REPORT MODAL ================= */}
+      {/* ================= HERO PREMIUM REPORT MODAL ================= */}
       <Modal isOpen={isReportModalOpen} onOpenChange={setIsReportModalOpen}>
         <Modal.Backdrop className="bg-black/30 backdrop-blur-md">
           <Modal.Container>

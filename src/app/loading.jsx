@@ -1,10 +1,9 @@
 import { Spinner } from "@heroui/react";
 export const metadata = {
   title: "Flavor Flow - Loading",
-  description:
-    "The page is loading. Please wait.",
+  description: "The page is loading. Please wait.",
 };
-export default function Loading() {
+const Loading = () => {
   return (
     <div className="flex min-h-[75vh] w-full flex-col items-center justify-center gap-3 select-none">
       <div className="relative flex items-center justify-center">
@@ -18,4 +17,5 @@ export default function Loading() {
       </p>
     </div>
   );
-}
+};
+export default Loading;
