@@ -42,11 +42,12 @@ Flavor Flow is a full-stack web application providing a comprehensive recipe man
 ---
 
 ## Key Features
-- Browse and search recipes from the public catalog
-- View detailed recipe information and instructions
-- Create and manage personal recipes
-- Save favorite recipes for quick access
-- Track recipe interactions through reports
+
+- Browse and search recipes from the public catalog.
+- View detailed recipe information and instructions.
+- Create and manage personal recipes.
+- Save favorite recipes for quick access.
+- Track recipe interactions through reports.
 
 ### 🔐 User System
 - Email and password authentication
